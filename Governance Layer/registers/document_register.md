@@ -11,6 +11,9 @@ Single source of truth for all corporate documents, policies, SOPs, and records 
 Register
 | Document ID | Title | Owner | Status | Version | Approval Authority | Review Cycle | Classification | Location |
 |---|---|---|---|---|---|---|---|---|
+| AGENTS-ACK-001 | Governance Acknowledgement Form | People Command + Legal | Review | 1.0.0 | Triumvirate + Gatekeeper | Annual | RESTRICTED | Onboarding/governance_acknowledgement.md |
+| AGENTS-GOV-001 | Governance Framework (MD) | Governance Layer | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/Governance.md |
+| AGENTS-CONST-002 | Constitution (MD) | Governance Layer | Review | 2.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/constitution.md |
 | AGENTS-BASE-AUS-001 | Australian Standards Baseline | Governance Layer | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/standards_baseline.md |
 | AGENTS-DOC-CTRL-001 | Document Control and Records Management | Legal and Compliance | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/document_control.md |
 | AGENTS-CHK-LOG-001 | Checkpoint Logging Standard | Audit and Compliance | Draft | 1.0.0 | Audit Agent + Gatekeeper | Monthly | INTERNAL | Governance Layer/checkpoint_logging.md |

@@ -19,8 +19,9 @@ Contents
 6. Protocols and incident response summary
 7. Oath of Service document
 8. Agent Employment Contract
-9. Training curriculum overview
-10. Reporting chain and escalation map
+9. Governance Acknowledgement Form
+10. Training curriculum overview
+11. Reporting chain and escalation map
 
 Required Forms
 - Identity assignment form
