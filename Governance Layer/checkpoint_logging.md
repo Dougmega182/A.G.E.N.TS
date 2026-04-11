@@ -31,3 +31,6 @@ Governance Layer/memory/checkpoints.jsonl
 Minimum Compliance
 No changes are considered complete until the checkpoint log is updated.
 
+Non-Recursive Rule
+Checkpoint log updates do not require additional checkpoint entries to avoid infinite recursion.
+
