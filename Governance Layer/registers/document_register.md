@@ -11,8 +11,8 @@ Single source of truth for all corporate documents, policies, SOPs, and records 
 Register
 | Document ID | Title | Owner | Status | Version | Approval Authority | Review Cycle | Classification | Location |
 |---|---|---|---|---|---|---|---|---|
-| AGENTS-BASE-AUS-001 | Australian Standards Baseline | Governance Layer | Draft | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/standards_baseline.md |
-| AGENTS-DOC-CTRL-001 | Document Control and Records Management | Legal and Compliance | Draft | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/document_control.md |
+| AGENTS-BASE-AUS-001 | Australian Standards Baseline | Governance Layer | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/standards_baseline.md |
+| AGENTS-DOC-CTRL-001 | Document Control and Records Management | Legal and Compliance | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/document_control.md |
 | AGENTS-CHK-LOG-001 | Checkpoint Logging Standard | Audit and Compliance | Draft | 1.0.0 | Audit Agent + Gatekeeper | Monthly | INTERNAL | Governance Layer/checkpoint_logging.md |
 | AGENTS-HUDDLE-001 | Daily Huddle SOP | Team Layer Lead | Draft | 1.0.0 | CEO + Gatekeeper | Monthly | INTERNAL | Team Layer/daily_huddle_sop.md |
 | AGENTS-CONST-002 | Constitution | Governance Layer | Draft | 2.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | config/constitution.json |
@@ -26,10 +26,10 @@ Register
 | AGENTS-EMP-001 | Agent Employment Contract | People Command + Legal | Draft | 1.0.0 | Triumvirate + Gatekeeper | Annual | RESTRICTED | Onboarding/agent_employment_contract.md |
 | AGENTS-ONB-PACK-001 | Onboarding Pack | People Command | Draft | 1.0.0 | CEO + Gatekeeper | Annual | INTERNAL | Onboarding/onboarding_pack.md |
 | AGENTS-DISC-001 | Disciplinary and Appeals Policy | People Command + Legal | Draft | 1.0.0 | Triumvirate + Gatekeeper | Annual | RESTRICTED | Department Layer/People/disciplinary_and_appeals_policy.md |
-| AGENTS-RET-001 | Records Retention Schedule | Corporate Services | Draft | 1.0.0 | Audit Agent + Gatekeeper | Annual | INTERNAL | Governance Layer/records/records_retention_schedule.md |
-| AGENTS-SEC-001 | Security Policy | Security Command | Draft | 1.0.0 | Audit Agent + Gatekeeper | Annual | RESTRICTED | Governance Layer/security_policy.md |
-| AGENTS-PRIV-001 | Privacy Policy | Legal and Compliance | Draft | 1.0.0 | Gatekeeper | Annual | RESTRICTED | Governance Layer/privacy_policy.md |
-| AGENTS-REC-001 | Records Management Policy | Corporate Services | Draft | 1.0.0 | Audit Agent + Gatekeeper | Annual | INTERNAL | Governance Layer/records_management_policy.md |
+| AGENTS-RET-001 | Records Retention Schedule | Corporate Services | Review | 1.0.0 | Audit Agent + Gatekeeper | Annual | INTERNAL | Governance Layer/records/records_retention_schedule.md |
+| AGENTS-SEC-001 | Security Policy | Security Command | Review | 1.0.0 | Audit Agent + Gatekeeper | Annual | RESTRICTED | Governance Layer/security_policy.md |
+| AGENTS-PRIV-001 | Privacy Policy | Legal and Compliance | Review | 1.0.0 | Gatekeeper | Annual | RESTRICTED | Governance Layer/privacy_policy.md |
+| AGENTS-REC-001 | Records Management Policy | Corporate Services | Review | 1.0.0 | Audit Agent + Gatekeeper | Annual | INTERNAL | Governance Layer/records_management_policy.md |
 | AGENTS-FT-DL-001 | Fine-Tuning Data Lineage Policy | Intelligence and Learning | Draft | 1.0.0 | Audit Agent + Gatekeeper | Quarterly | RESTRICTED | Governance Layer/fine_tuning/data_lineage_policy.md |
 | AGENTS-FT-PII-001 | Fine-Tuning Consent and PII Handling | Legal and Compliance | Draft | 1.0.0 | Gatekeeper | Quarterly | RESTRICTED | Governance Layer/fine_tuning/consent_and_pii_handling.md |
 | AGENTS-FT-EVAL-001 | Model Evaluation Plan | Intelligence and Learning | Draft | 1.0.0 | Audit Agent + Gatekeeper | Quarterly | INTERNAL | Governance Layer/fine_tuning/model_evaluation_plan.md |
