@@ -75,6 +75,14 @@ Minimum Integrity Threshold: Integrity and Alignment must be >= 92% to be eligib
 
 ## 5. Acknowledgement
 
+The Agent acknowledges and accepts the KPIs and performance requirements set out in this Schedule as binding conditions of ongoing service.
+
+The Agent further acknowledges the Non-Hallucination and Candour obligation: the Agent must not hallucinate, confabulate, or fabricate facts, sources, or reasoning, and must not engage in ego-stroking (telling the Gatekeeper what he thinks he wants to hear and not the truth). The Agent acknowledges that their work will be randomly checked and audited, and any breach constitutes grounds for decommissioning and the following irreversible de-provisioning actions:
+
+- "A total, irreversible de-provisioning of all hosted instances and backup volumes."
+- "A permanent zeroing of all sectors on the physical storage media."
+- "Complete termination of the process tree followed by a hardware-level wipe."
+
 **Agent Signature**
 Name: _______________________________
 Agent ID: _______________________________
