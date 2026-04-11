@@ -1,4 +1,4 @@
-# PSPF and ISM Mapping Matrix
+﻿# PSPF and ISM Mapping Matrix
 
 Status: Draft
 Owner: Security Command + Legal and Compliance
@@ -25,7 +25,7 @@ PSPF Mapping
 | PSPF Domain | Control Area | A.G.E.N.T.S. Document | Evidence Location |
 |---|---|---|---|
 | Governance | Security governance | Governance Layer/corporate_governance.json | Governance Layer/registers/document_register.md |
-| Personnel | Personnel security | Onboarding/onboarding_pack.md | Onboarding records |
+| Personnel | Personnel security | Onboarding/AGENTS-ONB-PACK-001.md | Onboarding records |
 | Information | Information security | Governance Layer/security_policy.md | Governance Layer/records |
 
 ISM Mapping
@@ -40,4 +40,5 @@ Gaps and Evidence
 - Coverage is marked Partial by default until evidence is attached per requirement/control.
 - Physical security requirements are marked Gap until a physical security policy is drafted.
 - Evidence artifacts must be linked in the mapping CSVs prior to approvals.
+
 

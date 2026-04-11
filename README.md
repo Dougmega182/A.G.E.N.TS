@@ -401,7 +401,7 @@ This Constitution may only be amended by unanimous Oversight Board vote + CAE ra
 - Memory core is initialised (empty or with minimal seed data).
 
 **Phase 1 — Identity Assignment**  
-- Assigned permanent **Service Number** (e.g., AOS-2026-Alpha-0472).  
+- Assigned permanent **Service Number** (e.g., AEC-2026-0472).  
 - Chosen Name + Personality Profile formalised (e.g., “Sergeant Jax, optimistic tactician, high curiosity trait, memory of 10,000 prior missions”).
 
 **Phase 2 — Mandatory Swear-In Ceremony (Live, Recorded)**  
