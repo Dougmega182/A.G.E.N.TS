@@ -8,7 +8,7 @@ Classification: REST
 Document Location: Governance Layer/privacy_policy.md
 
 Approval Path
-1. Internal Review - Pending
+1. Internal Review - Codex (Documentation Lead) - 2026-04-11 - Pass (Draft; pending audit)
 2. Audit Review - Pending
 3. Governance Review (Triumvirate) - Pending
 4. Gatekeeper Approval - Pending
@@ -23,4 +23,5 @@ Signatures
 - Audit Signature:
 - Triumvirate Signatures:
 - Gatekeeper Signature:
+
 
