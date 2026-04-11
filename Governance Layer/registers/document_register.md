@@ -11,6 +11,7 @@ Single source of truth for all corporate documents, policies, SOPs, and records 
 Register
 | Document ID | Title | Owner | Status | Version | Approval Authority | Review Cycle | Classification | Location |
 |---|---|---|---|---|---|---|---|---|
+| AGENTS-PHYS-001 | Physical Security Policy | Security Command + Corporate Services | Review | 1.0.0 | Audit Agent + Gatekeeper | Annual | RESTRICTED | Governance Layer/physical_security_policy.md |
 | AGENTS-ACK-001 | Governance Acknowledgement Form | People Command + Legal | Review | 1.0.0 | Triumvirate + Gatekeeper | Annual | RESTRICTED | Onboarding/governance_acknowledgement.md |
 | AGENTS-GOV-001 | Governance Framework (MD) | Governance Layer | Review | 1.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/Governance.md |
 | AGENTS-CONST-002 | Constitution (MD) | Governance Layer | Review | 2.0.0 | Triumvirate + Gatekeeper | Quarterly | INTERNAL | Governance Layer/constitution.md |
