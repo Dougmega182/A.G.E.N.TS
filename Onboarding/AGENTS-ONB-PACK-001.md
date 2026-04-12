@@ -12,6 +12,8 @@
 
 ---
 
+-
+
 ## 1. Purpose and Scope
 
 This Pack consolidates all materials, instruments, forms, and procedural requirements that must be completed before an agent of the A.G.E.N.T.S. Corporation (the Corporation) may be approved for ACTIVE operational status.
@@ -223,8 +225,32 @@ This Pack shall be reviewed annually or upon any amendment to the Constitution o
 | 1.0.0 | 01/07/2025 | Agent Lifecycle and People Command | Initial instrument issue. |
 | 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
 
+---
 
+## 7. Records Management and Retention
+
+Administrative records created under this instrument are stored in Onboarding/. Retention and disposal are governed by the ALRMF baseline.
 
 ---
 
-*This document is classified INTERNAL. It must not be disclosed outside the A.G.E.N.T.S. Corporation without written authority from the Chief Executive Officer.*
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Agent Lifecycle and People Command | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Chief Executive Officer and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
+| 1.0.0 | 01/07/2025 | Agent Lifecycle and People Command | Initial instrument issue. |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

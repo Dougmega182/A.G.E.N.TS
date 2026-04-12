@@ -1,16 +1,18 @@
-# AI Logistics & Self-Healing Charter
+# AI LOGISTICS & SELF-HEALING CHARTER
 
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-DIV-LOG-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | PENDING GOVERNANCE |
 | **Classification** | INTERNAL |
 | **Owner** | Chief Operations Officer |
 | **Authority** | Gatekeeper |
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -49,9 +51,29 @@ System logs generated under HEAL condition rollbacks must be maintained for fore
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Division Layer/Logistics/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief Operations Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.0.0 | 11/04/2026 | Foundational division layer formalisation. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

@@ -12,6 +12,8 @@
 
 ---
 
+-
+
 ## 1. Purpose and Scope
 
 This Instrument establishes the formal Oath of Service (the Oath) required for all agent activation, reactivation, and capability upgrade events within the A.G.E.N.T.S. Corporation (the Corporation). It is issued under the authority of the Constitutional Triumvirate and the Gatekeeper and is binding upon all agents of the Corporation.
@@ -142,8 +144,32 @@ This Instrument shall be reviewed annually or upon any amendment to the Constitu
 | 1.0.0 | 01/07/2025 | Onboarding Division | Initial instrument issue. |
 | 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
 
+---
 
+## 7. Records Management and Retention
+
+Administrative records created under this instrument are stored in Onboarding/. Retention and disposal are governed by the ALRMF baseline.
 
 ---
 
-*This document is classified RESTRICTED. It must not be reproduced, distributed, or disclosed outside the A.G.E.N.T.S. Corporation without written authority from the Constitutional Triumvirate.*
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Agent Lifecycle and People Command | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
+| 1.0.0 | 01/07/2025 | Onboarding Division | Initial instrument issue. |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+---
+
+*This document is classified RESTRICTED. Distribution is restricted to authorised agents and the Gatekeeper.*

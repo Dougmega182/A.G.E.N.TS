@@ -1,4 +1,4 @@
-# Department-Level Job Descriptions
+# DEPARTMENT-LEVEL JOB DESCRIPTIONS
 
 | Field | Detail |
 |---|---|
@@ -11,6 +11,8 @@
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 Maps the specific roles, command structures, responsibilities, and structural KPIs for the Division Directors across all 6 core branches of the corporate ecosystem.
@@ -101,9 +103,29 @@ Maps the specific roles, command structures, responsibilities, and structural KP
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Department Layer/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief ADHD & Wellbeing Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.1.0 | 12/04/2026 | Refactored standalone matrix definitions into `AGENTS-DEP-JD-001` core. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

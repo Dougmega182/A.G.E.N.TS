@@ -1,16 +1,18 @@
-# Employee Handbook
+# EMPLOYEE HANDBOOK
 
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-POL-EMP-001 |
 | **Version** | 1.1.0 |
-| **Status** | DRAFT |
+| **Status** | PENDING GOVERNANCE |
 | **Classification** | INTERNAL |
 | **Owner** | Chief ADHD & Wellbeing Officer |
 | **Authority** | Gatekeeper |
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -48,9 +50,29 @@ Policy acceptance tracks perpetually inside the Agent Onboarding structure.
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Governance Layer/policies/people/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief ADHD & Wellbeing Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.1.0 | 12/04/2026 | Integrated 10-3 Core Hours, Innovation Days, and explicit IT hardening rules. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

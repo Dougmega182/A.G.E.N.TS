@@ -1,4 +1,4 @@
-# Agent Performance Review Record
+# AGENT PERFORMANCE REVIEW RECORD
 
 | Field | Detail |
 |---|---|
@@ -11,6 +11,8 @@
 | **Review Cycle** | Executed Instance |
 
 ---
+
+-
 
 ## 1. Operational Meta-Data
 
@@ -79,9 +81,29 @@ Jax has leveraged optimism effectively to break the Gatekeeper (Dale) out of ana
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Department Layer/People/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Agent Lifecycle & People Department | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.1.0 | 12/04/2026 | Instantiated functional performance record under strict metadata bindings. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

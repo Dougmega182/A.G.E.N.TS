@@ -1,4 +1,4 @@
-# Agent Profiles Register
+# AGENT PROFILES REGISTER
 
 | Field | Detail |
 |---|---|
@@ -11,6 +11,8 @@
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -60,9 +62,29 @@ This register is a living document. Any onboarding, decommission, or reassignmen
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Individual Contributor Layer/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief Executive Officer (Aria) | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper (Dale) | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.0.0 | 11/04/2026 | Standardised template introduced and codenames deprecated. | Antigravity (System Administrator) |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

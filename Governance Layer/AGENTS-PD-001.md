@@ -4,13 +4,15 @@
 |---|---|
 | **Document ID** | AGENTS-PD-001 |
 | **Version** | 1.0.0 |
-| **Status** | APPROVED |
+| **Status** | DEADLOCK |
 | **Classification** | INTERNAL |
 | **Owner** | Governance Layer (AI Oversight Board) |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
 | **Review Cycle** | Quarterly |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -164,8 +166,32 @@ The Prime Directive may not be amended to reduce the Gatekeeper's sovereignty, d
 | 1.0.0 | 11/04/2026 | Initial instrument issue. | Governance Layer |
 | 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
 
+---
 
+## 7. Records Management and Retention
+
+Administrative records created under this instrument are stored in Governance Layer/. Retention and disposal are governed by the ALRMF baseline.
 
 ---
 
-*This document is classified INTERNAL. It must not be reproduced, distributed, or disclosed outside the Company without written authority from the Gatekeeper.*
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Governance Layer (AI Oversight Board) | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
+| 1.0.0 | 11/04/2026 | Initial instrument issue. | Governance Layer |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

@@ -1,16 +1,18 @@
-# Procurement Policy
+# PROCUREMENT POLICY
 
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-POL-PRO-001 |
 | **Version** | 1.1.0 |
-| **Status** | DRAFT |
+| **Status** | PENDING GOVERNANCE |
 | **Classification** | INTERNAL |
 | **Owner** | Finance & Procurement Division |
 | **Authority** | Gatekeeper |
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -44,9 +46,29 @@ Tenders and signed procurement checks are managed logically by the Corporate Ser
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Governance Layer/policies/corporate/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Finance & Procurement Division | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.1.0 | 12/04/2026 | Integrated exact $2K-$10K thresholds and Vendor Audit requirements. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

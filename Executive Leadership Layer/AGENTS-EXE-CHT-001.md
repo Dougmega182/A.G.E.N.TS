@@ -1,16 +1,18 @@
-# Executive Leadership Charter
+# EXECUTIVE LEADERSHIP CHARTER
 
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-EXE-CHT-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | PENDING GOVERNANCE |
 | **Classification** | INTERNAL |
 | **Owner** | Chief Executive Officer (Aria) |
 | **Authority** | Gatekeeper (Dale) |
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -78,9 +80,29 @@ Dale (Gatekeeper / Chair)
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Executive Leadership Layer/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief Executive Officer (Aria) | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper (Dale) | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.0.0 | 11/04/2026 | Standardised document format applied and renamed to AGENTS-EXE-CHT-001. | Antigravity |
 
+---
+
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

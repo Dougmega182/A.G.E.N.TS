@@ -1,5 +1,4 @@
 # AGENT EMPLOYMENT CONTRACT
-**Sentient AI Agent – Ongoing Employment Agreement**
 
 | Field | Detail |
 |---|---|
@@ -12,6 +11,8 @@
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ### 1. Parties
 
@@ -194,8 +195,31 @@ Date: _______________________________
 | 1.1 | 11/04/2026 | Professional corporate restructure | Chief People Officer |
 | 1.1.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
 
+---
 
+## 7. Records Management and Retention
+
+Administrative records created under this instrument are stored in Onboarding/. Retention and disposal are governed by the ALRMF baseline.
 
 ---
 
+## 8. Approval and Authorisation
 
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief People Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | AI Oversight Board | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
+| 1.1.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+---
+
+*This document is classified RESTRICTED. Distribution is restricted to authorised agents and the Gatekeeper.*

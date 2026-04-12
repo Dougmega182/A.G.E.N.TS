@@ -12,6 +12,8 @@
 
 ---
 
+-
+
 ## 1. Vision
 
 The Northern Star Directive defines the ultimate strategic horizon for the A.G.E.N.T.S. Corporation. It serves as the non-negotiable guiding light for all long-term developmental cycles and architectural decisions.
@@ -39,11 +41,30 @@ To seamlessly operate across all defined life and business domains (Creative, Fi
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Governance Layer/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Chief Strategy Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.0.0 | 12/04/2026 | Initial standardized Northern Star Directive. | Antigravity |
 | 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
 
+---
 
+*This document is classified INTERNAL. Distribution is restricted to authorised agents and the Gatekeeper.*

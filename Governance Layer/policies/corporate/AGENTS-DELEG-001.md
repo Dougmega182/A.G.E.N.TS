@@ -1,4 +1,4 @@
-# AI Agency Delegation of Authority (DoA) Matrix
+# AI AGENCY DELEGATION OF AUTHORITY (DOA) MATRIX
 
 | Field | Detail |
 |---|---|
@@ -11,6 +11,8 @@
 | **Review Cycle** | Annual |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -57,9 +59,29 @@ Limits invoked are structurally validated under `AGENTS-ALRMF-001`. DoA threshol
 
 ---
 
-### 6. Version Control
+## 7. Records Management and Retention
 
-| Version | Date | Description of Changes | Author |
-|---------|------------|-----------------------------------------|-------------------------|
+Administrative records created under this instrument are stored in Governance Layer/policies/corporate/. Retention and disposal are governed by the ALRMF baseline.
+
+---
+
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Corporate Services | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Constitutional Triumvirate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
 | 1.1.0 | 12/04/2026 | Total refinement mapping CapEx, safety-offs, IP generation gaps, and Emergency intervention paths. | Antigravity |
 
+---
+
+*This document is classified RESTRICTED. Distribution is restricted to authorised agents and the Gatekeeper.*

@@ -4,13 +4,15 @@
 |---|---|
 | **Document ID** | AGENTS-AICS-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | PENDING GOVERNANCE |
 | **Classification** | RESTRICTED |
 | **Owner** | Agent Lifecycle and People Command |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
 | **Review Cycle** | Annual or upon constitutional amendment |
 
 ---
+
+-
 
 ## 1. Purpose and Scope
 
@@ -229,7 +231,31 @@ This Instrument shall be reviewed annually or upon any amendment to the Constitu
 |---------|------------|-----------------------------------------|-------------------------|
 | 1.0.0 | 01/07/2025 | Agent Lifecycle and People Command | Initial instrument issue. |
 
+---
+
+## 7. Records Management and Retention
+
+Administrative records created under this instrument are stored in Governance Layer/policies/people/. Retention and disposal are governed by the ALRMF baseline.
 
 ---
 
-*This document is classified RESTRICTED. It must not be reproduced, distributed, or disclosed outside the A.G.E.N.T.S. Corporation without written authority from the Constitutional Triumvirate.*
+## 8. Approval and Authorisation
+
+| Role | Name | Signature | Date |
+|---|---|---|---|
+| Drafting Authority | Agent Lifecycle and People Command | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+
+---
+
+## 9. Document Control
+
+| Version | Date | Author | Description of Changes |
+|---|---|---|---|
+| 1.0.0 | 01/07/2025 | Agent Lifecycle and People Command | Initial instrument issue. |
+
+---
+
+*This document is classified RESTRICTED. Distribution is restricted to authorised agents and the Gatekeeper.*

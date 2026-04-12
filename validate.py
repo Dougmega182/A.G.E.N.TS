@@ -2,12 +2,10 @@ import os
 import re
 
 def parse_markdown_table(content):
-    """Simple parser for the Field/Detail metadata table at the top of AGENTS docs."""
     data = {}
     lines = content.split('\n')
     for line in lines:
         if line.startswith('| **') or line.startswith('|**'):
-            # Match | **Key** | Value |
             match = re.search(r'\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\s*\|', line)
             if match:
                 key = match.group(1).strip()
@@ -20,7 +18,7 @@ def validate_system():
     reg_path = os.path.join(base_dir, "Governance Layer", "registers", "AGENTS-DOC-REG-001.md")
     
     print("=" * 60)
-    print("  A.G.E.N.T.S. MARKDOWN ARCHITECTURE VALIDATION")
+    print("  A.G.E.N.T.S. MARKDOWN ARCHITECTURE VALIDATION (v2.1.0)")
     print("=" * 60)
 
     if not os.path.exists(reg_path):
@@ -31,17 +29,24 @@ def validate_system():
         lines = f.readlines()
 
     docs_to_check = []
+    # Identify Section 5 tables (Master Document Register)
+    in_master_reg = False
     for line in lines:
-        if any(line.startswith(f"| {prefix}") for prefix in ["AGENTS-", "SEC-", "HR-", "GOV-", "AGT-"]):
-            parts = [p.strip() for p in line.split('|')[1:-1]]
-            if len(parts) >= 9:
+        if "## 5. Master Document Register" in line:
+            in_master_reg = True
+        if "## 6. Register Maintenance" in line:
+            in_master_reg = False
+            
+        if in_master_reg and any(line.startswith(f"| {prefix}") for prefix in ["AGENTS-", "SEC-", "HR-", "GOV-", "AGT-"]):
+            parts = [p.strip().replace('`', '') for p in line.split('|')[1:-1]]
+            # Schema v2.1.0: ID[0], Title[1], Type[2], Version[3], Status[4], Class[5], Owner[6], Authority[7], Cycle[8], Path[9], Notes[10]
+            if len(parts) >= 10:
                 docs_to_check.append({
                     'id': parts[0],
                     'title': parts[1],
-                    'status': parts[3],
-                    'version': parts[4],
-                    'classification': parts[7],
-                    'location': parts[8]
+                    'version': parts[3],
+                    'status': parts[4],
+                    'location': parts[9]
                 })
 
     print(f"\n--- SCRAPING MASTER REGISTER ({len(docs_to_check)} ENTRIES) ---\n")
@@ -50,11 +55,27 @@ def validate_system():
     fail_count = 0
 
     for doc in docs_to_check:
-        full_path = os.path.join(base_dir, doc['location'])
+        if not doc['location'] or doc['location'] == "N/A":
+            continue
+            
+        # Strip backticks and extra whitespace for pathing
+        loc = doc['location'].strip('`').strip('/')
+        full_path = os.path.join(base_dir, loc)
+
+        # Handle Directory paths (Outlines etc) vs File paths
         if not os.path.exists(full_path):
             print(f"  [MISSING] {doc['id']:18} | Location: {doc['location']}")
             fail_count += 1
             continue
+            
+        if os.path.isdir(full_path):
+            # If it's a directory, check for the specific file within it if path was just the dir
+            target_file = f"{doc['id']}.md"
+            full_path = os.path.join(full_path, target_file)
+            if not os.path.exists(full_path):
+                 print(f"  [MISSING] {doc['id']:18} | File not found in {doc['location']}")
+                 fail_count += 1
+                 continue
 
         try:
             with open(full_path, 'r', encoding='utf-8-sig') as f:
@@ -62,7 +83,6 @@ def validate_system():
             
             meta = parse_markdown_table(content)
             
-            # Validation Logic
             mismatches = []
             if meta.get('Document ID') != doc['id']:
                 mismatches.append(f"ID ({meta.get('Document ID')} vs {doc['id']})")
@@ -71,7 +91,6 @@ def validate_system():
             if meta.get('Version') != doc['version']:
                 mismatches.append(f"Version ({meta.get('Version')} vs {doc['version']})")
             
-            # Safe print to avoid charmap errors on Windows terminals
             clean_title = doc['title'].encode('ascii', 'ignore').decode('ascii')[:40]
             if not mismatches:
                 print(f"  [OK]      {doc['id']:18} | {clean_title}")
