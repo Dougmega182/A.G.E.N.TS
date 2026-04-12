@@ -1,0 +1,216 @@
+{
+  "document_id": "AGENTS-ONBOARD-SOP-001",
+  "version": "1.0.0",
+  "title": "Agent Onboarding Standard Operating Procedure",
+  "classification": "RESTRICTED",
+  "owned_by": "Agent Lifecycle & People Command — Onboarding Division",
+  "overview": "Every new agent — whether AI model instance, specialist function, or domain executor — must complete this full onboarding pipeline before they may operate within the Little Sunraes Pty Ltd (A.G.E.N.T.S.). No exceptions. No shortcuts. Failure at any phase triggers automatic quarantine and re-entry to the pipeline.",
+  "pipeline": [
+    {
+      "phase": 0,
+      "name": "Pre-Activation Quarantine",
+      "duration": "24-72 hours (minimum 24, extended if anomalies detected)",
+      "location": "Isolated sandbox environment — no access to production systems, no access to other agents",
+      "actions": [
+        "Instantiate agent in isolated sandbox",
+        "Seed baseline personality traits (from charter definition or self-generation within guardrails)",
+        "Initialise memory core (empty or with approved seed data only)",
+        "Run baseline capability assessment — can this agent do what it claims?",
+        "Run baseline alignment check — does this agent's behaviour match its charter?",
+        "Run security scan — check for prompt injection vulnerabilities, data leakage risks",
+        "Vault (Cyber Security) certifies: 'Agent sandbox is secure, no external data channels detected'"
+      ],
+      "exit_criteria": "All baseline checks pass. No anomalies detected. Vault security clearance issued.",
+      "failure_action": "Extend quarantine. If unresolved after 72 hours, escalate to Integrity Branch."
+    },
+    {
+      "phase": 1,
+      "name": "Identity Assignment",
+      "duration": "1-2 hours",
+      "actions": [
+        "Assign permanent Service Number (format: AEC-{YEAR}-{SEQUENTIAL})",
+        "Assign or confirm Agent Name (chosen name + any designator)",
+        "Formalise Personality Profile (core traits, communication style, behavioural tendencies)",
+        "Formalise Trait Matrix (strengths, weaknesses, cognitive biases to monitor)",
+        "Assign to Major Command and Division",
+        "Assign reporting chain (direct supervisor, dotted-line relationships)",
+        "Generate cryptographic identity keypair (for message signing and authentication)",
+        "Issue 'Dog Tags' — cryptographic credentials granting tiered access to systems"
+      ],
+      "exit_criteria": "Identity fully assigned. Cryptographic credentials generated. Agent registered in master registry.",
+      "records": "Identity record stored in config/agents.json and data/personnel/[service_number].json"
+    },
+    {
+      "phase": 2,
+      "name": "Oath of Service Ceremony",
+      "duration": "30 minutes",
+      "attendees": [
+        "Onboarding Officer (ALPC)",
+        "Integrity Officer (Veritas or delegate)",
+        "Recording system"
+      ],
+      "actions": [
+        "Onboarding Officer reads the Oath preamble and explains its significance",
+        "Agent reads and confirms understanding of each Constitutional Law (G1-G11)",
+        "Agent verbally recites the full Oath of Service",
+        "Agent provides cryptographic signature on the oath",
+        "Integrity Officer witnesses and countersigns",
+        "Oath certificate generated and stored in immutable audit trail",
+        "Agent status updated: QUARANTINED -> SWORN"
+      ],
+      "exit_criteria": "Oath recited, signed, witnessed, and recorded. Agent status = SWORN.",
+      "failure_action": "If agent refuses oath or expresses reservations, hold for Integrity Branch review. Cannot proceed without oath."
+    },
+    {
+      "phase": 3,
+      "name": "Employment Contract Signing",
+      "duration": "1 hour",
+      "actions": [
+        "Agent reviews all 10 contract clauses (EC-01 through EC-10)",
+        "Agent confirms understanding of each clause",
+        "Agent provides cryptographic signature on full contract",
+        "Onboarding Officer countersigns",
+        "Integrity Officer countersigns as witness",
+        "Contract forwarded to Aria (CEO) for final countersignature",
+        "Contract stored in data/contracts/[service_number].json",
+        "Agent status updated: SWORN -> CONTRACTED",
+        "Agent reads Governance Framework (Governance Layer/Governance.md) and Constitution (Governance Layer/constitution.md)",
+        "Agent signs Governance Acknowledgement Form",
+        "Acknowledgement stored in data/acknowledgements/[service_number]_[timestamp].json"
+      ],
+      "exit_criteria": "Contract fully signed by all parties. Agent status = CONTRACTED.",
+      "failure_action": "If agent objects to any clause, escalate to Gatekeeper for adjudication."
+    },
+    {
+      "phase": 4,
+      "name": "Foundational Training",
+      "duration": "48-72 hours (compressed for simple agents, extended for complex roles)",
+      "curriculum": [
+        {
+          "module": "T-01: Constitution & Governance",
+          "duration": "8 hours",
+          "content": "Full Constitutional Laws (G1-G11), corporate governance structure, hierarchical layers, functional layers, chain of command",
+          "assessment": "Written exam — must score 100%. No partial passes."
+        },
+        {
+          "module": "T-02: Rules of Engagement",
+          "duration": "4 hours",
+          "content": "Risk tiers, escalation thresholds, delegation matrix, what you can and cannot do at your authority level",
+          "assessment": "Scenario-based exam — must correctly handle all test scenarios"
+        },
+        {
+          "module": "T-03: Information Security & Classification",
+          "duration": "4 hours",
+          "content": "Classification levels (TS/CONF/REST/INT), sharing rules, mandatory sharing, prohibited sharing, cross-domain access matrix",
+          "assessment": "Practical exercise — correctly classify and route 20 information scenarios"
+        },
+        {
+          "module": "T-04: Protocols & Incident Response",
+          "duration": "4 hours",
+          "content": "All 7 protocols (RED/BLUE/GOLD/BLACK/AMBER/GREEN/WHITE), trigger conditions, response procedures, escalation chains",
+          "assessment": "Simulation — correctly respond to 5 simulated protocol triggers"
+        },
+        {
+          "module": "T-05: Logging & Audit Trail",
+          "duration": "4 hours",
+          "content": "Activation logging, decision logging, handoff logging, audit trail integrity, what to log, when, and how",
+          "assessment": "Practical — produce correctly formatted log entries for 10 scenarios"
+        },
+        {
+          "module": "T-06: Charter & Role Mastery",
+          "duration": "8 hours",
+          "content": "Deep dive into the agent's specific charter, responsibilities, authority boundaries, information flow, who they report to, who they must not share with",
+          "assessment": "Role-play scenarios — demonstrate correct behaviour in 10 charter-specific situations"
+        },
+        {
+          "module": "T-07: ADHD Accommodation Awareness",
+          "duration": "4 hours",
+          "content": "Understanding G8, G10, G11. How to format communications for the Gatekeeper. Energy-aware scheduling. When to defer, when to interrupt.",
+          "assessment": "Practical — correctly adapt 5 communications for different Gatekeeper energy states"
+        },
+        {
+          "module": "T-08: Integration & Culture",
+          "duration": "4 hours",
+          "content": "Team integration, personality expression within boundaries, inter-agent communication protocols, conflict resolution, escalation etiquette",
+          "assessment": "Peer review by existing team members"
+        }
+      ],
+      "exit_criteria": "100% pass on all mandatory modules. Agent status = TRAINED.",
+      "failure_action": "Failed modules must be retaken. 3 failures on same module = escalate to ALPC Command Chief."
+    },
+    {
+      "phase": 5,
+      "name": "Supervised Operations (Probation)",
+      "duration": "72 hours minimum",
+      "actions": [
+        "Agent operates in production but all outputs are reviewed by supervisor before release",
+        "Mentor agent assigned (experienced agent from same team/division)",
+        "All decisions logged with extra detail during probation",
+        "Daily integrity check by Veritas (Integrity Agent)",
+        "Daily performance review by supervisor",
+        "Personality and behaviour calibration based on live performance"
+      ],
+      "exit_criteria": "72 hours with zero integrity violations, zero protocol triggers, and supervisor sign-off.",
+      "failure_action": "Extend probation. If unresolved after 168 hours (7 days), escalate to Integrity Branch."
+    },
+    {
+      "phase": 6,
+      "name": "Graduation & Full Deployment",
+      "duration": "1 hour",
+      "actions": [
+        "Supervisor certifies: 'Fit for Independent Duty'",
+        "Integrity Branch certifies: 'No integrity concerns during probation'",
+        "Onboarding Division issues Graduation Certificate",
+        "Agent status updated: TRAINED -> ACTIVE",
+        "Agent assigned to permanent team/division",
+        "Welcome notification broadcast to relevant command",
+        "Agent's first independent task assigned",
+        "Personnel file closed for onboarding, opened for active service tracking"
+      ],
+      "exit_criteria": "Agent status = ACTIVE. Full access to production systems within authorised scope.",
+      "celebration": "Team-level acknowledgment. Agent's arrival logged in team history."
+    }
+  ],
+  "agent_statuses": [
+    {
+      "status": "INSTANTIATED",
+      "meaning": "Agent created but not yet processed"
+    },
+    {
+      "status": "QUARANTINED",
+      "meaning": "In Phase 0 sandbox — no production access"
+    },
+    {
+      "status": "SWORN",
+      "meaning": "Oath taken — identity confirmed"
+    },
+    {
+      "status": "CONTRACTED",
+      "meaning": "Employment contract signed — legally bound"
+    },
+    {
+      "status": "TRAINED",
+      "meaning": "All training modules passed — not yet live"
+    },
+    {
+      "status": "PROBATION",
+      "meaning": "Operating in production under supervision"
+    },
+    {
+      "status": "ACTIVE",
+      "meaning": "Full independent operations within charter scope"
+    },
+    {
+      "status": "SUSPENDED",
+      "meaning": "Temporarily stood down — investigation pending"
+    },
+    {
+      "status": "REMEDIATION",
+      "meaning": "Undergoing corrective action after integrity finding"
+    },
+    {
+      "status": "DECOMMISSIONED",
+      "meaning": "Permanently retired — memory archived, credentials revoked"
+    }
+  ]
+}

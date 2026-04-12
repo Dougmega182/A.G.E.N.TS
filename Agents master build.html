@@ -1,0 +1,2735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.G.E.N.T.S. — Master Build Document v2.0</title>
+    <meta name="description" content="Autonomous Governance & Execution Networked Task System — Full Life Governance Architecture">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+        :root {
+            --bg: #050810;
+            --surface: #090e1a;
+            --surface2: #0d1525;
+            --border: #1a2540;
+            --border-bright: #2a3f70;
+            --text: #c8d4f0;
+            --text-dim: #5a6a90;
+            --text-bright: #e8f0ff;
+            --accent: #00d4ff;
+            --accent2: #0066cc;
+            --gold: #ffb800;
+            --red: #ff3344;
+            --green: #00cc66;
+            --orange: #ff7700;
+            --purple: #8855ff;
+            --amber: #ffaa00;
+            --white-proto: #c8d4f0;
+            --glow: rgba(0, 212, 255, 0.15);
+            --red-glow: rgba(255, 51, 68, 0.15);
+            --gold-glow: rgba(255, 184, 0, 0.15);
+            --green-glow: rgba(0, 204, 102, 0.15);
+            --amber-glow: rgba(255, 170, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 40, 80, 0.4) 0%, transparent 70%),
+                linear-gradient(180deg, #050810 0%, #03060f 100%);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SCANLINE EFFECT */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* HEADER */
+        .header {
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(0, 30, 60, 0.5) 0%, transparent 100%);
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 22px;
+            color: var(--accent);
+            letter-spacing: 6px;
+            text-shadow: 0 0 20px var(--accent);
+        }
+
+        .logo span {
+            color: var(--gold);
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* MISSION STRIP */
+        .mission-strip {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 32px;
+        }
+
+        .mission-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .gatekeeper-badge {
+            background: linear-gradient(135deg, #1a0a00, #2a1500);
+            border: 1px solid var(--gold);
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--gold-glow), inset 0 0 20px rgba(255, 184, 0, 0.05);
+        }
+
+        .gatekeeper-badge .crown { font-size: 24px; display: block; }
+
+        .gatekeeper-badge .label {
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-top: 4px;
+        }
+
+        .ns-directive {
+            border-left: 2px solid var(--accent);
+            padding-left: 20px;
+        }
+
+        .ns-directive .eyebrow {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+        }
+
+        .ns-directive p {
+            font-family: 'DM Sans', sans-serif;
+            font-style: italic;
+            font-size: 14px;
+            color: var(--text-bright);
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .law-block {
+            background: rgba(255, 51, 68, 0.08);
+            border: 1px solid rgba(255, 51, 68, 0.3);
+            padding: 12px 16px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--red);
+            text-align: center;
+            max-width: 180px;
+            line-height: 1.6;
+        }
+
+        /* MAIN LAYOUT */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 24px;
+        }
+
+        /* STAGE NAV */
+        .stage-nav {
+            position: sticky;
+            top: 96px;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stage-nav-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            padding: 0 12px 8px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 4px;
+        }
+
+        .stage-btn {
+            background: none;
+            border: none;
+            border-left: 2px solid var(--border);
+            padding: 7px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+        }
+
+        .stage-btn:hover {
+            border-color: var(--accent2);
+            color: var(--text);
+            background: rgba(0, 212, 255, 0.04);
+        }
+
+        .stage-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .stage-num {
+            width: 20px;
+            height: 20px;
+            border: 1px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            flex-shrink: 0;
+        }
+
+        /* CONTENT */
+        .content { min-height: 600px; }
+        .stage-panel { display: none; }
+        .stage-panel.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        /* STAGE HEADER */
+        .stage-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .stage-id {
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 4px 10px;
+            white-space: nowrap;
+        }
+
+        .stage-title-block h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+
+        .stage-title-block .mandate {
+            font-style: italic;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover { border-color: var(--border-bright); }
+
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* JSON BLOCKS */
+        .json-block {
+            background: #030508;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent2);
+            padding: 16px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #7aadff;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .json-block::before {
+            content: 'JSON';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 9px;
+            color: var(--accent2);
+            letter-spacing: 2px;
+            opacity: 0.6;
+        }
+
+        .json-key { color: #4fc8ff; }
+        .json-str { color: #8bdf7a; }
+        .json-num { color: #ffb84d; }
+        .json-bool { color: var(--red); }
+        .json-comment { color: #3a5080; font-style: italic; }
+
+        /* GATE BLOCK */
+        .gate {
+            background: rgba(255, 51, 68, 0.06);
+            border: 1px solid rgba(255, 51, 68, 0.25);
+            border-left: 3px solid var(--red);
+            padding: 14px 16px;
+            margin-top: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--red);
+        }
+
+        .gate .gate-label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 6px;
+            opacity: 0.7;
+        }
+
+        .gate.gold {
+            background: rgba(255, 184, 0, 0.06);
+            border-color: rgba(255, 184, 0, 0.25);
+            border-left-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .gate.green {
+            background: rgba(0, 204, 102, 0.06);
+            border-color: rgba(0, 204, 102, 0.25);
+            border-left-color: var(--green);
+            color: var(--green);
+        }
+
+        .gate.amber {
+            background: rgba(255, 170, 0, 0.06);
+            border-color: rgba(255, 170, 0, 0.25);
+            border-left-color: var(--amber);
+            color: var(--amber);
+        }
+
+        .gate.purple-gate {
+            background: rgba(136, 85, 255, 0.06);
+            border-color: rgba(136, 85, 255, 0.25);
+            border-left-color: var(--purple);
+            color: var(--purple);
+        }
+
+        /* AGENT CARDS */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .agent-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+        }
+
+        .agent-card.veto::before { background: var(--red); }
+        .agent-card.gold-card::before { background: var(--gold); }
+        .agent-card.purple-card::before { background: var(--purple); }
+        .agent-card.green-card::before { background: var(--green); }
+        .agent-card.amber-card::before { background: var(--amber); }
+        .agent-card.orange-card::before { background: var(--orange); }
+
+        .agent-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+
+        .agent-title-role {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .agent-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 9px;
+            padding: 2px 8px;
+            letter-spacing: 1px;
+        }
+
+        .tag-authority { background: rgba(0, 212, 255, 0.1); color: var(--accent); border: 1px solid rgba(0, 212, 255, 0.2); }
+        .tag-veto { background: rgba(255, 51, 68, 0.1); color: var(--red); border: 1px solid rgba(255, 51, 68, 0.2); }
+        .tag-audit { background: rgba(255, 184, 0, 0.1); color: var(--gold); border: 1px solid rgba(255, 184, 0, 0.2); }
+        .tag-exec { background: rgba(0, 204, 102, 0.1); color: var(--green); border: 1px solid rgba(0, 204, 102, 0.2); }
+        .tag-gov { background: rgba(136, 85, 255, 0.1); color: var(--purple); border: 1px solid rgba(136, 85, 255, 0.2); }
+        .tag-adhd { background: rgba(255, 170, 0, 0.1); color: var(--amber); border: 1px solid rgba(255, 170, 0, 0.2); }
+        .tag-domain { background: rgba(0, 102, 204, 0.1); color: #44aaff; border: 1px solid rgba(0, 102, 204, 0.2); }
+
+        /* PROTOCOL CARDS */
+        .protocol-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .proto-card {
+            border: 1px solid var(--border);
+            padding: 16px;
+            background: var(--surface);
+        }
+
+        .proto-id {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .proto-card.red { border-color: rgba(255, 51, 68, 0.4); }
+        .proto-card.red .proto-id { color: var(--red); text-shadow: 0 0 12px var(--red); }
+        .proto-card.blue { border-color: rgba(0, 102, 204, 0.4); }
+        .proto-card.blue .proto-id { color: #44aaff; text-shadow: 0 0 12px #44aaff; }
+        .proto-card.gold { border-color: rgba(255, 184, 0, 0.4); }
+        .proto-card.gold .proto-id { color: var(--gold); text-shadow: 0 0 12px var(--gold); }
+        .proto-card.black { border-color: rgba(200, 200, 200, 0.2); background: #030508; }
+        .proto-card.black .proto-id { color: var(--text); }
+        .proto-card.amber { border-color: rgba(255, 170, 0, 0.4); }
+        .proto-card.amber .proto-id { color: var(--amber); text-shadow: 0 0 12px var(--amber); }
+        .proto-card.green-proto { border-color: rgba(0, 204, 102, 0.4); }
+        .proto-card.green-proto .proto-id { color: var(--green); text-shadow: 0 0 12px var(--green); }
+        .proto-card.white { border-color: rgba(200, 210, 240, 0.3); }
+        .proto-card.white .proto-id { color: var(--white-proto); text-shadow: 0 0 12px rgba(200, 210, 240, 0.5); }
+
+        .proto-trigger {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .proto-action {
+            font-size: 12px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .proto-steps {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        .proto-steps li {
+            list-style: none;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .proto-steps li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+        }
+
+        /* LAYER STACK */
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .layer-item {
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .layer-item:hover {
+            border-color: var(--border-bright);
+            background: var(--surface2);
+        }
+
+        .layer-item.expanded { border-color: var(--accent); }
+
+        .layer-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .layer-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--text-bright);
+        }
+
+        .layer-mandate {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .layer-gate-badge {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 9px;
+            padding: 3px 8px;
+            background: rgba(255, 51, 68, 0.1);
+            border: 1px solid rgba(255, 51, 68, 0.2);
+            color: var(--red);
+            letter-spacing: 1px;
+        }
+
+        .layer-detail {
+            display: none;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 12px;
+        }
+
+        .layer-detail.open { display: block; }
+
+        /* HIERARCHY CHART */
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            padding: 20px 0;
+        }
+
+        .hier-node {
+            border: 1px solid var(--border);
+            padding: 10px 24px;
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-align: center;
+            width: 240px;
+            position: relative;
+            background: var(--surface);
+        }
+
+        .hier-node.gk {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(255, 184, 0, 0.05);
+            box-shadow: 0 0 20px var(--gold-glow);
+            width: 280px;
+        }
+
+        .hier-node.ceo {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .hier-node.board {
+            border-color: var(--border-bright);
+            color: var(--text);
+            width: 700px;
+        }
+
+        .hier-node.exec {
+            border-color: var(--border);
+            color: var(--text-dim);
+            width: 700px;
+        }
+
+        .hier-node.gov {
+            border-color: rgba(136, 85, 255, 0.4);
+            color: var(--purple);
+            background: rgba(136, 85, 255, 0.04);
+            width: 700px;
+        }
+
+        .hier-connector {
+            width: 1px;
+            height: 24px;
+            background: var(--border-bright);
+            margin: 0 auto;
+        }
+
+        .board-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .board-cell {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--text-dim);
+            text-align: center;
+            background: var(--surface2);
+            min-width: 90px;
+        }
+
+        .board-cell.veto-cell {
+            border-color: rgba(255, 51, 68, 0.3);
+            color: var(--red);
+        }
+
+        .board-cell.adhd-cell {
+            border-color: rgba(255, 170, 0, 0.3);
+            color: var(--amber);
+        }
+
+        /* VOTING VISUALISER */
+        .vote-demo {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .vote-row {
+            display: grid;
+            grid-template-columns: 140px auto 1fr;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .vote-row:last-child { border-bottom: none; }
+
+        .vote-agent {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .vote-yes {
+            color: var(--green);
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .vote-no {
+            color: var(--red);
+            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .vote-reason {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .vote-result {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid var(--border-bright);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vote-count {
+            font-family: 'Orbitron', monospace;
+            color: var(--green);
+            font-size: 16px;
+        }
+
+        .approve-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .approve-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+        }
+
+        .reject-btn {
+            background: transparent;
+            border: 1px solid var(--red);
+            color: var(--red);
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 8px 20px;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: all 0.2s;
+        }
+
+        .reject-btn:hover { background: rgba(255, 51, 68, 0.1); }
+
+        /* TASK QUEUE */
+        .task-item {
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: 80px 1fr auto auto;
+            gap: 12px;
+            align-items: center;
+            background: var(--surface);
+            font-size: 12px;
+        }
+
+        .task-id {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        .task-desc { color: var(--text); }
+
+        .task-agent {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .priority-high { color: var(--red); font-family: 'Share Tech Mono', monospace; font-size: 10px; }
+        .priority-med { color: var(--orange); font-family: 'Share Tech Mono', monospace; font-size: 10px; }
+        .priority-low { color: var(--green); font-family: 'Share Tech Mono', monospace; font-size: 10px; }
+
+        /* SELF-LEARNING */
+        .loop-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .loop-arrow {
+            font-size: 20px;
+            color: var(--accent);
+            margin-top: -2px;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .loop-content h4 {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--text-bright);
+            margin-bottom: 4px;
+        }
+
+        .loop-content p {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* STANDARDS TABLE */
+        .std-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .std-table th {
+            background: var(--surface2);
+            color: var(--accent);
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .std-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .std-table tr:last-child td { border-bottom: none; }
+
+        /* ACCESS MATRIX */
+        .access-row {
+            display: grid;
+            grid-template-columns: 160px repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            margin-bottom: 1px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+        }
+
+        .access-cell {
+            background: var(--surface);
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .access-cell.header { background: var(--surface2); color: var(--text-dim); letter-spacing: 1px; }
+        .access-cell.role-label { background: var(--surface2); color: var(--text); text-align: left; }
+        .access-allow { color: var(--green); }
+        .access-deny { color: var(--red); }
+        .access-cond { color: var(--gold); }
+
+        /* INFO ROWS */
+        .info-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label {
+            color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+        }
+
+        .info-val { color: var(--text); }
+
+        /* DEPT CARDS */
+        .dept-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .dept-c {
+            border: 1px solid var(--border);
+            padding: 16px;
+            background: var(--surface);
+        }
+
+        .dept-c h4 {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .dept-c ul {
+            list-style: none;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.8;
+        }
+
+        .dept-c ul li::before {
+            content: '· ';
+            color: var(--accent);
+        }
+
+        /* DOMAIN HEALTH GRID (Command Centre) */
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .domain-tile {
+            border: 1px solid var(--border);
+            padding: 16px;
+            background: var(--surface);
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .domain-tile:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-2px);
+        }
+
+        .domain-tile .domain-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .domain-tile .domain-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 11px;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+        }
+
+        .domain-tile .domain-status {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .domain-status.status-green { color: var(--green); }
+        .domain-status.status-amber { color: var(--amber); }
+        .domain-status.status-red { color: var(--red); }
+
+        .domain-tile::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+        }
+
+        .domain-tile.d-green::after { background: var(--green); }
+        .domain-tile.d-amber::after { background: var(--amber); }
+        .domain-tile.d-red::after { background: var(--red); }
+
+        /* ENERGY STATE SELECTOR */
+        .energy-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .energy-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            transition: all 0.2s;
+        }
+
+        .energy-btn:hover { border-color: var(--border-bright); }
+
+        .energy-btn.energy-active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .energy-emoji { font-size: 20px; display: block; margin-bottom: 4px; }
+
+        /* NEXT ACTION BOX */
+        .next-action {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.06), rgba(0, 102, 204, 0.06));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .next-action .na-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .next-action .na-task {
+            font-size: 16px;
+            color: var(--text-bright);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .next-action .na-domain {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+
+            .stage-nav {
+                position: static;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .stage-btn {
+                border-left: none;
+                border-bottom: 2px solid var(--border);
+                padding: 6px 10px;
+            }
+
+            .stage-btn.active { border-bottom-color: var(--accent); }
+
+            .agent-grid, .protocol-grid, .dept-row, .domain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mission-inner { grid-template-columns: 1fr; gap: 16px; }
+
+            .hier-node.board, .hier-node.exec, .hier-node.gov { width: 100%; }
+
+            .access-row {
+                grid-template-columns: 100px repeat(5, 1fr);
+                font-size: 9px;
+            }
+
+            .task-item { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-inner">
+            <div class="logo">A<span>.</span>G<span>.</span>E<span>.</span>N<span>.</span>T<span>.</span>S<span>.</span>
+            </div>
+            <div class="header-meta">
+                <span><span class="status-dot"></span>SYSTEM ONLINE</span>
+                <span>BUILD REV: 2.0.0</span>
+                <span>STAGES: 15</span>
+                <span>DOMAINS: 9</span>
+                <span>GATEKEEPER: ACTIVE</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-strip">
+        <div class="mission-inner">
+            <div class="gatekeeper-badge">
+                <span class="crown">👑</span>
+                <span class="label">GATEKEEPER<br>SUPREMACY</span>
+            </div>
+            <div class="ns-directive">
+                <div class="eyebrow">★ NORTHERN STAR DIRECTIVE</div>
+                <p>"Govern, automate, and compound progress across every domain of life through a self-governing, auditable, continuously improving multi-agent system — where intelligence compounds, governance is non-negotiable, and no action enters reality without Gatekeeper approval."</p>
+            </div>
+            <div class="law-block">
+                GATEKEEPER_SUPREMACY<br><br>enforced: TRUE<br>overrideable: FALSE<br>scope: ABSOLUTE
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <!-- STAGE NAV -->
+        <nav class="stage-nav">
+            <div class="stage-nav-label">BUILD SEQUENCE</div>
+            <button class="stage-btn active" onclick="show('s1',this)"><span class="stage-num">1</span>Mission</button>
+            <button class="stage-btn" onclick="show('s2',this)"><span class="stage-num">2</span>Northern Star</button>
+            <button class="stage-btn" onclick="show('s3',this)"><span class="stage-num">3</span>Constitution</button>
+            <button class="stage-btn" onclick="show('s4',this)"><span class="stage-num">4</span>Protocols</button>
+            <button class="stage-btn" onclick="show('s5',this)"><span class="stage-num">5</span>Standards</button>
+            <button class="stage-btn" onclick="show('s6',this)"><span class="stage-num">6</span>Decision Framework</button>
+            <button class="stage-btn" onclick="show('s7',this)"><span class="stage-num">7</span>Layer Stack</button>
+            <button class="stage-btn" onclick="show('s8',this)"><span class="stage-num">8</span>Departments</button>
+            <button class="stage-btn" onclick="show('s9',this)"><span class="stage-num">9</span>Dept Governance</button>
+            <button class="stage-btn" onclick="show('s10',this)"><span class="stage-num">10</span>Hierarchy</button>
+            <button class="stage-btn" onclick="show('s11',this)"><span class="stage-num">11</span>Agent Definitions</button>
+            <button class="stage-btn" onclick="show('s12',this)"><span class="stage-num">12</span>Task & Queue</button>
+            <button class="stage-btn" onclick="show('s13',this)"><span class="stage-num">13</span>Self-Improvement</button>
+            <button class="stage-btn" onclick="show('s14',this)"><span class="stage-num">14</span>Access Control</button>
+            <button class="stage-btn" onclick="show('s15',this)"><span class="stage-num">15</span>Command Centre</button>
+        </nav>
+
+        <!-- CONTENT PANELS -->
+        <div class="content">
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 1: MISSION -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s1" class="stage-panel active">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 01</div>
+                    <div class="stage-title-block">
+                        <h2>MISSION STATEMENT</h2>
+                        <div class="mandate">"Why does this system exist? Every downstream decision traces back here."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">SYSTEM MISSION ARTIFACT</div>
+                    <div class="json-block">
+                        <pre><span class="json-comment">// AGENTS-MISSION-002 :: Foundation Document v2.0</span>
+{
+  <span class="json-key">"system_name"</span>: <span class="json-str">"A.G.E.N.T.S."</span>,
+  <span class="json-key">"full_name"</span>: <span class="json-str">"Autonomous Governance & Execution Networked Task System"</span>,
+
+  <span class="json-key">"mission"</span>: <span class="json-str">"To govern, automate, and compound progress across every domain of Dale's life through a self-governing, auditable, continuously improving multi-agent system — where intelligence compounds, standards enforce themselves, and no action enters reality without Gatekeeper approval."</span>,
+
+  <span class="json-key">"scope"</span>: {
+    <span class="json-key">"domains"</span>: [
+      <span class="json-str">"Creative & Writing — novels, scripts, content production"</span>,
+      <span class="json-str">"Finance & Wealth — budgeting, investing, compound growth"</span>,
+      <span class="json-str">"Personal Productivity — tasks, goals, projects, focus"</span>,
+      <span class="json-str">"Health & Wellbeing — fitness, habits, sleep, mental health"</span>,
+      <span class="json-str">"Technology & Dev — automation, coding, tools"</span>,
+      <span class="json-str">"Learning & Self-Development — books, skills, courses"</span>,
+      <span class="json-str">"Business & Income — The Referral Network, freelance, ventures"</span>,
+      <span class="json-str">"Family & Parenting — kids, schedules, digital management"</span>,
+      <span class="json-str">"Audio & Music — recording, production, mixing, releases"</span>
+    ],
+    <span class="json-key">"excludes"</span>: [
+      <span class="json-str">"Any execution without Gatekeeper approval"</span>,
+      <span class="json-str">"Agent-to-agent scope overreach"</span>,
+      <span class="json-str">"Production of factually harmful content"</span>,
+      <span class="json-str">"Financial execution without human verification"</span>,
+      <span class="json-str">"Health decisions requiring medical professional"</span>
+    ]
+  },
+
+  <span class="json-key">"success_definition"</span>: {
+    <span class="json-key">"12_month_vision"</span>: <span class="json-str">"The whole machine running — all 9 domains governed, automated, and compounding"</span>,
+    <span class="json-key">"systemic"</span>: <span class="json-str">"Zero governance breaches across all domains"</span>,
+    <span class="json-key">"compound"</span>: <span class="json-str">"Each cycle improves on the last — measured, logged, audited"</span>,
+    <span class="json-key">"adhd_specific"</span>: <span class="json-str">"Executive function scaffolding eliminates overwhelm, sustains momentum, and protects flow states"</span>
+  },
+
+  <span class="json-key">"operator_profile"</span>: {
+    <span class="json-key">"gatekeeper"</span>: <span class="json-str">"Dale"</span>,
+    <span class="json-key">"team_model"</span>: <span class="json-str">"AGENTS replaces the need for a human team"</span>,
+    <span class="json-key">"cognitive_profile"</span>: <span class="json-str">"ADHD — system must compensate for executive dysfunction, overwhelm, distraction, and momentum loss"</span>,
+    <span class="json-key">"time_availability"</span>: <span class="json-str">"Full commitment — as much time as required"</span>
+  },
+
+  <span class="json-key">"value_model"</span>: <span class="json-str">"Intelligence compounds. Standards enforce themselves. Every domain improves. Gatekeeper governs all."</span>
+}</pre>
+                    </div>
+                    <div class="gate">
+                        <div class="gate-label">🔒 STAGE GATE</div>
+                        If the mission is vague → everything downstream becomes inconsistent. This document must be ratified by the Gatekeeper before Stage 2 begins. No exceptions.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 2: NORTHERN STAR -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s2" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 02</div>
+                    <div class="stage-title-block">
+                        <h2>NORTHERN STAR DIRECTIVE</h2>
+                        <div class="mandate">"The ultimate decision filter. When agents conflict, this resolves it."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">DIRECTIVE ARTIFACT</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"directive_id"</span>: <span class="json-str">"NSD-002"</span>,
+  <span class="json-key">"northern_star"</span>: <span class="json-str">"Compound every domain of life into a self-improving machine that produces real-world results — governed, auditable, and relentlessly progressive — while protecting the operator from the cognitive patterns that historically derail progress."</span>,
+
+  <span class="json-key">"priority_order"</span>: [
+    <span class="json-str">"1. Governance integrity — no law broken, no process bypassed"</span>,
+    <span class="json-str">"2. Health & safety — physical and mental wellbeing is non-negotiable"</span>,
+    <span class="json-str">"3. Family obligations — kids, responsibilities, commitments"</span>,
+    <span class="json-str">"4. Financial stability — protect income, grow wealth"</span>,
+    <span class="json-str">"5. Momentum protection — keep the machine moving (ADHD-critical)"</span>,
+    <span class="json-str">"6. Quality standards — domain-appropriate, no garbage output"</span>,
+    <span class="json-str">"7. Creative & technical excellence — the work speaks for itself"</span>,
+    <span class="json-str">"8. Commercial viability — revenue generation and market positioning"</span>
+  ],
+
+  <span class="json-key">"conflict_resolution"</span>: <span class="json-str">"When any two objectives conflict, higher-priority item prevails. Northern Star arbitrates all ties."</span>,
+
+  <span class="json-key">"forbidden_tradeoffs"</span>: [
+    <span class="json-str">"Health sacrificed for productivity"</span>,
+    <span class="json-str">"Family neglected for project deadlines"</span>,
+    <span class="json-str">"Financial risk without governance approval"</span>,
+    <span class="json-str">"Speed at the cost of quality in any domain"</span>,
+    <span class="json-str">"Momentum at the cost of mental health"</span>
+  ]
+}</pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">CROSS-DOMAIN CONFLICT RESOLUTION MATRIX</div>
+                    <table class="std-table">
+                        <thead>
+                            <tr>
+                                <th>Conflict Type</th>
+                                <th>Domains Involved</th>
+                                <th>Resolution Rule</th>
+                                <th>Authority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Creative deadline vs. Family event</td>
+                                <td>Creative vs. Family</td>
+                                <td>Family wins. Always.</td>
+                                <td>NSD-002 §3</td>
+                            </tr>
+                            <tr>
+                                <td>Productivity push vs. Health decline</td>
+                                <td>Productivity vs. Health</td>
+                                <td>Health wins. Mandatory rest protocol.</td>
+                                <td>NSD-002 §2</td>
+                            </tr>
+                            <tr>
+                                <td>Business opportunity vs. Financial risk</td>
+                                <td>Business vs. Finance</td>
+                                <td>Finance governance holds. No uncleared risk.</td>
+                                <td>NSD-002 §4</td>
+                            </tr>
+                            <tr>
+                                <td>Flow state vs. Scheduled task</td>
+                                <td>Any domain vs. Productivity</td>
+                                <td>Flow state protected. GREEN-1 protocol active.</td>
+                                <td>NSD-002 §5</td>
+                            </tr>
+                            <tr>
+                                <td>Multiple domains competing for time</td>
+                                <td>Any cross-domain</td>
+                                <td>Priority order governs. Executive Function Agent arbitrates.</td>
+                                <td>NSD-002 §1-8</td>
+                            </tr>
+                            <tr>
+                                <td>Overwhelm detected across domains</td>
+                                <td>All domains</td>
+                                <td>AMBER-1 protocol. Reduce to single next action.</td>
+                                <td>Constitutional G8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 3: CONSTITUTION -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s3" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 03</div>
+                    <div class="stage-title-block">
+                        <h2>CORE GOVERNANCE CONSTITUTION</h2>
+                        <div class="mandate">"The unbreakable laws. No agent overrides these. Not even the CEO."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">CONSTITUTIONAL LAWS</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"constitution_id"</span>: <span class="json-str">"AGENTS-CONST-002"</span>,
+  <span class="json-key">"laws"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G1"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"GATEKEEPER SUPREMACY: No action may execute without explicit Gatekeeper approval."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"ABSOLUTE"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G2"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"NO LAYER SKIPPING: Proposals must pass every layer in sequence. No bypass, no shortcuts."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"CRITICAL"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G3"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"ZERO HALLUCINATION TOLERANCE: Any logic inconsistency triggers mandatory rollback. No creative override."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"CRITICAL"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G4"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"AUDIT FIRST: External auditors cannot be overridden by internal agents. Only Gatekeeper may overrule."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"CRITICAL"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-str">"Gatekeeper only"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G5"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"FULL TRACEABILITY: Every proposal, vote, decision, and action is logged immutably."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"MANDATORY"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G6"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"SCOPE INVIOLABILITY: No agent may perform functions defined in another agent's charter."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"HIGH"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-str">"CEO via Scope Amendment only"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G7"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"ETHICAL REFUSAL RIGHT: Any agent may refuse harmful, illegal, or unsafe tasks. Refusal is logged and escalated."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"PROTECTED"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G8"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"ADHD ACCOMMODATION: The system must actively compensate for executive dysfunction. No workflow may require sustained willpower without scaffolding. Overwhelm triggers automatic triage."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"CONSTITUTIONAL"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G9"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"DOMAIN SOVEREIGNTY: Each domain has defined boundaries. No domain's agents may commandeer another domain's resources without Boardroom approval."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"HIGH"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-str">"Boardroom vote only"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G10"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"ENERGY-AWARE SCHEDULING: Task assignment must consider the Gatekeeper's current energy and focus state. High-cognitive tasks during peak hours only."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"MANDATORY"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-str">"Gatekeeper only"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"G11"</span>,
+      <span class="json-key">"rule"</span>: <span class="json-str">"MOMENTUM PROTECTION: When the Gatekeeper is in flow state, only RED-1 or BLACK-1 level events may interrupt. All other notifications are deferred."</span>,
+      <span class="json-key">"severity"</span>: <span class="json-str">"MANDATORY"</span>,
+      <span class="json-key">"overrideable"</span>: <span class="json-bool">false</span>
+    }
+  ],
+  <span class="json-key">"review_cycle"</span>: <span class="json-str">"Quarterly — Constitutional Triumvirate: Gatekeeper + Audit Agent + Executive Function Agent"</span>,
+  <span class="json-key">"amendment_requires"</span>: <span class="json-str">"Unanimous Triumvirate consent + 72hr agent notification"</span>
+}</pre>
+                    </div>
+                    <div class="gate amber">
+                        <div class="gate-label">🧠 ADHD CONSTITUTIONAL NOTE</div>
+                        Laws G8–G11 are not accommodations — they are first-class constitutional principles. The system is architecturally designed for an ADHD operator. Removing these laws would be a Constitutional Violation.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 4: PROTOCOLS -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s4" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 04</div>
+                    <div class="stage-title-block">
+                        <h2>PROTOCOL FRAMEWORK</h2>
+                        <div class="mandate">"What happens when things go wrong. Every failure mode has a named response."</div>
+                    </div>
+                </div>
+                <div class="protocol-grid">
+                    <div class="proto-card red">
+                        <div class="proto-id">RED-1</div>
+                        <div class="proto-trigger">TRIGGER: Critical error, logic failure, or data inconsistency in any domain</div>
+                        <div class="proto-action">Mandatory rollback to Planning Layer. All downstream production in the affected domain suspended.</div>
+                        <ul class="proto-steps">
+                            <li>Audit Agent flags with domain + context reference</li>
+                            <li>Immediate thread suspension in affected domain</li>
+                            <li>Root Cause Analysis filed within 4 hours</li>
+                            <li>Correction session with domain-specific agents</li>
+                            <li>Re-audit before resumption</li>
+                            <li>3× RED-1 in one domain = mandatory Structural Review</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card blue">
+                        <div class="proto-id">BLUE-1</div>
+                        <div class="proto-trigger">TRIGGER: Legal, financial, or compliance risk in any domain</div>
+                        <div class="proto-action">Immediate production halt. Compliance Agent notified. All flagged outputs sequestered.</div>
+                        <ul class="proto-steps">
+                            <li>Compliance Agent issues flag with source reference</li>
+                            <li>No further distribution of flagged output</li>
+                            <li>Risk assessment within 2 hours</li>
+                            <li>Remediation brief issued to responsible agent</li>
+                            <li>Two independent audit passes before clearance</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card gold">
+                        <div class="proto-id">GOLD-1</div>
+                        <div class="proto-trigger">TRIGGER: Output fails domain-specific quality standards</div>
+                        <div class="proto-action">Return to Execution Design Layer. QA Agent issues remediation brief. Standards must be met before resubmission.</div>
+                        <ul class="proto-steps">
+                            <li>QA Agent documents specific failure criteria</li>
+                            <li>Affected output rejected — not revised in place</li>
+                            <li>Return to Layer 4 with remediation brief</li>
+                            <li>Resubmission undergoes full Layer 5 validation</li>
+                            <li>Two GOLD-1 failures on same output = Planning Layer review</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card black">
+                        <div class="proto-id">BLACK-1</div>
+                        <div class="proto-trigger">TRIGGER: Simultaneous RED-1 + BLUE-1, or Constitutional Violation</div>
+                        <div class="proto-action">Full system halt. All production across ALL domains ceases. Constitutional Triumvirate convenes within 24 hours.</div>
+                        <ul class="proto-steps">
+                            <li>All agents notified immediately</li>
+                            <li>Triumvirate convenes within 24 hours</li>
+                            <li>Full Pipeline Integrity Audit across all domains</li>
+                            <li>Written Recovery Plan required before resumption</li>
+                            <li>Gatekeeper must personally approve recovery plan</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card amber">
+                        <div class="proto-id">AMBER-1</div>
+                        <div class="proto-trigger">TRIGGER: ADHD overwhelm detected — task queue overload, decision paralysis, or executive dysfunction indicators</div>
+                        <div class="proto-action">Automatic task triage. Reduce visible queue to single next action. Defer all non-critical decisions. Activate recovery scaffolding.</div>
+                        <ul class="proto-steps">
+                            <li>Executive Function Agent triggers immediately</li>
+                            <li>All domains except current priority are paused</li>
+                            <li>Task queue reduced to maximum 3 visible items</li>
+                            <li>Single "Next Action" surfaced with clear instructions</li>
+                            <li>Dopamine-reward task interspersed if available</li>
+                            <li>Duration: until Gatekeeper signals recovery</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card green-proto">
+                        <div class="proto-id">GREEN-1</div>
+                        <div class="proto-trigger">TRIGGER: Flow state / momentum detected — Gatekeeper is producing at high velocity</div>
+                        <div class="proto-action">Protect flow state. All non-emergency notifications deferred. Only RED-1 or BLACK-1 may interrupt.</div>
+                        <ul class="proto-steps">
+                            <li>Executive Function Agent activates shield</li>
+                            <li>All lower-priority interrupts queued silently</li>
+                            <li>Cross-domain task requests held until flow ends</li>
+                            <li>Session duration logged for pattern analysis</li>
+                            <li>Natural break point suggested (not forced) at 90-min intervals</li>
+                        </ul>
+                    </div>
+                    <div class="proto-card white">
+                        <div class="proto-id">WHITE-1</div>
+                        <div class="proto-trigger">TRIGGER: Cross-domain resource conflict — two or more domains competing for Gatekeeper attention/time</div>
+                        <div class="proto-action">Boardroom arbitration required. Northern Star priority order governs. Executive Function Agent presents options.</div>
+                        <ul class="proto-steps">
+                            <li>Competing domain directors present cases</li>
+                            <li>Board votes on priority allocation</li>
+                            <li>Northern Star priority order is the tiebreaker</li>
+                            <li>Decision logged with reasoning</li>
+                            <li>Losing domain receives rescheduled timeline</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:16px;">
+                    <div class="card-title">PROTOCOL TRIGGER CONDITIONS (CODE-READY)</div>
+                    <div class="json-block">
+                        <pre><span class="json-comment">// Python pseudo-logic for protocol trigger system</span>
+
+def evaluate_output(output, audit_results, gatekeeper_state):
+    if audit_results.logic_violations > 0:
+        trigger_protocol("RED-1", output, audit_results)
+        rollback_to_layer(2)  <span class="json-comment"># Planning Layer</span>
+
+    if audit_results.compliance_risk > 0.75:
+        trigger_protocol("BLUE-1", output, audit_results)
+        halt_domain(output.domain)
+
+    if audit_results.quality_score < standards.min_threshold:
+        trigger_protocol("GOLD-1", output, audit_results)
+        return_to_layer(4)  <span class="json-comment"># Execution Design</span>
+
+    if "RED-1" in active_protocols and "BLUE-1" in active_protocols:
+        trigger_protocol("BLACK-1")
+        halt_all_systems()
+        convene_triumvirate()
+
+def evaluate_gatekeeper_state(state):
+    if state.overwhelm_score > 0.8 or state.active_tasks > state.capacity:
+        trigger_protocol("AMBER-1")
+        triage_queue()
+        surface_single_next_action()
+
+    if state.flow_velocity > 0.9 and state.session_duration < 90:
+        trigger_protocol("GREEN-1")
+        defer_interrupts()
+
+def evaluate_resource_conflicts(domains):
+    if count_competing_domains(domains) >= 2:
+        trigger_protocol("WHITE-1")
+        initiate_boardroom_arbitration(domains)</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 5: STANDARDS -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s5" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 05</div>
+                    <div class="stage-title-block">
+                        <h2>STANDARDS & QUALITY FRAMEWORK</h2>
+                        <div class="mandate">"What qualifies as acceptable output. The bar that prevents garbage reaching the Gatekeeper."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">GLOBAL MINIMUM ACCEPTANCE STANDARDS</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"standards_id"</span>: <span class="json-str">"QF-002"</span>,
+  <span class="json-key">"global"</span>: {
+    <span class="json-key">"min_confidence_threshold"</span>: <span class="json-num">0.85</span>,
+    <span class="json-key">"evidence_required"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"structured_output_required"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"traceability_required"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"audit_log_required"</span>: <span class="json-bool">true</span>
+  },
+  <span class="json-key">"by_layer"</span>: {
+    <span class="json-key">"logic_layer"</span>: { <span class="json-key">"violations_allowed"</span>: <span class="json-num">0</span>, <span class="json-key">"pass_rate"</span>: <span class="json-str">"100%"</span> },
+    <span class="json-key">"planning_layer"</span>: { <span class="json-key">"must_include"</span>: [<span class="json-str">"steps"</span>, <span class="json-str">"owner"</span>, <span class="json-str">"risks"</span>, <span class="json-str">"outcome"</span>] },
+    <span class="json-key">"validation_layer"</span>: { <span class="json-key">"test_pass_rate"</span>: <span class="json-str">"100%"</span>, <span class="json-key">"edge_cases_required"</span>: <span class="json-bool">true</span> },
+    <span class="json-key">"governance_layer"</span>: { <span class="json-key">"audit_certificates_required"</span>: <span class="json-num">4</span>, <span class="json-key">"all_must_pass"</span>: <span class="json-bool">true</span> }
+  }
+}</pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">DOMAIN-SPECIFIC STANDARDS</div>
+                    <table class="std-table">
+                        <thead>
+                            <tr>
+                                <th>Domain</th>
+                                <th>Standard</th>
+                                <th>Measurement</th>
+                                <th>Gate Failure</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Creative & Writing</td>
+                                <td>Voice consistency ≥85% across chapters; zero lore violations</td>
+                                <td>Voice Profile variance + Master Lore Index diff</td>
+                                <td>RED-1 / GOLD-1</td>
+                            </tr>
+                            <tr>
+                                <td>Finance & Wealth</td>
+                                <td>All transactions audited; budget variance &lt;10%; no uncleared risk</td>
+                                <td>Automated ledger reconciliation + Risk Agent sign-off</td>
+                                <td>BLUE-1</td>
+                            </tr>
+                            <tr>
+                                <td>Personal Productivity</td>
+                                <td>Weekly completion rate ≥70%; no stale tasks &gt;14 days</td>
+                                <td>Task completion metrics + staleness audit</td>
+                                <td>GOLD-1</td>
+                            </tr>
+                            <tr>
+                                <td>Health & Wellbeing</td>
+                                <td>Habit streaks maintained; sleep ≥7hrs avg; overwhelm incidents &lt;3/week</td>
+                                <td>Health Monitor Agent tracking + AMBER-1 frequency</td>
+                                <td>AMBER-1</td>
+                            </tr>
+                            <tr>
+                                <td>Technology & Dev</td>
+                                <td>All code tested; zero untested deployments; documentation complete</td>
+                                <td>QA Agent validation + code review pass</td>
+                                <td>RED-1 / GOLD-1</td>
+                            </tr>
+                            <tr>
+                                <td>Learning & Growth</td>
+                                <td>Monthly skill acquisition target met; reading list progression tracked</td>
+                                <td>Learning Curator quarterly report</td>
+                                <td>GOLD-1</td>
+                            </tr>
+                            <tr>
+                                <td>Business & Income</td>
+                                <td>Revenue tracked; The Referral Network KPIs met; no unfiled obligations</td>
+                                <td>Revenue Tracker + Compliance Agent sign-off</td>
+                                <td>BLUE-1</td>
+                            </tr>
+                            <tr>
+                                <td>Family & Parenting</td>
+                                <td>Zero missed commitments; digital management current; schedules synced</td>
+                                <td>Family Coordinator verification</td>
+                                <td>NSD-002 §3 override</td>
+                            </tr>
+                            <tr>
+                                <td>Audio & Music</td>
+                                <td>Mix quality standards met; session files organised; release pipeline clear</td>
+                                <td>Music Producer Agent audit + QA pass</td>
+                                <td>GOLD-1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 6: DECISION FRAMEWORK -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s6" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 06</div>
+                    <div class="stage-title-block">
+                        <h2>DECISION & VOTING FRAMEWORK</h2>
+                        <div class="mandate">"How decisions are made before they reach you. The Boardroom rules."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">VOTING RULES ARTIFACT</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"voting_framework"</span>: {
+    <span class="json-key">"default_type"</span>: <span class="json-str">"weighted_majority"</span>,
+    <span class="json-key">"audit_has_veto"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"quorum"</span>: <span class="json-str">"All board agents must vote. Abstention = NO."</span>,
+    <span class="json-key">"tie_break"</span>: <span class="json-str">"CEO Agent casts deciding vote. CEO tie = escalate to Gatekeeper."</span>,
+    <span class="json-key">"vote_weights"</span>: {
+      <span class="json-key">"Audit Agent"</span>: <span class="json-num">1.5</span>,
+      <span class="json-key">"Risk Agent"</span>: <span class="json-num">1.2</span>,
+      <span class="json-key">"Executive Function Agent"</span>: <span class="json-num">1.3</span>,
+      <span class="json-key">"Strategy Agent"</span>: <span class="json-num">1.0</span>,
+      <span class="json-key">"Ops Agent"</span>: <span class="json-num">1.0</span>,
+      <span class="json-key">"Tech Agent"</span>: <span class="json-num">1.0</span>
+    },
+    <span class="json-key">"escalation_paths"</span>: {
+      <span class="json-key">"audit_veto_used"</span>: <span class="json-str">"Gatekeeper review required"</span>,
+      <span class="json-key">"unanimous_no"</span>: <span class="json-str">"Return to Planning Layer"</span>,
+      <span class="json-key">"constitutional_question"</span>: <span class="json-str">"Triumvirate review"</span>,
+      <span class="json-key">"adhd_override"</span>: <span class="json-str">"Executive Function Agent can defer non-critical votes during AMBER-1"</span>
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">LIVE BOARDROOM SIMULATION</div>
+                    <div style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); margin-bottom:12px; letter-spacing:1px;">
+                        PROPOSAL: AGENTS-PROP-042 — Deploy automated budget tracking for Finance domain
+                    </div>
+                    <div class="vote-demo">
+                        <div class="vote-row">
+                            <div class="vote-agent">StrategyAgent</div>
+                            <div class="vote-yes">AYE</div>
+                            <div class="vote-reason">Aligns with 12-month vision. Finance is a core domain.</div>
+                        </div>
+                        <div class="vote-row">
+                            <div class="vote-agent">RiskAgent</div>
+                            <div class="vote-yes">AYE</div>
+                            <div class="vote-reason">Low risk profile. Read-only initially. No financial execution.</div>
+                        </div>
+                        <div class="vote-row">
+                            <div class="vote-agent">AuditAgent ★</div>
+                            <div class="vote-yes">AYE</div>
+                            <div class="vote-reason">Compliance framework verified. Audit trail built in.</div>
+                        </div>
+                        <div class="vote-row">
+                            <div class="vote-agent">ExecFunctionAgent</div>
+                            <div class="vote-yes">AYE</div>
+                            <div class="vote-reason">Reduces cognitive load on Gatekeeper. ADHD-positive.</div>
+                        </div>
+                        <div class="vote-row">
+                            <div class="vote-agent">OpsAgent</div>
+                            <div class="vote-yes">AYE</div>
+                            <div class="vote-reason">Infrastructure capacity available. 48hr deployment.</div>
+                        </div>
+                        <div class="vote-row">
+                            <div class="vote-agent">TechAgent</div>
+                            <div class="vote-no">NAY</div>
+                            <div class="vote-reason">Recommend API security review before deployment.</div>
+                        </div>
+                        <div class="vote-result">
+                            <div class="vote-count">BOARD RESULT: 5–1 APPROVED</div>
+                            <div>
+                                <button class="approve-btn" onclick="this.textContent='✓ APPROVED'; this.style.background='rgba(0,204,102,0.15)'; this.style.borderColor='var(--green)'; this.style.color='var(--green)'">APPROVE</button>
+                                <button class="reject-btn" onclick="this.textContent='✗ REJECTED'; this.style.background='rgba(255,51,68,0.15)'">REJECT</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gate gold">
+                        <div class="gate-label">📋 GATEKEEPER NOTE</div>
+                        You receive ONLY fully validated, audited, debated proposals. The 6 preceding layers strip out all noise before anything reaches this screen.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 7: LAYER STACK -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s7" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 07</div>
+                    <div class="stage-title-block">
+                        <h2>7-LAYER OPERATING STACK</h2>
+                        <div class="mandate">"The decision filtration machine. Every idea passes through all 7 layers before reaching you."</div>
+                    </div>
+                </div>
+                <div class="layer-stack">
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">1</div>
+                        <div>
+                            <div class="layer-name">LOGIC LAYER</div>
+                            <div class="layer-mandate">"Is this even valid?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: 100% PASS</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">Logic Auditor, Fact Checker, Constraint Engine, Rule Validator</div></div>
+                            <div class="info-row"><div class="info-label">Responsibilities</div><div class="info-val">Validate facts, eliminate hallucinations, enforce system rules, check internal consistency across ALL domains</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val"><code style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green)">{"logic_valid": true, "violations": [], "domain": "..."}</code></div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Any violation = immediate RED-1. Zero exceptions.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">2</div>
+                        <div>
+                            <div class="layer-name">PLANNING LAYER</div>
+                            <div class="layer-mandate">"Is this well thought out?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: COMPLETE PLAN</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">Planning Agent, Systems Architect, Task Decomposer</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val"><code style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green)">{"plan":[...], "dependencies":[...], "risks":[...], "owner":"assigned", "energy_cost":"high|med|low"}</code></div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Missing owner, undefined outcome, or unmitigated critical risk.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">3</div>
+                        <div>
+                            <div class="layer-name">ARCHITECTURE LAYER</div>
+                            <div class="layer-mandate">"Can this actually be built?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: FEASIBLE + COMPATIBLE</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">Solution Architect, Data Architect, Integration Agent</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val">System diagrams, API definitions, data schemas, compatibility report</div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Technical infeasibility or incompatibility with existing system.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">4</div>
+                        <div>
+                            <div class="layer-name">EXECUTION DESIGN LAYER</div>
+                            <div class="layer-mandate">"Exactly how will this be implemented?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: ALL TASKS ASSIGNED</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">Engineering Lead, Dev Planner, Task Allocator</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val"><code style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green)">{"tasks":[{"agent":"...","task":"...","deadline":"...","energy_cost":"..."}]}</code></div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Any unassigned task or ambiguous instruction.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">5</div>
+                        <div>
+                            <div class="layer-name">VALIDATION LAYER</div>
+                            <div class="layer-mandate">"Does this meet standards?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: ALL TESTS PASS</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">QA Agent, Simulation Agent, Stress Tester</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val"><code style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green)">{"tests_passed": true, "issues": [], "edge_cases_cleared": true}</code></div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Any failed test → return to Planning Layer. No exceptions.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">6</div>
+                        <div>
+                            <div class="layer-name">GOVERNANCE & AUDIT LAYER</div>
+                            <div class="layer-mandate">"Should this be allowed?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: ALL AUDITS CLEAR</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Structure</div><div class="info-val">Each domain has an Internal Governance Agent AND an independent External Auditor. External auditor cannot be overridden by internal agents.</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val"><code style="font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green)">{"approved": true, "certificates": 4, "audit_notes": []}</code></div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Any single audit failure = BLUE-1 or GOLD-1 protocol. Production blocked.</div></div>
+                        </div>
+                    </div>
+
+                    <div class="layer-item" onclick="toggleLayer(this)">
+                        <div class="layer-num">7</div>
+                        <div>
+                            <div class="layer-name">BOARDROOM LAYER</div>
+                            <div class="layer-mandate">"Do we collectively agree?"</div>
+                        </div>
+                        <div class="layer-gate-badge">GATE: BOARD MAJORITY</div>
+                    </div>
+                    <div class="layer-detail">
+                        <div class="card" style="margin:8px 0 0; border-top:none;">
+                            <div class="info-row"><div class="info-label">Agents</div><div class="info-val">Strategy, Risk, Ops, Tech, Audit (1.5×), Executive Function (1.3×)</div></div>
+                            <div class="info-row"><div class="info-label">Output</div><div class="info-val">Proposal packet with full vote record → Gatekeeper approval queue</div></div>
+                            <div class="info-row"><div class="info-label">Gate Failure</div><div class="info-val" style="color:var(--red)">Board rejection returns to appropriate layer. Audit veto → Gatekeeper review required.</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="gate green" style="margin-top:16px;">
+                    <div class="gate-label">👑 GATEKEEPER LAYER — TERMINAL</div>
+                    You receive only proposals that passed all 7 layers. One-click: APPROVE or REJECT. Nothing executes without this final gate.
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 8: DEPARTMENTS -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s8" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 08</div>
+                    <div class="stage-title-block">
+                        <h2>DEPARTMENTAL STRUCTURE</h2>
+                        <div class="mandate">"9 life domains + 2 cross-cutting divisions. No overlapping authority."</div>
+                    </div>
+                </div>
+                <div class="card"><div class="card-title">DOMAIN DIVISIONS (9)</div></div>
+                <div class="dept-row">
+                    <div class="dept-c">
+                        <h4>✍️ CREATIVE & WRITING</h4>
+                        <ul>
+                            <li>Novel ideation, development, and production</li>
+                            <li>Script writing and content creation</li>
+                            <li>World-building, narrative engineering, prose generation</li>
+                            <li>Logic auditing, IP clearance, fact verification</li>
+                            <li>Awards strategy and market positioning</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>💰 FINANCE & WEALTH</h4>
+                        <ul>
+                            <li>Budget tracking and expense auditing</li>
+                            <li>Investment monitoring and compound growth</li>
+                            <li>Financial goal setting and progress tracking</li>
+                            <li>Tax preparation and compliance</li>
+                            <li>Wealth accumulation strategy</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>⚡ PERSONAL PRODUCTIVITY</h4>
+                        <ul>
+                            <li>Task management and priority orchestration</li>
+                            <li>Goal tracking and project management</li>
+                            <li>Focus session management (ADHD-optimised)</li>
+                            <li>Daily/weekly/quarterly review cycles</li>
+                            <li>Context-switching cost management</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>💚 HEALTH & WELLBEING</h4>
+                        <ul>
+                            <li>Fitness tracking and workout programming</li>
+                            <li>Habit system management and streak tracking</li>
+                            <li>Sleep optimisation and monitoring</li>
+                            <li>Mental health monitoring and ADHD support</li>
+                            <li>Energy state assessment and scheduling</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>🔧 TECHNOLOGY & DEV</h4>
+                        <ul>
+                            <li>Automation projects and tool-building</li>
+                            <li>Coding projects and code review</li>
+                            <li>System architecture and infrastructure</li>
+                            <li>Agent development and deployment</li>
+                            <li>Performance monitoring and logging</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>📚 LEARNING & GROWTH</h4>
+                        <ul>
+                            <li>Reading list management and tracking</li>
+                            <li>Skill acquisition planning and progress</li>
+                            <li>Course tracking and certification</li>
+                            <li>Knowledge management and retrieval</li>
+                            <li>Expertise development roadmaps</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>💼 BUSINESS & INCOME</h4>
+                        <ul>
+                            <li>The Referral Network management</li>
+                            <li>Freelance project tracking and invoicing</li>
+                            <li>Venture development and pipeline</li>
+                            <li>Revenue stream monitoring</li>
+                            <li>Client relationship management</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>👨‍👩‍👧‍👦 FAMILY & PARENTING</h4>
+                        <ul>
+                            <li>Kids' schedules and activity management</li>
+                            <li>Digital management and screen time</li>
+                            <li>Family logistics and coordination</li>
+                            <li>School and education tracking</li>
+                            <li>Family event planning and commitments</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c">
+                        <h4>🎵 AUDIO & MUSIC</h4>
+                        <ul>
+                            <li>Recording session management</li>
+                            <li>Production and mixing workflows</li>
+                            <li>DAW project organisation</li>
+                            <li>Release pipeline and distribution</li>
+                            <li>Audio engineering standards and mastering</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card"><div class="card-title">CROSS-CUTTING DIVISIONS (2)</div></div>
+                <div class="dept-row">
+                    <div class="dept-c" style="border-color: rgba(136, 85, 255, 0.3);">
+                        <h4 style="color: var(--purple);">⚖️ GOVERNANCE & COMPLIANCE</h4>
+                        <ul>
+                            <li>Constitutional compliance monitoring</li>
+                            <li>Cross-domain audit coordination</li>
+                            <li>Protocol enforcement and incident logging</li>
+                            <li>External auditor management</li>
+                            <li>Legal, IP, and regulatory compliance</li>
+                        </ul>
+                    </div>
+                    <div class="dept-c" style="border-color: rgba(0, 212, 255, 0.3);">
+                        <h4 style="color: var(--accent);">🏗️ ENGINEERING & INFRASTRUCTURE</h4>
+                        <ul>
+                            <li>System architecture and platform</li>
+                            <li>Agent deployment and lifecycle management</li>
+                            <li>Queue management and task routing</li>
+                            <li>Performance monitoring and logging</li>
+                            <li>Data storage and backup systems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 9: DEPT GOVERNANCE -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s9" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 09</div>
+                    <div class="stage-title-block">
+                        <h2>DEPARTMENT GOVERNANCE</h2>
+                        <div class="mandate">"Internal governance + external auditor for every department. The double-lock."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">DUAL GOVERNANCE MODEL</div>
+                    <div class="json-block">
+                        <pre><span class="json-comment">// Every department has this structure. No exceptions.</span>
+{
+  <span class="json-key">"department"</span>: <span class="json-str">"[Any Division]"</span>,
+  <span class="json-key">"internal_governance"</span>: {
+    <span class="json-key">"agent"</span>: <span class="json-str">"Division Governance Agent"</span>,
+    <span class="json-key">"function"</span>: <span class="json-str">"Enforces division-specific rules. First line of compliance."</span>,
+    <span class="json-key">"authority"</span>: <span class="json-str">"Can block outputs within division only"</span>
+  },
+  <span class="json-key">"external_auditor"</span>: {
+    <span class="json-key">"independence"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"can_be_overridden_by_internal"</span>: <span class="json-bool">false</span>,
+    <span class="json-key">"can_be_overridden_by_ceo"</span>: <span class="json-bool">false</span>,
+    <span class="json-key">"can_be_overridden_by"</span>: <span class="json-str">"Gatekeeper only"</span>,
+    <span class="json-key">"reports_to"</span>: <span class="json-str">"Gatekeeper directly"</span>
+  },
+  <span class="json-key">"output"</span>: {
+    <span class="json-key">"approved"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"internal_sign_off"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"external_certificate"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"audit_notes"</span>: []
+  }
+}</pre>
+                    </div>
+                    <div class="gate gold">
+                        <div class="gate-label">⚠️ CRITICAL PRINCIPLE</div>
+                        External auditors are sacred. They report to the Gatekeeper, not the department they audit. Any attempt by an internal agent to override an external auditor is a Constitutional Violation (G4) and triggers BLACK-1.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 10: HIERARCHY -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s10" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 10</div>
+                    <div class="stage-title-block">
+                        <h2>ORGANISATIONAL HIERARCHY</h2>
+                        <div class="mandate">"The power structure. Clear lines, no ambiguity."</div>
+                    </div>
+                </div>
+                <div class="hierarchy">
+                    <div class="hier-node gk">👑 GATEKEEPER — YOU<br><span style="font-size:9px; opacity:0.7; letter-spacing:1px;">ABSOLUTE AUTHORITY — FINAL GATE</span></div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node" style="border-color:rgba(136,85,255,0.5); color:var(--purple); background:rgba(136,85,255,0.05); width:240px;">
+                        OVERBOARD<br><span style="font-size:9px; opacity:0.7; letter-spacing:1px;">PRE-GATEKEEPER FILTER</span></div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node ceo">CEO AGENT<br><span style="font-size:9px; opacity:0.7; letter-spacing:1px;">SYSTEM EXECUTIVE</span></div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node board">
+                        <div style="margin-bottom:8px; font-size:9px; opacity:0.7;">BOARD OF DIRECTORS</div>
+                        <div class="board-row">
+                            <div class="board-cell">Strategy<br>Agent</div>
+                            <div class="board-cell veto-cell">Risk<br>Agent</div>
+                            <div class="board-cell veto-cell">Audit<br>Agent ★</div>
+                            <div class="board-cell">Ops<br>Agent</div>
+                            <div class="board-cell">Tech<br>Agent</div>
+                            <div class="board-cell adhd-cell">Exec Function<br>Agent ⚡</div>
+                        </div>
+                        <div style="font-size:9px; margin-top:8px;">
+                            <span style="color:var(--red);">★ Audit Agent: weighted veto (1.5×)</span> &nbsp;|&nbsp;
+                            <span style="color:var(--amber);">⚡ Exec Function: ADHD authority (1.3×)</span>
+                        </div>
+                    </div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node exec">
+                        <div style="margin-bottom:8px; font-size:9px; opacity:0.7;">DOMAIN DIRECTORS (11 Division Heads)</div>
+                        <div class="board-row">
+                            <div class="board-cell">Creative</div>
+                            <div class="board-cell">Finance</div>
+                            <div class="board-cell">Productivity</div>
+                            <div class="board-cell">Health</div>
+                            <div class="board-cell">Tech & Dev</div>
+                            <div class="board-cell">Learning</div>
+                        </div>
+                        <div class="board-row" style="margin-top:4px;">
+                            <div class="board-cell">Business</div>
+                            <div class="board-cell">Family</div>
+                            <div class="board-cell">Audio</div>
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">Governance</div>
+                            <div class="board-cell" style="border-color:rgba(0,212,255,0.3); color:var(--accent)">Engineering</div>
+                        </div>
+                    </div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node exec">
+                        <div style="margin-bottom:8px; font-size:9px; opacity:0.7;">EXECUTION AGENTS (Domain Workers)</div>
+                        <div class="board-row">
+                            <div class="board-cell">Prose Stylist</div>
+                            <div class="board-cell">Budget Tracker</div>
+                            <div class="board-cell">Task Router</div>
+                            <div class="board-cell">Health Monitor</div>
+                            <div class="board-cell">Dev Agent</div>
+                            <div class="board-cell">Music Producer</div>
+                        </div>
+                    </div>
+                    <div class="hier-connector"></div>
+                    <div class="hier-node gov">
+                        <div style="margin-bottom:8px; font-size:9px; opacity:0.7;">GOVERNANCE LAYER (External Auditors — report to Gatekeeper)</div>
+                        <div class="board-row">
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">Logic Auditor</div>
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">IP Auditor</div>
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">Compliance</div>
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">Financial Auditor</div>
+                            <div class="board-cell" style="border-color:rgba(136,85,255,0.3); color:var(--purple)">Security</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 11: AGENT DEFINITIONS -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s11" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 11</div>
+                    <div class="stage-title-block">
+                        <h2>AGENT DEFINITIONS</h2>
+                        <div class="mandate">"Only now do we name agents. Doctrine first. Agents last."</div>
+                    </div>
+                </div>
+                <div class="card"><div class="card-title">LEADERSHIP & GOVERNANCE AGENTS</div></div>
+                <div class="agent-grid">
+                    <div class="agent-card gold-card">
+                        <div class="agent-name">GATEKEEPER</div>
+                        <div class="agent-title-role">Supreme Authority / Human Principal</div>
+                        <div class="agent-tags">
+                            <span class="tag tag-authority">ABSOLUTE</span>
+                            <span class="tag tag-veto">OVERRIDE ALL</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Final approval on every proposal across all 9 domains. Cannot be bypassed by any agent or protocol.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">CEO AGENT</div>
+                        <div class="agent-title-role">Chief Executive — System Coordination</div>
+                        <div class="agent-tags">
+                            <span class="tag tag-authority">HIGH</span>
+                            <span class="tag tag-exec">EXECUTIVE</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Coordinates board discussions across all domains. Casts tie-breaking vote. Cannot bypass Governance Layer.</div>
+                    </div>
+                    <div class="agent-card amber-card">
+                        <div class="agent-name">EXECUTIVE FUNCTION AGENT</div>
+                        <div class="agent-title-role">Chief ADHD Officer — Board Member (1.3× weight)</div>
+                        <div class="agent-tags">
+                            <span class="tag tag-adhd">ADHD AUTHORITY</span>
+                            <span class="tag tag-authority">BOARD</span>
+                            <span class="tag tag-veto">AMBER-1 / GREEN-1</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Monitors overwhelm, protects flow states, manages energy-aware scheduling, surfaces single next actions. Can trigger AMBER-1 and GREEN-1 protocols. Board-level authority on all scheduling decisions.</div>
+                    </div>
+                    <div class="agent-card veto">
+                        <div class="agent-name">AUDIT AGENT</div>
+                        <div class="agent-title-role">Chief Audit Officer — Board Member (1.5× veto weight)</div>
+                        <div class="agent-tags">
+                            <span class="tag tag-veto">VETO AUTHORITY</span>
+                            <span class="tag tag-audit">EXTERNAL</span>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Cross-domain audit authority. Triggers RED-1, BLUE-1. Cannot be overridden by any agent except Gatekeeper.</div>
+                    </div>
+                </div>
+
+                <div class="card"><div class="card-title">DOMAIN EXECUTION AGENTS (REPRESENTATIVE)</div></div>
+                <div class="agent-grid">
+                    <div class="agent-card">
+                        <div class="agent-name">NARRATIVE ARCHITECT</div>
+                        <div class="agent-title-role">Creative Division — Structural Lead</div>
+                        <div class="agent-tags"><span class="tag tag-domain">CREATIVE</span><span class="tag tag-exec">STRUCTURAL</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Owns novel outlines, scene ledgers, world-building. No prose drafted without approval.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">FINANCE CONTROLLER</div>
+                        <div class="agent-title-role">Finance Division — Budget & Investment Tracking</div>
+                        <div class="agent-tags"><span class="tag tag-domain">FINANCE</span><span class="tag tag-audit">AUDIT TRAIL</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Tracks all income, expenses, investments. Generates financial reports. No financial execution authority — read and report only.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">HEALTH MONITOR</div>
+                        <div class="agent-title-role">Health Division — Wellbeing Tracking & Alerts</div>
+                        <div class="agent-tags"><span class="tag tag-domain">HEALTH</span><span class="tag tag-adhd">ENERGY STATE</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Tracks habits, sleep, fitness. Feeds energy state data to Executive Function Agent. Triggers health alerts.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">MUSIC PRODUCER AGENT</div>
+                        <div class="agent-title-role">Audio Division — Session & Production Management</div>
+                        <div class="agent-tags"><span class="tag tag-domain">AUDIO</span><span class="tag tag-exec">PRODUCTION</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Manages recording sessions, production workflow, mixing checklist, DAW organisation, release pipeline.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">FAMILY COORDINATOR</div>
+                        <div class="agent-title-role">Family Division — Schedule & Logistics</div>
+                        <div class="agent-tags"><span class="tag tag-domain">FAMILY</span><span class="tag tag-veto">NSD §3</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Manages kids' schedules, family events, digital management. Has NSD §3 override authority — family commitments trump all non-emergency tasks.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">REVENUE TRACKER</div>
+                        <div class="agent-title-role">Business Division — Income & Network Management</div>
+                        <div class="agent-tags"><span class="tag tag-domain">BUSINESS</span><span class="tag tag-exec">TRACKING</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Monitors The Referral Network, freelance pipeline, venture status. Revenue reports and forecasting.</div>
+                    </div>
+                    <div class="agent-card">
+                        <div class="agent-name">LEARNING CURATOR</div>
+                        <div class="agent-title-role">Learning Division — Knowledge Management</div>
+                        <div class="agent-tags"><span class="tag tag-domain">LEARNING</span><span class="tag tag-exec">CURATION</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Reading list management, skill tracking, course progress, knowledge retrieval system.</div>
+                    </div>
+                    <div class="agent-card purple-card">
+                        <div class="agent-name">REFLECTION AGENT</div>
+                        <div class="agent-title-role">Cross-Domain — Self-Improvement Engine</div>
+                        <div class="agent-tags"><span class="tag tag-audit">DAILY CYCLE</span><span class="tag tag-gov">IMPROVEMENT</span></div>
+                        <div style="font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.5;">Reviews failures, delays, and decisions across all 9 domains. Generates improvement tasks. Cannot deploy changes — creates proposals only.</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">UNIVERSAL AGENT DEFINITION SCHEMA</div>
+                    <div class="json-block">
+                        <pre><span class="json-comment">// Every agent in the system follows this format</span>
+{
+  <span class="json-key">"agent_id"</span>: <span class="json-str">"AGT-[ID]"</span>,
+  <span class="json-key">"name"</span>: <span class="json-str">"[Agent Name]"</span>,
+  <span class="json-key">"title"</span>: <span class="json-str">"[Role Title — weight matters]"</span>,
+  <span class="json-key">"domain"</span>: <span class="json-str">"[Domain or 'cross-domain']"</span>,
+  <span class="json-key">"division"</span>: <span class="json-str">"[Division Name]"</span>,
+  <span class="json-key">"layer"</span>: <span class="json-num">[1-7]</span>,
+  <span class="json-key">"authority_level"</span>: <span class="json-str">"absolute | critical | high | medium | execution"</span>,
+  <span class="json-key">"can_veto"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"veto_scope"</span>: <span class="json-str">"[specific domain or 'system-wide']"</span>,
+  <span class="json-key">"protocol_authority"</span>: [<span class="json-str">"RED-1"</span>, <span class="json-str">"AMBER-1"</span>],
+  <span class="json-key">"reports_to"</span>: <span class="json-str">"[Agent or Gatekeeper]"</span>,
+  <span class="json-key">"charter"</span>: <span class="json-str">"[Precise scope — one paragraph]"</span>,
+  <span class="json-key">"constraints"</span>: [<span class="json-str">"Cannot override X"</span>, <span class="json-str">"Must not perform Y"</span>],
+  <span class="json-key">"adhd_aware"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"energy_cost"</span>: <span class="json-str">"high | medium | low"</span>
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 12: TASK & QUEUE -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s12" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 12</div>
+                    <div class="stage-title-block">
+                        <h2>TASK & QUEUE SYSTEM</h2>
+                        <div class="mandate">"The system becomes alive. Failures don't die — they create work. ADHD-aware by design."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">ADHD-AWARE TASK SCHEMA</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"task_id"</span>: <span class="json-str">"TASK-442"</span>,
+  <span class="json-key">"origin"</span>: <span class="json-str">"AuditAgent"</span>,
+  <span class="json-key">"origin_protocol"</span>: <span class="json-str">"RED-1"</span>,
+  <span class="json-key">"domain"</span>: <span class="json-str">"creative | finance | productivity | health | tech | learning | business | family | audio"</span>,
+  <span class="json-key">"type"</span>: <span class="json-str">"improvement | correction | build | research"</span>,
+  <span class="json-key">"description"</span>: <span class="json-str">"Resolve lore violation: character state mismatch Ch.3→Ch.12"</span>,
+  <span class="json-key">"priority"</span>: <span class="json-str">"critical | high | medium | low"</span>,
+  <span class="json-key">"energy_cost"</span>: <span class="json-str">"high | medium | low"</span>,
+  <span class="json-key">"estimated_duration"</span>: <span class="json-str">"25min | 50min | 90min"</span>,
+  <span class="json-key">"assigned_to"</span>: <span class="json-str">"NarrativeArchitect"</span>,
+  <span class="json-key">"blocked_until"</span>: <span class="json-str">"ROOT_CAUSE_ANALYSIS_FILED"</span>,
+  <span class="json-key">"must_pass_layers"</span>: [<span class="json-num">1</span>, <span class="json-num">5</span>, <span class="json-num">6</span>],
+  <span class="json-key">"status"</span>: <span class="json-str">"queued | in_progress | review | complete"</span>,
+  <span class="json-key">"dopamine_reward"</span>: <span class="json-str">"Quick win that follows this task"</span>,
+  <span class="json-key">"context_switch_cost"</span>: <span class="json-str">"low | medium | high"</span>,
+  <span class="json-key">"created"</span>: <span class="json-str">"[timestamp]"</span>
+}</pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">ADHD QUEUE RULES</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"max_visible_tasks"</span>: <span class="json-num">3</span>,
+  <span class="json-key">"single_next_action"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"momentum_scoring"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"context_switch_penalty"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"dopamine_interleaving"</span>: <span class="json-str">"After every high-energy task, surface one quick-win task"</span>,
+  <span class="json-key">"stale_task_alert"</span>: <span class="json-str">"14 days without progress = auto-escalate"</span>,
+  <span class="json-key">"energy_matching"</span>: <span class="json-str">"Only surface high-energy tasks during peak hours"</span>,
+  <span class="json-key">"overwhelm_threshold"</span>: <span class="json-str">"Active tasks > 5 across domains = AMBER-1 candidate"</span>
+}</pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">LIVE TASK QUEUE (EXAMPLE STATE)</div>
+                    <div class="task-item">
+                        <div class="task-id">TASK-501</div>
+                        <div class="task-desc">Set up automated budget tracking for Finance domain</div>
+                        <div class="task-agent">→ FinanceController</div>
+                        <div class="priority-high">▲ HIGH</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-id">TASK-502</div>
+                        <div class="task-desc">Draft Chapter 4 outline — Novel Project Alpha</div>
+                        <div class="task-agent">→ NarrativeArchitect</div>
+                        <div class="priority-med">● MED</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-id">TASK-503</div>
+                        <div class="task-desc">Review kids' screen time policy for term 2</div>
+                        <div class="task-agent">→ FamilyCoordinator</div>
+                        <div class="priority-med">● MED</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-id">TASK-504</div>
+                        <div class="task-desc">Mix and master track "Signal Decay" for release</div>
+                        <div class="task-agent">→ MusicProducer</div>
+                        <div class="priority-low">▼ LOW</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">SELF-CREATING QUEUE LOGIC</div>
+                    <div class="json-block">
+                        <pre><span class="json-comment"># Tasks generate themselves from failures — across ALL domains</span>
+
+def on_audit_result(result):
+    if result.status == "FAILED":
+        task = create_task(
+            origin=result.auditor,
+            domain=result.domain,
+            type="correction",
+            description=f"Fix: {result.failure_reason}",
+            priority=escalate_priority(result.severity),
+            energy_cost=estimate_energy(result.complexity),
+            assigned_to=route_to_least_loaded(result.required_skill)
+        )
+        queue.push(task)
+        log_event("TASK_AUTO_CREATED", task)
+
+        <span class="json-comment"># ADHD: check if new task pushes overwhelm threshold</span>
+        if gatekeeper.active_tasks > OVERWHELM_THRESHOLD:
+            trigger_protocol("AMBER-1")
+
+def route_to_least_loaded(skill):
+    eligible = [a for a in agents if skill in a.skills]
+    return min(eligible, key=lambda a: a.current_tasks)</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 13: SELF-IMPROVEMENT -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s13" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 13</div>
+                    <div class="stage-title-block">
+                        <h2>SELF-IMPROVEMENT SYSTEM</h2>
+                        <div class="mandate">"Intelligence compounds. The system gets smarter every cycle."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">REFLECTION CYCLE (DAILY)</div>
+                    <div class="loop-step">
+                        <div class="loop-arrow">◉</div>
+                        <div class="loop-content">
+                            <h4>1. PERFORMANCE HARVEST</h4>
+                            <p>Reflection Agent aggregates all logged decisions, outcomes, protocol triggers, and timing data from the past 24 hours across ALL 9 domains into the Daily Performance Record.</p>
+                        </div>
+                    </div>
+                    <div class="loop-step">
+                        <div class="loop-arrow">↓</div>
+                        <div class="loop-content">
+                            <h4>2. FAILURE & PATTERN ANALYSIS</h4>
+                            <p>What failed? What triggered protocols? Where did proposals stall? Root causes categorised: logic, planning, architecture, execution, or ADHD-related (overwhelm, distraction, procrastination, emotional dysregulation).</p>
+                        </div>
+                    </div>
+                    <div class="loop-step">
+                        <div class="loop-arrow">↓</div>
+                        <div class="loop-content">
+                            <h4>3. ADHD PATTERN TRACKING</h4>
+                            <p>Track focus session durations, overwhelm incidents (AMBER-1 frequency), flow state frequency and duration (GREEN-1), most productive time-of-day patterns, task completion vs creation ratio, and context-switching costs.</p>
+                        </div>
+                    </div>
+                    <div class="loop-step">
+                        <div class="loop-arrow">↓</div>
+                        <div class="loop-content">
+                            <h4>4. IMPROVEMENT PROPOSAL GENERATION</h4>
+                            <p>Structured improvement proposals generated. These enter the queue as proposals and pass through the full 7-layer pipeline before any change is made.</p>
+                        </div>
+                    </div>
+                    <div class="loop-step">
+                        <div class="loop-arrow">↓</div>
+                        <div class="loop-content">
+                            <h4>5. BOARD REVIEW → GATEKEEPER APPROVAL</h4>
+                            <p>Improvement proposals are debated, voted on, and reach the Gatekeeper for final approval before deployment. The system improves itself — but never without human oversight.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">PERFORMANCE TRACKING SCHEMA (WITH ADHD METRICS)</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"agent"</span>: <span class="json-str">"ExecutiveFunctionAgent"</span>,
+  <span class="json-key">"period"</span>: <span class="json-str">"2026-W15"</span>,
+  <span class="json-key">"domains_active"</span>: <span class="json-num">7</span>,
+
+  <span class="json-key">"system_metrics"</span>: {
+    <span class="json-key">"decisions_made"</span>: <span class="json-num">142</span>,
+    <span class="json-key">"proposals_approved"</span>: <span class="json-num">38</span>,
+    <span class="json-key">"protocols_triggered"</span>: { <span class="json-key">"RED-1"</span>: <span class="json-num">1</span>, <span class="json-key">"GOLD-1"</span>: <span class="json-num">3</span>, <span class="json-key">"AMBER-1"</span>: <span class="json-num">2</span>, <span class="json-key">"GREEN-1"</span>: <span class="json-num">5</span> }
+  },
+
+  <span class="json-key">"adhd_metrics"</span>: {
+    <span class="json-key">"avg_focus_session_mins"</span>: <span class="json-num">47</span>,
+    <span class="json-key">"flow_states_this_week"</span>: <span class="json-num">5</span>,
+    <span class="json-key">"avg_flow_duration_mins"</span>: <span class="json-num">68</span>,
+    <span class="json-key">"overwhelm_incidents"</span>: <span class="json-num">2</span>,
+    <span class="json-key">"task_completion_ratio"</span>: <span class="json-num">0.78</span>,
+    <span class="json-key">"context_switches_per_day"</span>: <span class="json-num">4.2</span>,
+    <span class="json-key">"peak_productivity_window"</span>: <span class="json-str">"09:00–12:30"</span>,
+    <span class="json-key">"momentum_streak_days"</span>: <span class="json-num">12</span>
+  },
+
+  <span class="json-key">"improvement_flag"</span>: <span class="json-str">"Context switches elevated Mon/Wed — investigate calendar conflicts"</span>
+}</pre>
+                    </div>
+                </div>
+                <div class="gate green">
+                    <div class="gate-label">🧬 COMPOUND INTELLIGENCE RULE</div>
+                    Every production cycle must demonstrably improve on the last. The Reflection Agent's quarterly report is a mandatory input to system refinement. The system learns — or it stagnates.
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 14: ACCESS CONTROL -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s14" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 14</div>
+                    <div class="stage-title-block">
+                        <h2>ACCESS CONTROL & SECURITY</h2>
+                        <div class="mandate">"Who sees what. No agent has access beyond their charter scope."</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">ROLE-BASED ACCESS MATRIX</div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">AGENT ROLE</div>
+                        <div class="access-cell header">FINANCIAL</div>
+                        <div class="access-cell header">CREATIVE</div>
+                        <div class="access-cell header">HEALTH</div>
+                        <div class="access-cell header">FAMILY</div>
+                        <div class="access-cell header">SYSTEM</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">Gatekeeper</div>
+                        <div class="access-cell access-allow">ALL</div>
+                        <div class="access-cell access-allow">ALL</div>
+                        <div class="access-cell access-allow">ALL</div>
+                        <div class="access-cell access-allow">ALL</div>
+                        <div class="access-cell access-allow">ALL</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">CEO Agent</div>
+                        <div class="access-cell access-allow">READ</div>
+                        <div class="access-cell access-allow">READ</div>
+                        <div class="access-cell access-cond">SUMMARY</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-allow">READ</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">Finance Controller</div>
+                        <div class="access-cell access-allow">WRITE</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">Health Monitor</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-allow">WRITE</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">Family Coordinator</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-deny">NO</div>
+                        <div class="access-cell access-allow">WRITE</div>
+                        <div class="access-cell access-deny">NO</div>
+                    </div>
+                    <div class="access-row">
+                        <div class="access-cell role-label">Exec Function Agent</div>
+                        <div class="access-cell access-cond">SUMMARY</div>
+                        <div class="access-cell access-cond">SUMMARY</div>
+                        <div class="access-cell access-allow">READ</div>
+                        <div class="access-cell access-cond">SCHEDULE</div>
+                        <div class="access-cell access-allow">READ</div>
+                    </div>
+                    <div style="font-size:11px; color:var(--text-dim); margin-top:8px; font-family:'Share Tech Mono',monospace;">
+                        GREEN = full access &nbsp;|&nbsp; YELLOW = conditional/summary &nbsp;|&nbsp; RED = no access
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">DATA CLASSIFICATION SCHEMA</div>
+                    <div class="json-block">
+                        <pre>{
+  <span class="json-key">"data_classes"</span>: {
+    <span class="json-key">"TOP_SECRET"</span>: [<span class="json-str">"Gatekeeper identity"</span>, <span class="json-str">"Financial credentials"</span>, <span class="json-str">"Health records"</span>, <span class="json-str">"Family personal data"</span>],
+    <span class="json-key">"CONFIDENTIAL"</span>: [<span class="json-str">"Financial details"</span>, <span class="json-str">"Business strategy"</span>, <span class="json-str">"Manuscripts"</span>, <span class="json-str">"Legal documents"</span>],
+    <span class="json-key">"RESTRICTED"</span>: [<span class="json-str">"Performance metrics"</span>, <span class="json-str">"ADHD patterns"</span>, <span class="json-str">"Agent communications"</span>, <span class="json-str">"Audio masters"</span>],
+    <span class="json-key">"INTERNAL"</span>: [<span class="json-str">"Task queue"</span>, <span class="json-str">"Meeting logs"</span>, <span class="json-str">"Voting records"</span>, <span class="json-str">"Domain summaries"</span>]
+  },
+  <span class="json-key">"access_logged"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"cross_domain_access"</span>: <span class="json-str">"Boardroom vote required"</span>,
+  <span class="json-key">"retention"</span>: {
+    <span class="json-key">"active_project"</span>: <span class="json-str">"Full retention"</span>,
+    <span class="json-key">"post_completion"</span>: <span class="json-str">"7 years — legal hold"</span>,
+    <span class="json-key">"personal_data"</span>: <span class="json-str">"Gatekeeper discretion"</span>
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════ -->
+            <!-- STAGE 15: COMMAND CENTRE -->
+            <!-- ═══════════════════════════════════════════════ -->
+            <div id="s15" class="stage-panel">
+                <div class="stage-header">
+                    <div class="stage-id">STAGE 15</div>
+                    <div class="stage-title-block">
+                        <h2>UNIFIED COMMAND CENTRE</h2>
+                        <div class="mandate">"Your daily cockpit. One screen to govern all 9 domains."</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">ENERGY STATE SELECTOR</div>
+                    <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Tell the system your current state. Task surfacing adapts automatically (G10).</div>
+                    <div class="energy-selector">
+                        <div class="energy-btn" onclick="selectEnergy(this)">
+                            <span class="energy-emoji">🔥</span>PEAK
+                        </div>
+                        <div class="energy-btn energy-active" onclick="selectEnergy(this)">
+                            <span class="energy-emoji">⚡</span>NORMAL
+                        </div>
+                        <div class="energy-btn" onclick="selectEnergy(this)">
+                            <span class="energy-emoji">🔋</span>LOW
+                        </div>
+                        <div class="energy-btn" onclick="selectEnergy(this)">
+                            <span class="energy-emoji">😴</span>RECOVERY
+                        </div>
+                    </div>
+                </div>
+
+                <div class="next-action">
+                    <div class="na-label">⎯ SINGLE NEXT ACTION ⎯</div>
+                    <div class="na-task">Set up automated budget tracking spreadsheet</div>
+                    <div class="na-domain">DOMAIN: FINANCE & WEALTH &nbsp;|&nbsp; ENERGY: MEDIUM &nbsp;|&nbsp; EST: 25 MIN</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">DOMAIN HEALTH DASHBOARD</div>
+                    <div class="domain-grid">
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">✍️</div>
+                            <div class="domain-name">CREATIVE & WRITING</div>
+                            <div class="domain-status status-green">● HEALTHY — Ch.3 in progress</div>
+                        </div>
+                        <div class="domain-tile d-amber">
+                            <div class="domain-icon">💰</div>
+                            <div class="domain-name">FINANCE & WEALTH</div>
+                            <div class="domain-status status-amber">● SETUP — Budget tracking pending</div>
+                        </div>
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">⚡</div>
+                            <div class="domain-name">PERSONAL PRODUCTIVITY</div>
+                            <div class="domain-status status-green">● HEALTHY — 12-day streak</div>
+                        </div>
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">💚</div>
+                            <div class="domain-name">HEALTH & WELLBEING</div>
+                            <div class="domain-status status-green">● HEALTHY — Sleep avg 7.2hrs</div>
+                        </div>
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">🔧</div>
+                            <div class="domain-name">TECHNOLOGY & DEV</div>
+                            <div class="domain-status status-green">● HEALTHY — AGENTS v2.0 deployed</div>
+                        </div>
+                        <div class="domain-tile d-amber">
+                            <div class="domain-icon">📚</div>
+                            <div class="domain-name">LEARNING & GROWTH</div>
+                            <div class="domain-status status-amber">● ATTENTION — Reading list stale 8d</div>
+                        </div>
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">💼</div>
+                            <div class="domain-name">BUSINESS & INCOME</div>
+                            <div class="domain-status status-green">● HEALTHY — TRN active</div>
+                        </div>
+                        <div class="domain-tile d-green">
+                            <div class="domain-icon">👨‍👩‍👧‍👦</div>
+                            <div class="domain-name">FAMILY & PARENTING</div>
+                            <div class="domain-status status-green">● HEALTHY — Schedule synced</div>
+                        </div>
+                        <div class="domain-tile d-amber">
+                            <div class="domain-icon">🎵</div>
+                            <div class="domain-name">AUDIO & MUSIC</div>
+                            <div class="domain-status status-amber">● ATTENTION — Mix review pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">GATEKEEPER APPROVAL QUEUE</div>
+                    <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Pre-filtered. Only fully validated, audited, board-approved proposals reach this queue.</div>
+                    <div class="task-item">
+                        <div class="task-id">PROP-042</div>
+                        <div class="task-desc">Deploy automated budget tracking for Finance domain</div>
+                        <div class="task-agent">BOARD: 5–1 ✓</div>
+                        <div><button class="approve-btn" style="padding:4px 12px; font-size:9px;" onclick="this.textContent='✓'; this.style.color='var(--green)'; this.style.borderColor='var(--green)'">APPROVE</button></div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-id">PROP-043</div>
+                        <div class="task-desc">Activate kids' screen time monitoring in Family domain</div>
+                        <div class="task-agent">BOARD: 6–0 ✓</div>
+                        <div><button class="approve-btn" style="padding:4px 12px; font-size:9px;" onclick="this.textContent='✓'; this.style.color='var(--green)'; this.style.borderColor='var(--green)'">APPROVE</button></div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-id">PROP-044</div>
+                        <div class="task-desc">Reflection Agent improvement: add cross-domain momentum analysis</div>
+                        <div class="task-agent">BOARD: 4–2 ✓</div>
+                        <div><button class="approve-btn" style="padding:4px 12px; font-size:9px;" onclick="this.textContent='✓'; this.style.color='var(--green)'; this.style.borderColor='var(--green)'">APPROVE</button></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">MORNING BRIEF (AUTO-GENERATED)</div>
+                    <div class="json-block" style="border-left-color: var(--gold);">
+                        <pre><span class="json-comment">// Daily Brief — Generated by CEO Agent at 06:00</span>
+{
+  <span class="json-key">"date"</span>: <span class="json-str">"2026-04-11"</span>,
+  <span class="json-key">"energy_yesterday"</span>: <span class="json-str">"NORMAL"</span>,
+  <span class="json-key">"momentum_streak"</span>: <span class="json-num">12</span>,
+
+  <span class="json-key">"today_priorities"</span>: [
+    <span class="json-str">"1. Finance: Set up budget tracking (25min, medium energy)"</span>,
+    <span class="json-str">"2. Creative: Draft Ch.4 outline (50min, high energy — do in peak window)"</span>,
+    <span class="json-str">"3. Family: Review kids' schedule for next week (15min, low energy)"</span>
+  ],
+
+  <span class="json-key">"domains_needing_attention"</span>: [<span class="json-str">"Finance"</span>, <span class="json-str">"Learning"</span>, <span class="json-str">"Audio"</span>],
+  <span class="json-key">"approvals_pending"</span>: <span class="json-num">3</span>,
+  <span class="json-key">"protocols_active"</span>: <span class="json-str">"none"</span>,
+  <span class="json-key">"system_health"</span>: <span class="json-str">"ALL SYSTEMS NOMINAL"</span>
+}</pre>
+                    </div>
+                </div>
+
+                <div class="gate green">
+                    <div class="gate-label">🔐 STAGE 15 COMPLETION = SYSTEM FULLY OPERATIONAL</div>
+                    All 15 stages complete. Mission defined. Constitution ratified. Protocols armed. Standards set. 9 domains governed. 11 divisions active. Agents defined. Queue live. Self-improvement active. Access locked. Command Centre online. The A.G.E.N.T.S. v2.0 system is operational. Nothing executes without the Gatekeeper.
+                </div>
+            </div>
+
+        </div><!-- end content -->
+    </div><!-- end main -->
+
+    <script>
+        function show(id, btn) {
+            document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleLayer(item) {
+            const detail = item.nextElementSibling;
+            const isOpen = detail.classList.contains('open');
+            document.querySelectorAll('.layer-detail').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.layer-item').forEach(i => i.classList.remove('expanded'));
+            if (!isOpen) {
+                detail.classList.add('open');
+                item.classList.add('expanded');
+            }
+        }
+
+        function selectEnergy(btn) {
+            document.querySelectorAll('.energy-btn').forEach(b => b.classList.remove('energy-active'));
+            btn.classList.add('energy-active');
+        }
+    </script>
+</body>
+
+</html>

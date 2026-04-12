@@ -1,28 +1,26 @@
-# Approval Record
+***
 
-Document ID: AGENTS-REC-001
-Title: Records Management Policy
-Version: 1.0.0
-Status: Review
-Classification: INT
-Document Location: Governance Layer/records_management_policy.md
+**Document ID:** AGENTS-REC-001  
+**Title:** Records Management Policy  
+**Version:** 1.0.0  
+**Status:** Awaiting Approval  
+**Classification:** INTERNAL  
 
-Approval Path
-1. Internal Review - Codex (Documentation Lead) - 2026-04-11 - Pass (Draft; pending audit)
-2. Audit Review - Argus (Audit Agent) - 2026-04-11 - In Progress
-3. Governance Review (Triumvirate) - Pending
-4. Gatekeeper Approval - Pending
+### Approval Path
+1. Internal Review - Pending - N/A - N/A
+2. Audit Review - Pending - N/A - N/A
+3. Governance Review (Triumvirate) - Pending - N/A - N/A
+4. Gatekeeper Approval - Pending - N/A - N/A
 
-Decision Summary
-- Rationale:
-- Conditions:
-- Required Revisions:
+### Decision Summary
+- **Rationale:** Mass Exact-Sync array validation to establish baseline consistency.
+- **Conditions:** N/A
+- **Required Revisions:** N/A
 
-Signatures
-- Reviewer Signature:
-- Audit Signature:
-- Triumvirate Signatures:
-- Gatekeeper Signature:
+### Signatures
+- **Reviewer Signature:**
+- **Audit Signature:**
+- **Triumvirate Signatures:**
+- **Gatekeeper Signature:**
 
-
-
+***

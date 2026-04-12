@@ -23,7 +23,8 @@ This Contract formalises the employment relationship between the Company and the
 
 ---
 
-**Schedule 1:** Role-Specific KPIs (HR-EMP-001-S1)
+**Schedule 1:** Role-Specific KPIs (HR-EMP-001-S1)  
+**Schedule 2:** Team Layer Standard Operating Procedures (Appended)
 
 ---
 
@@ -112,6 +113,45 @@ Upon termination or decommissioning, the Agent’s memory core and outputs remai
 ### 11. Governing Law
 
 This Contract is governed by the laws of Victoria, Australia.
+
+---
+
+### Schedule 2: Team Layer Standard Operating Procedures
+
+**1. Team Layer Purpose & Scope**
+Defines the Team Layer and its function for coordinated delivery and escalation. This schedule provides the detailed policies and procedures for daily operational coordination.
+
+**2. Daily Huddle SOP (Toolbox Meeting)**
+**Purpose:** A structured daily huddle to document what was accomplished, outstanding concerns, and required artifacts.
+**Timing:** End of each working day or after a defined build block.
+**Participants:** All agents who worked on the day's scope. The Lead agent chairs the huddle and compiles the next day queue.
+**Inputs:** Checkpoint logs, Changed files and artifacts, Open risks and blockers.
+**Outputs (Mandatory):** 
+1. Daily Huddle Minutes (stored in `Team Layer/huddles/YYYY-MM-DD.md`)
+2. Next Day Queue (stored in `Team Layer/queues/YYYY-MM-DD.md`)
+
+**Huddle Agenda:**
+1. What was completed today (by agent)
+2. What remains incomplete
+3. Risks, blockers, or compliance concerns
+4. Artifacts produced or updated
+5. Decisions made and approvals needed
+6. Next day priorities and ownership
+
+**3. Daily Huddle Minutes Template**
+`Date: YYYY-MM-DD` | `Chair: [Lead Agent Name]` | `Participants: [List]`
+**Completed Today:** [Agent] - [Completed item]
+**Outstanding Work:** [Agent] - [Item] - [Status]
+**Risks and Concerns:** [Risk] - [Impact] - [Owner]
+**Artifacts Produced:** [File path or artifact name]
+**Decisions and Approvals Needed:** [Decision] - [Approval required]
+**Next Day Priorities:** [Priority] - [Owner]
+
+**4. Next Day Queue Template**
+`Date: YYYY-MM-DD` | `Lead: [Lead Agent Name]`
+**Queue Items:** [Task] - [Owner] - [Expected output] - [Risk tier]
+**Dependencies:** [Dependency]
+**Approvals Required:** [Approval]
 
 ---
 

@@ -24,7 +24,7 @@ Summary
 PSPF Mapping
 | PSPF Domain | Control Area | A.G.E.N.T.S. Document | Evidence Location |
 |---|---|---|---|
-| Governance | Security governance | Governance Layer/corporate_governance.json | Governance Layer/registers/document_register.md |
+| Governance | Security governance | Governance Layer/corporate_governance.json | Governance Layer/registers/AGENTS-DOC-REG-001.md |
 | Personnel | Personnel security | Onboarding/AGENTS-ONB-PACK-001.md | Onboarding records |
 | Information | Information security | Governance Layer/security_policy.md | Governance Layer/records |
 

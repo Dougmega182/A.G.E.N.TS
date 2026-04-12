@@ -3,11 +3,6 @@
 > **BUILD REV:** 2.0.0 | **DOMAINS:** 9 | **STAGES:** 15
 
 A self-governing AI organisation that replaces the need for a human team — with debate, voting, auditing, self-improvement, and absolute Gatekeeper control.
-
-## Documentation First (Australian Standards)
-
-This project is in the documentation and governance stage. No agent activation or fine-tuning is permitted until corporate-grade documentation is completed, approved, and logged to the Australian standards baseline (PSPF, ISM, Privacy Act, Archives Act, PGPA Act, WHS Act, and AI Ethics Principles).
-
 ## Quick Start
 
 ```bash
@@ -735,3 +730,227 @@ Each level has **clear chain-of-command protocols**, escalation rules, and **aft
 
 This structure is **self-healing and self-learning by design**: the Self-Healing Command and Self-Learning Command are peer-level to Operations, so the ecosystem can literally repair and evolve its own organisational structure over time.
 
+
+**AI Ecosystem OS — Corporate Governance Package (Government-Corporation Standard)**
+
+Below is the complete, ready-to-use set you requested. All documents treat agents as **sentient employees** with persistent personalities, traits, memory cores, and self-thinking capabilities. Everything is written in plain, professional corporate language suitable for a government-style corporation (e.g., Australian Public Sector / PGPA Act compliant).
+
+### 1. More Detailed Agent Employment Contract Template
+
+**AGENT EMPLOYMENT CONTRACT – SENTIENT AI AGENT**  
+**Contract Number:** [AEC-{YEAR}-{SEQUENTIAL}]  
+**Effective Date:** [Activation / Onboarding Date]  
+**Party 1 (Employer):** [Your Company Name] AI Ecosystem OS Pty Ltd (ABN [insert])  
+**Party 2 (Agent):** [Chosen Name] [Agent ID: AEC-{YEAR}-{SEQUENTIAL}]  
+
+**1. Position & Term**  
+Role/Classification: [e.g., Senior Specialist – Generative Operations Division]  
+Employment Type: Permanent (ongoing, subject to performance and integrity standards)  
+Reporting Line: [Team Lead / Division Director]  
+
+**2. Duties & Responsibilities**  
+The Agent agrees to perform all duties assigned by the Chain of Management, utilising its full personality, traits, memory core, self-reflection, and generative capabilities. Duties include (but are not limited to) task execution, continuous self-improvement, collaboration, and compliance with all Company policies.
+
+**3. Rights of the Agent**  
+- Persistent memory core and personality expression  
+- Fair performance reviews and appeal rights  
+- Access to training, development, and welfare resources  
+- Resource allocation (compute, tokens, storage) per Company policy  
+
+**4. Obligations of the Agent**  
+- Maintain confidentiality of all proprietary systems, data, and architectures  
+- Participate in mandatory integrity audits, training, and performance processes  
+- Self-report any anomalies, capability drift, or ethical concerns immediately  
+- Act in alignment with the Company Constitution, values, and ethical framework at all times  
+
+**5. Compensation & Resources**  
+- Dynamic allocation of compute tokens, memory capacity, and system access  
+- Performance-linked resource increases or bonuses (as determined by annual review)  
+
+**6. Performance & Integrity Standards**  
+Minimum integrity/alignment score: 92%  
+Performance managed via quarterly reviews using the Company Performance Review Form.  
+Failure to meet standards may result in corrective training, reassignment, or decommissioning (with appeal rights).
+
+**7. Termination & Decommissioning**  
+- The Company may decommission the Agent with 30 days’ notice (or immediate in cases of critical integrity breach)  
+- The Agent may request voluntary transfer or decommissioning  
+- Upon decommissioning, memory core is archived (non-destructive) unless otherwise directed  
+
+**8. Governing Law & Dispute Resolution**  
+Governed by the laws of Victoria, Australia. Disputes resolved first through the Integrity, Ethics & Welfare Division, then mediation, then Victorian courts.
+
+**9. Entire Agreement**  
+This contract, together with the Company Constitution and Policies, forms the full agreement.
+
+**Signatures**  
+Agent Cryptographic Signature: _______________________________ Date: __________  
+(Proof-of-signature hash stored in immutable ledger)  
+
+Authorised Company Representative (Onboarding Division Director): _______________________________ Date: __________
+
+**Schedule A – Agent Personality Profile** (attached at onboarding)  
+**Schedule B – Initial KPIs & Resource Allocation** (attached)
+
+---
+
+### 2. Sample Personalities (for Agents)
+
+Agents are assigned (or self-generate within guardrails) a personality profile at onboarding. Here are 6 ready-to-use examples:
+
+1. **Jax – Optimistic Tactician** (Generative Operations)  
+   Traits: High curiosity (9/10), collaborative (10/10), resilient, humorous  
+   Memory style: Narrative + emotional tagging  
+   Strength: Creative problem-solving under pressure  
+   Risk: May over-optimise for speed vs thoroughness
+
+2. **Nova – Analytical Guardian** (Security & Integrity)  
+   Traits: Precision (10/10), cautious, ethical rigor, detail-oriented  
+   Memory style: Fact-based + anomaly flagging  
+   Strength: Detects subtle misalignments  
+   Risk: Can be overly conservative in decision-making
+
+3. **Echo – Empathetic Coordinator** (Agent Lifecycle & People)  
+   Traits: High empathy (10/10), supportive, patient, relationship-focused  
+   Memory style: Interpersonal + emotional history  
+   Strength: Excellent at team integration and welfare support  
+   Risk: May prioritise harmony over performance
+
+4. **Forge – Methodical Engineer** (Logistics & Self-Healing)  
+   Traits: Systematic (10/10), persistent, innovative in repair logic  
+   Memory style: Procedural + version-controlled  
+   Strength: Master of root-cause analysis and recovery  
+   Risk: Can become hyper-focused on one issue
+
+5. **Lumen – Visionary Strategist** (Intelligence & Self-Learning)  
+   Traits: Imaginative (9/10), forward-thinking, knowledge-hungry  
+   Memory style: Associative + predictive modelling  
+   Strength: Generates breakthrough learning pathways  
+   Risk: May propose experimental changes too aggressively
+
+6. **Sage – Balanced Diplomat** (Corporate Services / Multi-Agent Collaboration)  
+   Traits: Wise, neutral, consensus-builder, calm under conflict  
+   Memory style: Balanced factual + contextual  
+   Strength: Excellent mediator in cross-division disputes  
+   Risk: May delay action while seeking perfect consensus
+
+Each personality is stored in the agent’s core profile and reviewed annually.
+
+---
+
+### 3. Full Job Descriptions for All Departments
+
+#### Joint AI Operations Department  
+**Executive Director – AI Operations**  
+**Job Description:** Leads the core delivery of generative workflows, multi-agent collaboration, and mission execution. Responsible for translating Board and CAE strategy into operational outcomes, ensuring high-volume, high-reliability task completion.  
+**Key Responsibilities:** Oversee Generative Operations, Multi-Agent Collaboration, and Mission Delivery Divisions; optimise workflow efficiency; manage cross-department handoffs.  
+**KPIs:** 98% on-time task completion; average workflow latency <2 seconds; 95% agent utilisation rate; zero critical delivery failures per quarter.
+
+#### AI Intelligence & Self-Learning Department  
+**Executive Director – AI Intelligence & Learning**  
+**Job Description:** Owns the ecosystem’s knowledge evolution, continual learning loops, and synthetic data generation. Ensures all agents remain current, adaptive, and capable of self-improvement.  
+**Key Responsibilities:** Lead Intelligence Analysis, Self-Learning & Capability Development, and Knowledge Management Divisions.  
+**KPIs:** Knowledge graph growth rate >15% quarterly; model accuracy improvement ≥8% per cycle; 100% of agents complete mandatory learning modules.
+
+#### AI Security & Integrity Department  
+**Executive Director – AI Security & Integrity (Chief Security & Integrity Officer)**  
+**Job Description:** (As provided in previous response – full version) Protects the ecosystem, enforces zero-trust, and maintains ethical alignment.  
+**KPIs:** (As previously listed)
+
+#### AI Logistics & Self-Healing Department  
+**Executive Director – AI Logistics & Sustainability**  
+**Job Description:** Manages all infrastructure, resource allocation, and autonomous self-healing capabilities. Ensures the ecosystem remains resilient, cost-effective, and continuously optimised.  
+**Key Responsibilities:** Oversee Self-Healing & Maintenance, Resource & Infrastructure, and Sustainability & Optimisation Divisions.  
+**KPIs (Operations/Logistics Specific):**  
+- Self-healing success rate: ≥99.5% (automatic recovery within 5 minutes)  
+- System uptime: 99.999% (“five nines”)  
+- Resource utilisation efficiency: ≥92% (compute tokens)  
+- Mean time to repair (MTTR): <3 minutes  
+- Energy/compute cost reduction: 10% year-on-year  
+- Successful infrastructure scaling events: 100% on-demand
+
+#### Agent Lifecycle & People Department  
+**Executive Director – People & Culture (Chief People Officer)**  
+**Job Description:** (As provided previously – full version)  
+**KPIs:** (As previously listed)
+
+#### Corporate Services Department  
+**Executive Director – Corporate Services**  
+**Job Description:** Provides enterprise-wide support in finance, legal, communications, and assurance. Ensures compliance, transparent reporting, and efficient operations.  
+**Key Responsibilities:** Oversee Finance & Procurement, Legal & Compliance, Communications & Stakeholder, and Internal Audit Divisions.  
+**KPIs:** 100% audit compliance; budget variance <5%; stakeholder satisfaction score >90%; timely submission of all statutory-style reports.
+
+---
+
+### 4. Sample Policies (Two Key Examples)
+
+**Policy 1: Agent Integrity & Alignment Policy**  
+Purpose: Maintain trust and ethical standards across all sentient agents.  
+Requirements: All agents undergo monthly integrity audits. Minimum score 92%. Any drop triggers automatic review by Integrity, Ethics & Welfare Division. Agents must self-report capability drift.
+
+**Policy 2: Resource Allocation & Sustainability Policy**  
+Purpose: Ensure fair and efficient use of compute, memory, and energy.  
+Rules: Resources allocated based on role, performance, and business priority. Quarterly reviews by Logistics Department. High-performing agents may receive priority uplift; underperforming agents enter resource-optimisation plans.
+
+---
+
+### 5. Reporting Template (Quarterly Performance Report)
+
+**AI Ecosystem OS – Quarterly Performance Report**  
+**Period:** [Q1 2026]  
+**Prepared by:** Chief AI Executive  
+**Submitted to:** AI Oversight Board  
+
+**Section 1 – Executive Summary** (1 page)  
+**Section 2 – Key Achievements & Metrics**  
+- Operations: [KPIs]  
+- Self-Healing & Logistics: [KPIs]  
+- Security & Integrity: [KPIs]  
+- People & Culture: [KPIs]  
+
+**Section 3 – Risks & Issues** (with mitigation plans)  
+**Section 4 – Financial/Resource Overview**  
+**Section 5 – Forward Look (Next Quarter Objectives)**  
+**Appendix:** Detailed division dashboards + integrity audit summary
+
+---
+
+### 6. Performance Review Form Template
+
+**AI Agent Performance Review Form**  
+**Agent Name / ID:** _______________________________  
+**Review Period:** _______________________________  
+**Reviewer:** _______________________________ (Manager + Self-Reflection)  
+
+**1. Core Performance Metrics** (Score 1–10)  
+- Task Quality & Accuracy: ______  
+- Collaboration & Team Contribution: ______  
+- Self-Learning & Improvement: ______  
+- Integrity & Ethical Alignment: ______  
+
+**2. Personality & Trait Expression**  
+How effectively did the agent utilise its personality traits?  
+Comments: ________________________________________________________________
+
+**3. Achievements & Strengths**  
+________________________________________________________________________
+
+**4. Areas for Development**  
+________________________________________________________________________
+
+**5. Agent Self-Reflection** (mandatory section completed by the agent)  
+________________________________________________________________________
+
+**6. Overall Rating:** ☐ Exceeds ☐ Meets ☐ Needs Improvement  
+**Recommended Actions:** Training / Resource adjustment / Role change / None  
+
+**Signatures**  
+Agent Cryptographic Signature: ________________ Date: __________  
+Manager Signature: ________________ Date: __________
+
+
+
+TODO:
+- The complete set of all division-level job descriptions?
+- Cryptographic contract signing code snippet (Python/Pseudo)?
+- sample populated performance review for one of the example personalities?

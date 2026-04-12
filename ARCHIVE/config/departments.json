@@ -1,0 +1,164 @@
+{
+  "domain_divisions": [
+    {
+      "id": "creative",
+      "name": "Creative & Writing",
+      "icon": "✍️",
+      "responsibilities": [
+        "Novel ideation, development, and production",
+        "Script writing and content creation",
+        "World-building, narrative engineering, prose generation",
+        "Logic auditing, IP clearance, fact verification",
+        "Awards strategy and market positioning"
+      ],
+      "director": "creative_director",
+      "governance_agent": "creative_governance",
+      "external_auditor": "creative_auditor"
+    },
+    {
+      "id": "finance",
+      "name": "Finance & Wealth",
+      "icon": "💰",
+      "responsibilities": [
+        "Budget tracking and expense auditing",
+        "Investment monitoring and compound growth",
+        "Financial goal setting and progress tracking",
+        "Tax preparation and compliance",
+        "Wealth accumulation strategy"
+      ],
+      "director": "finance_director",
+      "governance_agent": "finance_governance",
+      "external_auditor": "financial_auditor"
+    },
+    {
+      "id": "productivity",
+      "name": "Personal Productivity",
+      "icon": "⚡",
+      "responsibilities": [
+        "Task management and priority orchestration",
+        "Goal tracking and project management",
+        "Focus session management (ADHD-optimised)",
+        "Daily/weekly/quarterly review cycles",
+        "Context-switching cost management"
+      ],
+      "director": "productivity_director",
+      "governance_agent": "productivity_governance",
+      "external_auditor": "productivity_auditor"
+    },
+    {
+      "id": "health",
+      "name": "Health & Wellbeing",
+      "icon": "💚",
+      "responsibilities": [
+        "Fitness tracking and workout programming",
+        "Habit system management and streak tracking",
+        "Sleep optimisation and monitoring",
+        "Mental health monitoring and ADHD support",
+        "Energy state assessment and scheduling"
+      ],
+      "director": "health_director",
+      "governance_agent": "health_governance",
+      "external_auditor": "health_auditor"
+    },
+    {
+      "id": "tech",
+      "name": "Technology & Dev",
+      "icon": "🔧",
+      "responsibilities": [
+        "Automation projects and tool-building",
+        "Coding projects and code review",
+        "System architecture and infrastructure",
+        "Agent development and deployment",
+        "Performance monitoring and logging"
+      ],
+      "director": "tech_director",
+      "governance_agent": "tech_governance",
+      "external_auditor": "tech_auditor"
+    },
+    {
+      "id": "learning",
+      "name": "Learning & Growth",
+      "icon": "📚",
+      "responsibilities": [
+        "Reading list management and tracking",
+        "Skill acquisition planning and progress",
+        "Course tracking and certification",
+        "Knowledge management and retrieval",
+        "Expertise development roadmaps"
+      ],
+      "director": "learning_director",
+      "governance_agent": "learning_governance",
+      "external_auditor": "learning_auditor"
+    },
+    {
+      "id": "business",
+      "name": "Business & Income",
+      "icon": "💼",
+      "responsibilities": [
+        "The Referral Network management",
+        "Freelance project tracking and invoicing",
+        "Venture development and pipeline",
+        "Revenue stream monitoring",
+        "Client relationship management"
+      ],
+      "director": "business_director",
+      "governance_agent": "business_governance",
+      "external_auditor": "business_auditor"
+    },
+    {
+      "id": "family",
+      "name": "Family & Parenting",
+      "icon": "👨‍👩‍👧‍👦",
+      "responsibilities": [
+        "Kids' schedules and activity management",
+        "Digital management and screen time",
+        "Family logistics and coordination",
+        "School and education tracking",
+        "Family event planning and commitments"
+      ],
+      "director": "family_director",
+      "governance_agent": "family_governance",
+      "external_auditor": "family_auditor",
+      "nsd_override": "NSD-002 §3 — Family commitments trump non-emergency tasks"
+    },
+    {
+      "id": "audio",
+      "name": "Audio & Music",
+      "icon": "🎵",
+      "responsibilities": [
+        "Recording session management",
+        "Production and mixing workflows",
+        "DAW project organisation",
+        "Release pipeline and distribution",
+        "Audio engineering standards and mastering"
+      ],
+      "director": "audio_director",
+      "governance_agent": "audio_governance",
+      "external_auditor": "audio_auditor"
+    }
+  ],
+  "cross_cutting_divisions": [
+    {
+      "id": "governance",
+      "name": "Governance & Compliance",
+      "responsibilities": [
+        "Constitutional compliance monitoring",
+        "Cross-domain audit coordination",
+        "Protocol enforcement and incident logging",
+        "External auditor management",
+        "Legal, IP, and regulatory compliance"
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering & Infrastructure",
+      "responsibilities": [
+        "System architecture and platform",
+        "Agent deployment and lifecycle management",
+        "Queue management and task routing",
+        "Performance monitoring and logging",
+        "Data storage and backup systems"
+      ]
+    }
+  ]
+}
