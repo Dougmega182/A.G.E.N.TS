@@ -1,71 +1,97 @@
-"""Validate ALL A.G.E.N.T.S. config files, agent profiles, and governance documents."""
-import json
 import os
+import re
 
-configs = [
-    'agents', 'information_sharing', 'logging_requirements',
-    'security_layers', 'mission', 'northern_star', 'constitution',
-    'protocols', 'layer_stack', 'voting_framework', 'departments',
-    'corporate_governance', 'oath_and_contract', 'onboarding_sop',
-    'major_commands', 'rules_of_engagement',
-    'self_healing'
-]
+def parse_markdown_table(content):
+    """Simple parser for the Field/Detail metadata table at the top of AGENTS docs."""
+    data = {}
+    lines = content.split('\n')
+    for line in lines:
+        if line.startswith('| **') or line.startswith('|**'):
+            # Match | **Key** | Value |
+            match = re.search(r'\|\s*\*\*([^*]+)\*\*\s*\|\s*([^|]+)\s*\|', line)
+            if match:
+                key = match.group(1).strip()
+                val = match.group(2).strip()
+                data[key] = val
+    return data
 
-print("=" * 60)
-print("  A.G.E.N.T.S. FULL SYSTEM VALIDATION")
-print("=" * 60)
+def validate_system():
+    base_dir = "."
+    reg_path = os.path.join(base_dir, "Governance Layer", "registers", "AGENTS-DOC-REG-001.md")
+    
+    print("=" * 60)
+    print("  A.G.E.N.T.S. MARKDOWN ARCHITECTURE VALIDATION")
+    print("=" * 60)
 
-print("\n--- CONFIG FILES ---\n")
-for c in configs:
-    path = f"config/{c}.json"
-    try:
-        data = json.load(open(path, encoding="utf-8"))
-        print(f"  [OK]   {c}.json")
-    except Exception as e:
-        print(f"  [FAIL] {c}.json - {e}")
+    if not os.path.exists(reg_path):
+        print(f"[CRITICAL FAIL] Master Register not found at {reg_path}")
+        return
 
-print(f"\n  Total: {len(configs)} config files")
+    with open(reg_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
 
-agents = json.load(open("config/agents.json", encoding="utf-8"))
-agent_count = agents.get('total_agents', len(agents.get('agents', {})))
-print(f"\n--- AGENT ROSTER ({agent_count} agents) ---\n")
-for k, v in agents["agents"].items():
-    name = v["name"]
-    title = v["title"][:50]
-    aid = v["agent_id"]
-    print(f"  {aid}  {name:12s}  {title}")
+    docs_to_check = []
+    for line in lines:
+        if any(line.startswith(f"| {prefix}") for prefix in ["AGENTS-", "SEC-", "HR-", "GOV-", "AGT-"]):
+            parts = [p.strip() for p in line.split('|')[1:-1]]
+            if len(parts) >= 9:
+                docs_to_check.append({
+                    'id': parts[0],
+                    'title': parts[1],
+                    'status': parts[3],
+                    'version': parts[4],
+                    'classification': parts[7],
+                    'location': parts[8]
+                })
 
-profiles = sorted(os.listdir("agents/profiles"))
-print(f"\n--- AGENT PROFILES ({len(profiles)} files) ---\n")
-for p in profiles:
-    print(f"  > {p}")
+    print(f"\n--- SCRAPING MASTER REGISTER ({len(docs_to_check)} ENTRIES) ---\n")
 
-# Governance documents summary
-gov = json.load(open("config/corporate_governance.json", encoding="utf-8"))
-oath = json.load(open("config/oath_and_contract.json", encoding="utf-8"))
-onboard = json.load(open("config/onboarding_sop.json", encoding="utf-8"))
-commands = json.load(open("config/major_commands.json", encoding="utf-8"))
-roe = json.load(open("config/rules_of_engagement.json", encoding="utf-8"))
-heal = json.load(open("config/self_healing.json", encoding="utf-8"))
-sharing = json.load(open("config/information_sharing.json", encoding="utf-8"))
-security = json.load(open("config/security_layers.json", encoding="utf-8"))
-const = json.load(open("config/constitution.json", encoding="utf-8"))
-protos = json.load(open("config/protocols.json", encoding="utf-8"))
+    pass_count = 0
+    fail_count = 0
 
-print("\n--- GOVERNANCE SUMMARY ---\n")
-print(f"  Hierarchical layers:      {len(gov['hierarchical_layers'])}")
-print(f"  Functional layers:        {len(gov['functional_layers']['layers'])}")
-print(f"  Constitutional laws:      {len(const['laws'])}")
-print(f"  Protocols:                {len(protos['protocols'])}")
-print(f"  Classification levels:    {len(sharing['classification_levels'])}")
-print(f"  Security layers:          {len(security['security_layers'])}")
-print(f"  Major commands:           {len(commands['major_commands'])}")
-print(f"  Risk tiers (RoE):         {len(roe['risk_tiers'])}")
-print(f"  Self-healing levels:      {len(heal['severity_levels'])}")
-print(f"  Contract clauses:         {len(oath['agent_employment_contract']['clauses'])}")
-print(f"  Onboarding phases:        {len(onboard['pipeline'])}")
-print(f"  Agent statuses:           {len(onboard['agent_statuses'])}")
+    for doc in docs_to_check:
+        full_path = os.path.join(base_dir, doc['location'])
+        if not os.path.exists(full_path):
+            print(f"  [MISSING] {doc['id']:18} | Location: {doc['location']}")
+            fail_count += 1
+            continue
 
-print("\n" + "=" * 60)
-print("  ALL SYSTEMS NOMINAL")
-print("=" * 60)
+        try:
+            with open(full_path, 'r', encoding='utf-8-sig') as f:
+                content = f.read()
+            
+            meta = parse_markdown_table(content)
+            
+            # Validation Logic
+            mismatches = []
+            if meta.get('Document ID') != doc['id']:
+                mismatches.append(f"ID ({meta.get('Document ID')} vs {doc['id']})")
+            if meta.get('Status') != doc['status']:
+                mismatches.append(f"Status ({meta.get('Status')} vs {doc['status']})")
+            if meta.get('Version') != doc['version']:
+                mismatches.append(f"Version ({meta.get('Version')} vs {doc['version']})")
+            
+            # Safe print to avoid charmap errors on Windows terminals
+            clean_title = doc['title'].encode('ascii', 'ignore').decode('ascii')[:40]
+            if not mismatches:
+                print(f"  [OK]      {doc['id']:18} | {clean_title}")
+                pass_count += 1
+            else:
+                mismatch_str = ', '.join(mismatches).encode('ascii', 'ignore').decode('ascii')
+                print(f"  [MISMATCH] {doc['id']:18} | {mismatch_str}")
+                fail_count += 1
+                
+        except Exception as e:
+            print(f"  [ERROR]    {doc['id']:18} | {str(e)}")
+            fail_count += 1
+
+    print("\n" + "=" * 60)
+    print(f"  VALIDATION SUMMARY: {pass_count} PASSED, {fail_count} FAILED")
+    if fail_count == 0:
+        print("  ALL SYSTEMS NOMINAL - ARCHITECTURE 100% COMPLIANT")
+    else:
+        print("  WARNING: SYSTEM DEVIATIONS DETECTED")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    validate_system()

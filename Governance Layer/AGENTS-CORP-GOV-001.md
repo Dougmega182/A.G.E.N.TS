@@ -211,11 +211,12 @@ This Framework is reviewed quarterly by the Constitutional Triumvirate. Amendmen
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Governance Layer | Initial issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Initial issue. | Governance Layer |
+
 
 ---
 

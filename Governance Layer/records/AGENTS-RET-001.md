@@ -53,7 +53,9 @@ The master copy of this schedule resides in the Governance Layer. Disposal recor
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Corporate Services | Standardised Schedule format applied. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Corporate Services | Standardised Schedule format applied. |
+

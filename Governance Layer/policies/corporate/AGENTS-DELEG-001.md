@@ -57,7 +57,9 @@ Limits invoked are structurally validated under `AGENTS-ALRMF-001`. DoA threshol
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Total refinement mapping CapEx, safety-offs, IP generation gaps, and Emergency intervention paths. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Total refinement mapping CapEx, safety-offs, IP generation gaps, and Emergency intervention paths. | Antigravity |
+

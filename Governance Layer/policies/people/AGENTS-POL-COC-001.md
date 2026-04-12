@@ -47,7 +47,9 @@ Violations are logged under `AGENTS-AICS-001` and retained permanently in audit 
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Deeply tailored for ethical AI execution tracking. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Deeply tailored for ethical AI execution tracking. | Antigravity |
+

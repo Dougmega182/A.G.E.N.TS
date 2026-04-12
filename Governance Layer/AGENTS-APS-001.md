@@ -78,7 +78,7 @@ The Profile must open with the standard document metadata table:
 
 | Field | Detail |
 |---|---|
-| **Document ID** | `AGT-{number}-PROFILE-{version}` |
+| **Document ID** | AGENTS-APS-001 |
 | **Version** | Semantic version (e.g. `1.0.0`) |
 | **Status** | `DRAFT` / `ACTIVE` / `SUSPENDED` / `DECOMMISSIONED` |
 | **Classification** | As assigned |
@@ -309,11 +309,12 @@ This Standard shall be reviewed quarterly or upon any amendment to the Constitut
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Agent Lifecycle and People Command | Initial instrument issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Agent Lifecycle and People Command | Initial instrument issue. |
+
 
 ---
 

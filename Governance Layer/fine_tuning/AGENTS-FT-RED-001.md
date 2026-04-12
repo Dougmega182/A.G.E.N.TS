@@ -45,7 +45,9 @@ All red teaming reports and vulnerability logs are retained strictly in the secu
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Intelligence Command | Standardised SOP format applied. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Intelligence Command | Standardised SOP format applied. |
+

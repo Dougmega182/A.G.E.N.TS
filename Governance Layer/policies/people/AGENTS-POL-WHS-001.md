@@ -45,7 +45,9 @@ WHS assessments are retained permanently by the Human Resources wing inside the 
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Hardcoded 15-minute cognitive break rates and remote ergonomic checklists. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Hardcoded 15-minute cognitive break rates and remote ergonomic checklists. | Antigravity |
+

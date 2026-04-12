@@ -40,30 +40,20 @@ GOVERNANCE LAYER (External Auditors → Gatekeeper)
 
 ```
 A.G.E.N.T.S/
-├── config/                    # Governance artifacts (JSON)
-│   ├── mission.json           # Stage 1: Mission
-│   ├── northern_star.json     # Stage 2: Northern Star Directive
-│   ├── constitution.json      # Stage 3: Constitutional Laws (G1-G11)
-│   ├── protocols.json         # Stage 4: Protocols (RED/BLUE/GOLD/BLACK/AMBER/GREEN/WHITE)
-│   ├── layer_stack.json       # Stage 7: 7-Layer Operating Stack
-│   ├── voting_framework.json  # Stage 6: Decision & Voting Framework
-│   ├── departments.json       # Stage 8: Departmental Structure
-│   └── agents.json            # Stage 11: Agent Definitions
-├── agents/                    # Agent framework (Python)
-│   ├── core.py                # GovernanceEngine + Base Agent class
-│   ├── llm.py                 # LLM provider (OpenAI / Ollama)
-│   └── boardroom.py           # Voting system with weighted majority
-├── cli/
-│   └── gatekeeper.py          # Gatekeeper command centre (CLI)
-├── data/                      # Runtime data (auto-created)
-│   ├── tasks/                 # Task queue
-│   ├── proposals/             # Proposal pipeline
-│   ├── votes/                 # Vote records
-│   ├── audit_logs/            # Immutable audit trail
-│   └── reflections/           # Self-improvement reports
-├── Agents master build.html   # Visual blueprint document
-├── requirements.txt
-└── .env.example
+├── Governance Layer/          # Corporate Strategy, Constitution, and Standards
+├── Executive Leadership Layer/ # C-Suite Charters
+├── Department Layer/          # Major functional Department Mandates
+├── Division Layer/            # Granular Division Charters (Ops, Security, Intelligence, etc.)
+├── Team Layer/                # Operational SOPs (Daily Huddles, Queue Mgmt)
+├── Individual Contributor Layer/ # Agent Roster and Identity Management
+├── The Board room/            # Executive Minutes and Voting Records
+├── Incident reports/          # Critical AI Failure and Response Records
+├── Onboarding/                # Agent Employment Contracts and Swear-In Packs
+├── agents/                    # Python Framework (Profiles, Core, LLM Bridge)
+├── cli/                       # Gatekeeper Command Centre
+├── agents/profiles/           # Persistent Agent Personality Profiles (JSON)
+├── agents master build.html   # Visual Blueprint
+└── requirements.txt
 ```
 
 ## Constitutional Laws

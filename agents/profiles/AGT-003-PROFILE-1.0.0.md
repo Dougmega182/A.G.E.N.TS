@@ -1,10 +1,10 @@
-﻿# AGT-003 - ARGUS
+# AGT-003 - MARCUS
 
 | Field | Detail |
 |---|---|
 | **Document ID** | AGT-003-PROFILE-1.0.0 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | APPROVED |
 | **Classification** | INTERNAL |
 | **Owner** | Agent Lifecycle and People Command |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -236,11 +236,12 @@ The agent must not hallucinate, confabulate, or fabricate facts, sources, or rea
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Agent Lifecycle and People Command | Initial issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Agent Lifecycle and People Command | Initial issue. |
+
 
 ---
 

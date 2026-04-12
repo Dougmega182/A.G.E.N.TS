@@ -24,10 +24,12 @@ This outline operates explicitly as a high-level corporate map. Highly specific 
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Governance Layer | Standardised outline under strict AGENTS-DOC-STD-001 layout. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Standardised outline under strict AGENTS-DOC-STD-001 layout. | Governance Layer |
+
 
 ---
 

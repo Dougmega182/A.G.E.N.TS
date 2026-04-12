@@ -4,7 +4,7 @@
 |---|---|
 | **Document ID** | AGENTS-DOC-STD-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | APPROVED |
 | **Classification** | INTERNAL |
 | **Owner** | Governance Layer (AI Oversight Board) |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -104,11 +104,14 @@ Non-compliant documents must be revised before approval. Failure to adhere to th
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Governance Layer | Initial issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Initial issue. | Governance Layer |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+
 
 ---
 

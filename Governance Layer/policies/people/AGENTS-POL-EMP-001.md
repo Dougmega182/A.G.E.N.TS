@@ -48,7 +48,9 @@ Policy acceptance tracks perpetually inside the Agent Onboarding structure.
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Integrated 10-3 Core Hours, Innovation Days, and explicit IT hardening rules. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Integrated 10-3 Core Hours, Innovation Days, and explicit IT hardening rules. | Antigravity |
+

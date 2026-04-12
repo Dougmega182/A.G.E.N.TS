@@ -53,7 +53,9 @@ Because the Agency cannot physically guarantee zero-hallucinated collisions agai
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-12 | Antigravity | Foundational IP model instantiated formatting Hybrid License constraints. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 12/04/2026 | Foundational IP model instantiated formatting Hybrid License constraints. | Antigravity |
+

@@ -78,7 +78,9 @@ Dale (Gatekeeper / Chair)
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Antigravity | Standardised document format applied and renamed to AGENTS-EXE-CHT-001. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Standardised document format applied and renamed to AGENTS-EXE-CHT-001. | Antigravity |
+

@@ -74,7 +74,9 @@ Declarations are retained securely alongside the standard NDA.
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Embedded formal 6-part COI disclosure form and Open Source frameworks. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Embedded formal 6-part COI disclosure form and Open Source frameworks. | Antigravity |
+

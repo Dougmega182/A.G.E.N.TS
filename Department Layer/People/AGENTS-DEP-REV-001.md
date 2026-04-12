@@ -79,7 +79,9 @@ Jax has leveraged optimism effectively to break the Gatekeeper (Dale) out of ana
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Instantiated functional performance record under strict metadata bindings. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Instantiated functional performance record under strict metadata bindings. | Antigravity |
+

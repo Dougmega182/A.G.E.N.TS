@@ -62,9 +62,10 @@ All artifacts must be retained in accordance with the logging requirements frame
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Team Layer Lead | Standardised SOP format applied. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Standardised SOP format applied. | Team Layer Lead |
+
 

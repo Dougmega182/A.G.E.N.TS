@@ -44,7 +44,9 @@ Government audit records are classified RESTRICTED and maintained persistently p
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Tailored for Commonwealth 2024 standards. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Tailored for Commonwealth 2024 standards. | Antigravity |
+

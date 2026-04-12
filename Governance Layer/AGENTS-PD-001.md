@@ -4,7 +4,7 @@
 |---|---|
 | **Document ID** | AGENTS-PD-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | APPROVED |
 | **Classification** | INTERNAL |
 | **Owner** | Governance Layer (AI Oversight Board) |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -157,11 +157,14 @@ The Prime Directive may not be amended to reduce the Gatekeeper's sovereignty, d
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Governance Layer | Initial instrument issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Initial instrument issue. | Governance Layer |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+
 
 ---
 

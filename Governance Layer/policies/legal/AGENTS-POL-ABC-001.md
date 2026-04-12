@@ -46,7 +46,9 @@ Violations escalate permanently into the ALRMF unified log.
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Refactored to address software referral pipelines and gift limits. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Refactored to address software referral pipelines and gift limits. | Antigravity |
+

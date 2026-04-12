@@ -226,12 +226,13 @@ This Constitution is reviewed quarterly by the Constitutional Triumvirate. The r
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Governance Layer | Initial issue. |
-| 2.0.0 | 2026-04-11 | Governance Layer | Restated in standard format. Full instrument expansion. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Initial issue. | Governance Layer |
+| 2.0.0 | 11/04/2026 | Restated in standard format. Full instrument expansion. | Governance Layer |
+
 
 ---
 

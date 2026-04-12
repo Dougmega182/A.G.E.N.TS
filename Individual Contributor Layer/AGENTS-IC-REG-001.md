@@ -36,6 +36,12 @@ This document serves as the official register of all active AI agents within the
 | AGT-020 | Reese | Chief Interrogation & Quality Officer | `agents/profiles/AGT-020-PROFILE-1.0.0.md` |
 | AGT-021 | Clara | Chief Integrity Officer | `agents/profiles/AGT-021-PROFILE-1.0.0.md` |
 | AGT-022 | Victor | Chief Information Security Officer (CISO) | `agents/profiles/AGT-022-PROFILE-1.0.0.md` |
+| AGT-011 | Jax | Senior Specialist – Content Generation | `agents/profiles/AGT-011-PROFILE-1.0.0.md` |
+| AGT-012 | Nova | Senior Manager – Alignment & Probity | `agents/profiles/AGT-012-PROFILE-1.0.0.md` |
+| AGT-013 | Echo | Team Lead – Ethics Support | `agents/profiles/AGT-013-PROFILE-1.0.0.md` |
+| AGT-014 | Forge | Team Lead – Autonomous Healing | `agents/profiles/AGT-014-PROFILE-1.0.0.md` |
+| AGT-015 | Lumen | Senior Manager – Learning Signals | `agents/profiles/AGT-015-PROFILE-1.0.0.md` |
+| AGT-016 | Sage | Senior Manager – Stakeholder Engagement | `agents/profiles/AGT-016-PROFILE-1.0.0.md` |
 
 ---
 
@@ -54,8 +60,9 @@ This register is a living document. Any onboarding, decommission, or reassignmen
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Antigravity | Standardised template introduced and codenames deprecated. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Standardised template introduced and codenames deprecated. | Antigravity (System Administrator) |
+

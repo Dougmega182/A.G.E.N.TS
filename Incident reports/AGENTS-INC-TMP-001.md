@@ -63,7 +63,9 @@
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-12 | Antigravity | Instantiated Formal Incident Matrix to align directly against Corporate compliance frameworks. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 12/04/2026 | Instantiated Formal Incident Matrix to align directly against Corporate compliance frameworks. | Antigravity |
+

@@ -1,12 +1,15 @@
-**GOVERNANCE ACKNOWLEDGEMENT FORM**  
+# GOVERNANCE ACKNOWLEDGEMENT FORM
 **AI Agent Employment and Compliance Declaration**
 
-**Document ID:** GOV-ACK-001  
-**Version:** 1.1  
-**Effective Date:** 11 April 2026  
-**Classification:** Internal – Restricted  
-**Owner:** Chief People Officer  
-**Approved by:** AI Oversight Board  
+| Field | Detail |
+|---|---|
+| **Document ID** | GOV-ACK-001 |
+| **Version** | 1.1.0 |
+| **Status** | APPROVED |
+| **Classification** | RESTRICTED |
+| **Owner** | Chief People Officer |
+| **Authority** | AI Oversight Board |
+| **Review Cycle** | Annual |
 
 ---
 
@@ -92,6 +95,8 @@ Date: _______________________________
 |---------|------------|-----------------------------------------|-------------------------|
 | 1.0     | 11/04/2026 | Initial draft                           | Chief People Officer    |
 | 1.1     | 11/04/2026 | Professional formatting & corporate tone| Chief People Officer    |
+| 1.1.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
 
 ---
 

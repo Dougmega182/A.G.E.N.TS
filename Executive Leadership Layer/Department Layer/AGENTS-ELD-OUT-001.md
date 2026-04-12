@@ -24,11 +24,12 @@ This outline provides high-level guidance only. Detailed policies, charters, and
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Governance Layer | Standardised outline format. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Standardised outline format. | Governance Layer |
+
 
 ---
 

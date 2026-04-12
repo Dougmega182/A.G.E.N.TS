@@ -4,7 +4,7 @@
 |---|---|
 | **Document ID** | AGENTS-OATH-001 |
 | **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Status** | APPROVED |
 | **Classification** | RESTRICTED |
 | **Owner** | Agent Lifecycle and People Command |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -135,11 +135,14 @@ This Instrument shall be reviewed annually or upon any amendment to the Constitu
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2025-07-01 | Onboarding Division | Initial instrument issue. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 01/07/2025 | Onboarding Division | Initial instrument issue. |
+| 1.0.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+
 
 ---
 

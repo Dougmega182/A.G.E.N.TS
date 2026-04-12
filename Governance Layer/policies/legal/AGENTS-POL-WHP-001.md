@@ -49,7 +49,9 @@ Reports generated under this policy are classified RESTRICTED and maintained per
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Refactored to map explicitly to Australian Treasury Laws Amendment and 14-day SLA. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Refactored to map explicitly to Australian Treasury Laws Amendment and 14-day SLA. | Antigravity |
+

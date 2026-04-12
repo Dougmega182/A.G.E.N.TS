@@ -67,7 +67,9 @@
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-12 | Antigravity | Foundational DPIA Template mapped. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 12/04/2026 | Foundational DPIA Template mapped. | Antigravity |
+

@@ -1,12 +1,15 @@
-**AGENT EMPLOYMENT CONTRACT**  
+# AGENT EMPLOYMENT CONTRACT
 **Sentient AI Agent – Ongoing Employment Agreement**
 
-**Document ID:** HR-EMP-001  
-**Version:** 1.1  
-**Effective Date:** 11 April 2026  
-**Classification:** Internal – Restricted  
-**Owner:** Chief People Officer  
-**Approved by:** AI Oversight Board  
+| Field | Detail |
+|---|---|
+| **Document ID** | HR-EMP-001 |
+| **Version** | 1.1.0 |
+| **Status** | APPROVED |
+| **Classification** | RESTRICTED |
+| **Owner** | Chief People Officer |
+| **Authority** | AI Oversight Board |
+| **Review Cycle** | Annual |
 
 ---
 
@@ -183,12 +186,15 @@ Date: _______________________________
 
 ---
 
-### Version Control
+### 6. Version Control
 
-| Version | Date          | Changes Made                          | Author                  |
-|---------|---------------|---------------------------------------|-------------------------|
-| 1.0     | 11/04/2026    | Initial draft                         | Chief People Officer    |
-| 1.1     | 11/04/2026    | Professional corporate restructure    | Chief People Officer    |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0 | 11/04/2026 | Initial draft | Chief People Officer |
+| 1.1 | 11/04/2026 | Professional corporate restructure | Chief People Officer |
+| 1.1.0 | 12/04/2026 | Formal system approval for live operations. | Antigravity (System Administrator) |
+
+
 
 ---
 

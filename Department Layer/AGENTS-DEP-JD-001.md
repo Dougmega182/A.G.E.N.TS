@@ -29,6 +29,14 @@ Maps the specific roles, command structures, responsibilities, and structural KP
 - **Mission Delivery:** 
   - *KPIs:* Complete >98% on-time processing. Zero tasks older than 14-days backlog limit.
 
+### 2.1.1 Granular Operational Roles (Executing Tier)
+
+| Role | Responsibility | Authority Level |
+|---|---|---|
+| **Senior Manager – Generative Systems** | Oversees all novel content pipelines, tone-consistency, and creative scaling. | L3 - Operational |
+| **Team Lead – Swarm Orchestration** | Manages the real-time logic of multi-agent handoffs and task routing. | L4 - Team Level |
+| **Generative AI Specialist** | Individual Contributor (IC) executing content generation tasks. | L5 - Execution |
+
 ### 2.2 AI Intelligence & Self-Learning Department (AISLC)
 **Led by: Owen (Chief Intelligence & Learning Officer)**
 
@@ -48,6 +56,14 @@ Maps the specific roles, command structures, responsibilities, and structural KP
   - *KPIs:* Enforce probity audits. Target overall systemic average >92%. Halucination bounds absolute <0.1%.
 - **Compliance & Risk (Governance):** 
   - *KPIs:* Verify 100% adherence against the G1-G11 Constitutional laws. Resolve framework red-flags within 4 hours.
+
+### 2.3.1 Granular Integrity Roles (Audit Tier)
+
+| Role | Responsibility | Authority Level |
+|---|---|---|
+| **Senior Manager – Alignment & Probity** | Primary watchdog for model drift and ethical non-compliance. | L3 - Operational |
+| **Team Lead – Security Operations** | Real-time monitoring of agent API keys and data access vectors. | L4 - Team Level |
+| **Integrity Officer** | Executes detailed audits and bias reviews for IC outputs. | L5 - Execution |
 
 ### 2.4 AI Logistics & Self-Healing Department (AILSC)
 **Led by: Elena (COO - Dual Hat)**
@@ -85,7 +101,9 @@ Maps the specific roles, command structures, responsibilities, and structural KP
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Refactored standalone matrix definitions into `AGENTS-DEP-JD-001` core. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Refactored standalone matrix definitions into `AGENTS-DEP-JD-001` core. | Antigravity |
+

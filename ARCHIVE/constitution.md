@@ -93,11 +93,12 @@ Amendment Requires: Unanimous Triumvirate consent + 72 hour agent notification
 
 ---
 
-## Document Control
+### 6. Version Control
 
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 2.0.0 | 2026-04-11 | Governance Layer | Restated in standard format. |
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 2.0.0 | 11/04/2026 | Restated in standard format. | Governance Layer |
+
 
 ---
 

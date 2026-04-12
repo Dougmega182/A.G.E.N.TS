@@ -44,7 +44,9 @@ Tenders and signed procurement checks are managed logically by the Corporate Ser
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Integrated exact $2K-$10K thresholds and Vendor Audit requirements. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Integrated exact $2K-$10K thresholds and Vendor Audit requirements. | Antigravity |
+

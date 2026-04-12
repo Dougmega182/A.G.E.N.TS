@@ -53,7 +53,9 @@ Agent employment lifecycle states must be captured inside the canonical `/Onboar
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.0.0 | 2026-04-11 | Antigravity | Foundational division layer formalisation. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.0.0 | 11/04/2026 | Foundational division layer formalisation. | Antigravity |
+

@@ -44,7 +44,9 @@ Audit metrics verifying blinded execution are retained under `AGENTS-RET-001`.
 
 ---
 
-## Document Control
-| Version | Date | Author | Change Description |
-|---|---|---|---|
-| 1.1.0 | 2026-04-12 | Antigravity | Embedded Neurodiversity execution protocols and defined blinded recruitment loops. |
+### 6. Version Control
+
+| Version | Date | Description of Changes | Author |
+|---------|------------|-----------------------------------------|-------------------------|
+| 1.1.0 | 12/04/2026 | Embedded Neurodiversity execution protocols and defined blinded recruitment loops. | Antigravity |
+
