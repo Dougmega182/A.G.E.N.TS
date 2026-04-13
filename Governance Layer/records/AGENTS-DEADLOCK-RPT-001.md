@@ -3,8 +3,8 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-DEADLOCK-RPT-001 |
-| **Version** | 1.0.0 |
-| **Status** | PENDING INDUCTION |
+| **Version** | 2.0.0 |
+| **Status** | ACTIVE |
 | **Classification** | TOP_SECRET |
 | **Owner** | Governance Layer |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -44,16 +44,10 @@ This document sits under the authority of the Constitution (AGENTS-CONST-002).
 
 | Document ID | Title | Primary Objector | Rationale / Strategic Conflict | Recommended Gatekeeper Action |
 |---|---|---|---|---|
-| AGENTS-CP-LOG-001 | Checkpoint Logging Standard |  |  | OVERRIDE |
-| AGENTS-MIS-001 | MISSION DIRECTIVE |  |  | OVERRIDE |
-| AGENTS-PD-001 | PRIME DIRECTIVE |  |  | OVERRIDE |
-| AGENTS-STD-BASE-001 | Australian Standards Baseline |  |  | OVERRIDE |
-| AGT-001-PROFILE-1.0.0 | AGT-001 - ARIA |  |  | OVERRIDE |
-| AGT-004-PROFILE-1.0.0 | AGT-004 - NADIA |  |  | OVERRIDE |
-| AGT-009-PROFILE-1.0.0 | AGT-009 - JENNY |  |  | OVERRIDE |
-| AGT-015-PROFILE-1.0.0 | AGT-015 - LUMEN |  |  | OVERRIDE |
-| AGT-020-PROFILE-1.0.0 | AGT-020 - REESE |  |  | OVERRIDE |
-| AGT-031-PROFILE-1.0.0 | AGT-031 - POMPEY THE GREAT |  |  | OVERRIDE |
+| AGENTS-PRIV-001 | Data Privacy Policy | Pompey | Protocol Breach | REVIEW PENDING GHOST DRAFTS |
+| AGENTS-PHYS-SEC-001 | Physical Security Policy | Caesar | Strategic Friction | REVIEW PENDING GHOST DRAFTS |
+| AGENTS-PD-001 | Prime Directive | Pompey | Protocol Breach | REVIEW PENDING GHOST DRAFTS |
+| AGENTS-CP-LOG-001 | Checkpoint Logging Standard | Board | Structural Gaps | RESOLVED VIA CP-LOG-001 DRAFTING |
 
 
 ---
@@ -68,10 +62,10 @@ Administrative records created under this instrument are stored in Governance La
 
 | Role | Name | Signature | Date |
 |---|---|---|---|
-| Drafting Authority | Governance Layer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+| Drafting Authority | Governance Layer | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 13/04/2026 |
 
 ---
 

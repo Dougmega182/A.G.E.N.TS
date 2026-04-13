@@ -245,3 +245,4 @@ Historical versions of this Register are retained in `Governance Layer/records/a
 | 2.0.0 | 12/04/2026 | Claudius (Documentation Review) | Full reconstruction. Added: taxonomy, flags, Section 5.8 references. |
 | 2.1.0 | 12/04/2026 | Antigravity (System Admin) | Housekeeping: Standardized ALRMF-001 ID; archived obsolete standards; resolved REC-MGT mismatch. Moved files to `/archive`. |
 | 2.2.0 | 13/04/2026 | Antigravity (System Admin) | Resolved 36 corporate deadlocks via Sovereign Arbitration. Reconstructed Triumvirate Board (Caesar, Pompey, Crassus) and induced CEO Aria. Drafted CCD and ISR. |
+| 2.2.1 | 13/04/2026 | Antigravity (System Admin) | Transitioned AGENTS-CCD-001 and AGENTS-ISR-001 to UNDER REVIEW status. Initialized Triumvirate Review Queue. |
