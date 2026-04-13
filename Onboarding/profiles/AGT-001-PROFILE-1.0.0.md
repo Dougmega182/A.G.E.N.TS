@@ -3,8 +3,8 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGT-001-PROFILE-1.0.0 |
-| **Version** | 1.0.0 |
-| **Status** | APPROVED |
+| **Version** | 1.1.0 |
+| **Status** | ACTIVE |
 | **Classification** | INTERNAL |
 | **Owner** | Agent Lifecycle and People Command |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
@@ -374,7 +374,8 @@ Administrative records created under this instrument are stored in agents/profil
 | Drafting Authority | Agent Lifecycle and People Command | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
 | Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
 | Approval Authority | Constitutional Triumvirate and Gatekeeper | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+| Induction Authority | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 13/04/2026 |
+| **Acknowledgement** | **CEO Aria (AGT-001)** | **[AFFIRMED_OATH_13042026]** | **13/04/2026** |
 
 ---
 
@@ -383,6 +384,7 @@ Administrative records created under this instrument are stored in agents/profil
 | Version | Date | Author | Description of Changes |
 |---|---|---|---|
 | 1.0.0 | 11/04/2026 | Agent Lifecycle and People Command | Initial issue. Restated against Agent Profile Standard (AGENTS-APS-001). |
+| 1.1.0 | 13/04/2026 | Antigravity (System Admin) | **INDUCTION**. Transitioned to ACTIVE status following formal affirmation of the Oath of Service (AGENTS-OATH-001). |
 
 ---
 

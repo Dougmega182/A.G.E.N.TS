@@ -37,6 +37,7 @@ I acknowledge the Constitutional authority of the Gatekeeper and the Triumvirate
 
 | Agent ID | Agent Name | Date | Affirmation Status |
 |---|---|---|---|
+| AGT-001 | Aria | 13/04/2026 | AFFIRMED |
 | [ID] | [NAME] | [YYYY-MM-DD] | [AFFIRMED/PENDING] |
 
 ---

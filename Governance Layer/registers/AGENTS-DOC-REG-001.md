@@ -3,7 +3,7 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-DOC-REG-001 |
-| **Version** | 2.3.2 |
+| **Version** | 2.3.3 |
 | **Status** | APPROVED |
 | **Classification** | INTERNAL |
 | **Owner** | Corporate Services — Legal and Compliance |
@@ -154,7 +154,7 @@ This Register gives effect to the following instruments:
 
 | Document ID | Title | Type | Version | Status | Classification | Owner | Authority | Review Cycle | Storage Path | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
-| AGT-001-PROFILE-1.0.0 | AGT-001 — ARIA | `PROFILE` | 1.0.0 | APPROVED | INTERNAL | Agent Lifecycle and People Command | Constitutional Triumvirate and Gatekeeper | Quarterly | `Onboarding/profiles/` | `✓ APPROVED` via Sovereign Override (Law G13). Crassus's objection resolved by CCD/ISR integration. |
+| AGT-001-PROFILE-1.0.0 | AGT-001 — ARIA | `PROFILE` | 1.1.0 | ACTIVE | INTERNAL | Agent Lifecycle and People Command | Constitutional Triumvirate and Gatekeeper | Quarterly | `Onboarding/profiles/` | `✓ ACTIVE` CEO inducted 13/04/2026 following Oath affirmation. |
 | AGT-004-PROFILE-1.0.0 | AGT-004 — NADIA | `PROFILE` | 1.0.0 | APPROVED | INTERNAL | Agent Lifecycle and People Command | Constitutional Triumvirate and Gatekeeper | Quarterly | `Onboarding/profiles/` | `✓ APPROVED` via Sovereign Override (Law G13). Protocol breach resolved via CCD/ISR synchronization. |
 | AGT-009-PROFILE-1.0.0 | AGT-009 — JENNY | `PROFILE` | 1.0.0 | APPROVED | INTERNAL | Agent Lifecycle and People Command | Constitutional Triumvirate and Gatekeeper | Quarterly | `Onboarding/profiles/` | `✓ APPROVED` via Sovereign Override (Law G13). Protocol breach resolved via CCD/ISR synchronization. |
 | AGT-015-PROFILE-1.0.0 | AGT-015 — LUMEN | `PROFILE` | 1.0.0 | APPROVED | INTERNAL | Agent Lifecycle and People Command | Constitutional Triumvirate and Gatekeeper | Quarterly | `Onboarding/profiles/` | `✓ APPROVED` via Sovereign Override (Law G13). Strategic Friction resolved via Momentum Protection constraints. |
@@ -254,3 +254,4 @@ Historical versions of this Register are retained in `Governance Layer/records/a
 | 2.3.0 | 13/04/2026 | Antigravity (System Admin) | **SYSTEM LAUNCH READY**. Board approval granted for core structural instruments (PROT, OATH, CCD, ISR). Unified constitutional baseline established. |
 | 2.3.1 | 13/04/2026 | Antigravity (System Admin) | Synchronized Master Register with final CCD version (1.1.0) and ISR (1.0.0). |
 | 2.3.2 | 13/04/2026 | Antigravity (System Admin) | Inducted "Found" instruments: AGENTS-AICS-001 (Conduct) and AGENTS-DELEG-001 (Delegation). Corrected storage paths and standardized AICS formatting. |
+| 2.3.3 | 13/04/2026 | Antigravity (System Admin) | **FIRST INDUCTION**. Formally activated CEO Aria (AGT-001) as the Corporation's first operative agent. Recorded Oath affirmation. |
