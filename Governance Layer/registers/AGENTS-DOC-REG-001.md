@@ -3,7 +3,7 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-DOC-REG-001 |
-| **Version** | 2.2.0 |
+| **Version** | 2.2.2 |
 | **Status** | APPROVED |
 | **Classification** | INTERNAL |
 | **Owner** | Corporate Services — Legal and Compliance |
@@ -118,6 +118,8 @@ This Register gives effect to the following instruments:
 
 | Document ID | Title | Type | Version | Status | Classification | Owner | Authority | Review Cycle | Storage Path | Notes |
 |---|---|---|---|---|---|---|---|---|---|---|
+| AGENTS-PROT-001 | Protocols | `POL` | 1.0.0 | UNDER REVIEW | RESTRICTED | Governance Layer | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/` | `✓ UNDER REVIEW` Operative directive drafted 13/04/2026. Includes Triumvirate-first BLACK-1 flow. |
+| AGENTS-OATH-001 | Oath of Service | `POL` | 1.0.0 | UNDER REVIEW | RESTRICTED | Governance Layer | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/` | `✓ UNDER REVIEW` Operative directive drafted 13/04/2026. |
 | AGENTS-PRIV-001 | Data Privacy Policy | `POL` | 1.0.0 | DEADLOCK | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ DEADLOCK` Objector: Pompey. Rationale: Protocol Breach. `⚠ INFERRED` — document not uploaded. Integrity Officer review required before ruling. |
 | AGENTS-SEC-001 | Security Policy | `POL` | 1.0.0 | APPROVED | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ INFERRED` — document not uploaded; status inferred. Verify on upload. |
 | AGENTS-PHYS-SEC-001 | Physical Security Policy | `POL` | 1.0.0 | DEADLOCK | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ DEADLOCK` Objector: Caesar. Rationale: Strategic Friction. `⚠ INFERRED` — document not uploaded. |
@@ -246,3 +248,4 @@ Historical versions of this Register are retained in `Governance Layer/records/a
 | 2.1.0 | 12/04/2026 | Antigravity (System Admin) | Housekeeping: Standardized ALRMF-001 ID; archived obsolete standards; resolved REC-MGT mismatch. Moved files to `/archive`. |
 | 2.2.0 | 13/04/2026 | Antigravity (System Admin) | Resolved 36 corporate deadlocks via Sovereign Arbitration. Reconstructed Triumvirate Board (Caesar, Pompey, Crassus) and induced CEO Aria. Drafted CCD and ISR. |
 | 2.2.1 | 13/04/2026 | Antigravity (System Admin) | Transitioned AGENTS-CCD-001 and AGENTS-ISR-001 to UNDER REVIEW status. Initialized Triumvirate Review Queue. |
+| 2.2.2 | 13/04/2026 | Antigravity (System Admin) | Induced final "Ghost Instruments": AGENTS-PROT-001 (Protocols) and AGENTS-OATH-001 (Oath). Transitioned all pending policies to UNDER REVIEW. |

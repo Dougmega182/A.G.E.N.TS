@@ -19,6 +19,8 @@ The following instruments are currently awaiting formal review and approval by t
 |---|---|---|---|---|---|
 | HIGH | AGENTS-CCD-001 | Chain of Command Directive | 13/04/2026 | Stabilization of Layer 1 delegation logic | AWAITING REVIEW |
 | HIGH | AGENTS-ISR-001 | Information Sharing Rules | 13/04/2026 | Stabilization of data classification and access tiers | AWAITING REVIEW |
+| HIGH | AGENTS-PROT-001 | Protocol Directive | 13/04/2026 | Induction of BLACK-1 triggers and communication flow | AWAITING REVIEW |
+| HIGH | AGENTS-OATH-001 | Oath of Service | 13/04/2026 | Induction of universal core and Governor Affirmation | AWAITING REVIEW |
 
 ---
 
