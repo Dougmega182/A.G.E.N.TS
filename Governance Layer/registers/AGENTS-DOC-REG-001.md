@@ -122,8 +122,8 @@ This Register gives effect to the following instruments:
 | AGENTS-SEC-001 | Security Policy | `POL` | 1.0.0 | APPROVED | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ INFERRED` — document not uploaded; status inferred. Verify on upload. |
 | AGENTS-PHYS-SEC-001 | Physical Security Policy | `POL` | 1.0.0 | DEADLOCK | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ DEADLOCK` Objector: Caesar. Rationale: Strategic Friction. `⚠ INFERRED` — document not uploaded. |
 | AGENTS-TECH-001 | Technology Policy | `POL` | 1.0.0 | APPROVED | INTERNAL | Governance Layer | Constitutional Triumvirate and Gatekeeper | Quarterly | `Governance Layer/policies/` | `⚠ INFERRED` — document not uploaded; status inferred. Verify on upload. |
-| AGENTS-CCD-001 | Chain of Command Directive | `POL` | 0.1.0 | DRAFT | RESTRICTED | Governance Layer (AI Oversight Board) | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/people/` | `✓ DRAFTED` Baseline drafted 12/04/2026. Contains [PENDING GATEKEEPER RULING] flags for delegation limits and emergency bypass. |
-| AGENTS-ISR-001 | Information Sharing Rules | `POL` | 0.1.0 | DRAFT | RESTRICTED | Governance Layer (Audit and Compliance) | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/` | `✓ DRAFTED` Baseline drafted 13/04/2026. Contains [PENDING GATEKEEPER RULING] flags for sharing matrix accessibility. |
+| AGENTS-CCD-001 | Chain of Command Directive | `POL` | 1.0.0 | UNDER REVIEW | RESTRICTED | Governance Layer (AI Oversight Board) | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/people/` | `✓ UNDER REVIEW` Transitioned to Triumvirate review queue on 13/04/2026. |
+| AGENTS-ISR-001 | Information Sharing Rules | `POL` | 1.0.0 | UNDER REVIEW | RESTRICTED | Governance Layer (Audit and Compliance) | Constitutional Triumvirate and Gatekeeper | Annual | `Governance Layer/policies/` | `✓ UNDER REVIEW` Transitioned to Triumvirate review queue on 13/04/2026. |
 
 ---
 
@@ -230,8 +230,8 @@ Historical versions of this Register are retained in `Governance Layer/records/a
 
 | Role | Name | Signature | Date |
 |---|---|---|---|
-| Drafting Authority | Corporate Services — Legal and Compliance | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Review Authority | Integrity Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
+| Drafting Authority | Corporate Services — Legal and Compliance | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Review Authority | Integrity Officer | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
 | Approval Authority | Constitutional Triumvirate | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
 | Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 13/04/2026 |
 
