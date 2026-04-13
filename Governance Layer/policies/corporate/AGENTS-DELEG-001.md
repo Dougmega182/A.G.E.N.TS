@@ -4,7 +4,7 @@
 |---|---|
 | **Document ID** | AGENTS-DELEG-001 |
 | **Version** | 1.1.0 |
-| **Status** | RESTRICTED |
+| **Status** | APPROVED |
 | **Classification** | RESTRICTED |
 | **Owner** | Corporate Services |
 | **Authority** | Constitutional Triumvirate |
@@ -69,10 +69,10 @@ Administrative records created under this instrument are stored in Governance La
 
 | Role | Name | Signature | Date |
 |---|---|---|---|
-| Drafting Authority | Corporate Services | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Approval Authority | Constitutional Triumvirate | [ELECTRONIC_SIGNATURE_STAMPED] | 12/04/2026 |
-| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 12/04/2026 |
+| Drafting Authority | Corporate Services | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Review Authority | Triumvirate Delegate | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Approval Authority | Constitutional Triumvirate | [ELECTRONIC_SIGNATURE_STAMPED] | 13/04/2026 |
+| Gatekeeper | Gatekeeper (Dale) | [SOVEREIGN_SIGNATURE_STAMPED] | 13/04/2026 |
 
 ---
 
