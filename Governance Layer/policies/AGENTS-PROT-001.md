@@ -4,7 +4,7 @@
 |---|---|
 | **Document ID** | AGENTS-PROT-001 |
 | **Version** | 1.0.0 |
-| **Status** | UNDER REVIEW |
+| **Status** | APPROVED |
 | **Classification** | RESTRICTED |
 | **Owner** | Governance Layer |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |

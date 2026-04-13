@@ -1,0 +1,36 @@
+{
+  "mission": {
+    "id": "AGENTS-MIS-001",
+    "core": "To architect and operate a self-governed, multi-agent AI framework with human-grade accountability and strategic clarity.",
+    "directives": [
+      "No unauthorized autonomy.",
+      "Strict data classification.",
+      "Auditability by default."
+    ]
+  },
+  "northern_star": {
+    "goal": "Structural stability and autonomous governance excellence.",
+    "priority": 1.0
+  },
+  "constitution": {
+    "laws": [
+      { "id": "G1", "title": "Sovereign Primacy" },
+      { "id": "G2", "title": "No Layer Skipping" },
+      { "id": "G3", "title": "The Triumvirate" },
+      { "id": "G4", "title": "Budgetary Oversight" },
+      { "id": "G5", "title": "Data Sovereignty" },
+      { "id": "G6", "title": "Memory Integrity" },
+      { "id": "G7", "title": "Recursive Audit" },
+      { "id": "G9", "title": "The Oath" },
+      { "id": "G10", "title": "Activation Cycle" },
+      { "id": "G11", "title": "Deadlock and arbitration" },
+      { "id": "G12", "title": "Emergency Escalation" },
+      { "id": "G13", "title": "Sovereign Override" }
+    ]
+  },
+  "voting_framework": {
+    "governor_weights": { "AGT-030": 1.0, "AGT-031": 1.0, "AGT-032": 1.0 },
+    "consensus_threshold": 0.51,
+    "veto_authority": ["AGT-008", "Gatekeeper"]
+  }
+}

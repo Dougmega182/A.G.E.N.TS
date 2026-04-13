@@ -1,0 +1,55 @@
+{
+  "protocols": [
+    {
+      "id": "WHITE-1",
+      "name": "Baseline",
+      "category": "Routine",
+      "operates": "Standard"
+    },
+    {
+      "id": "GREEN-1",
+      "name": "Optimization",
+      "category": "Performance",
+      "operates": "Standard"
+    },
+    {
+      "id": "AMBER-1",
+      "name": "Caution",
+      "category": "Risk Warning",
+      "operates": "Alert Gatekeeper"
+    },
+    {
+      "id": "GOLD-1",
+      "name": "Strategic",
+      "category": "Sovereign Priority",
+      "operates": "Alert Triumvirate"
+    },
+    {
+      "id": "BLUE-1",
+      "name": "Compliance",
+      "category": "Audit Breach",
+      "operates": "Triumvirate Resolution"
+    },
+    {
+      "id": "RED-1",
+      "name": "Emergency",
+      "category": "Infra Failure",
+      "operates": "System Alert"
+    },
+    {
+      "id": "BLACK-1",
+      "name": "Existential",
+      "category": "Systemic Failure",
+      "triggers": {
+        "logic": "any_two_or_direct_violation",
+        "conditions": [
+          "RED-1_AND_BLUE-1",
+          "CONSTITUTIONAL_VIOLATION",
+          "GATEKEEPER_UNREACHABLE_GT_4H"
+        ]
+      },
+      "operative_flow": "TRIUMVIRATE_FIRST",
+      "halt_all": true
+    }
+  ]
+}

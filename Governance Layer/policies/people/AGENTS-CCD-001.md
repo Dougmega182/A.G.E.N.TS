@@ -3,8 +3,8 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-CCD-001 |
-| **Version** | 1.0.0 |
-| **Status** | DRAFT |
+| **Version** | 1.1.0 |
+| **Status** | APPROVED |
 | **Classification** | RESTRICTED |
 | **Owner** | Governance Layer (AI Oversight Board) |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |

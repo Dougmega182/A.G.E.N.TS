@@ -3,8 +3,8 @@
 | Field | Detail |
 |---|---|
 | **Document ID** | AGENTS-ISR-001 |
-| **Version** | 0.1.0 |
-| **Status** | DRAFT |
+| **Version** | 1.0.0 |
+| **Status** | APPROVED |
 | **Classification** | RESTRICTED |
 | **Owner** | Governance Layer (Audit and Compliance) |
 | **Authority** | Constitutional Triumvirate and Gatekeeper |
