@@ -4,12 +4,14 @@ Core agent framework. Loads governance configs and provides the base for all age
 """
 import json
 import os
+import hashlib
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+from .leases import create_mission_lease, MissionLease
 
 
-CONFIG_DIR = Path(__file__).parent.parent / "config"
+CONFIG_DIR = Path(__file__).parent.parent / "ARCHIVE" / "config"
 DATA_DIR = Path(__file__).parent.parent / "data"
 
 
@@ -18,7 +20,7 @@ def load_config(name: str) -> dict:
     path = CONFIG_DIR / f"{name}.json"
     if not path.exists():
         raise FileNotFoundError(f"Config not found: {path}")
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -43,6 +45,15 @@ class GovernanceEngine:
         self.voting = load_config("voting_framework")
         self.departments = load_config("departments")
         self.agents_config = load_config("agents")
+        # Index agents by ID for fast lookup
+        self.agents_by_id = {}
+        for key, config in self.agents_config.get("agents", {}).items():
+            aid = config.get("agent_id")
+            if aid:
+                self.agents_by_id[aid] = config
+            else:
+                self.agents_by_id[key] = config # Fallback to key
+                
         self._laws = {law["id"]: law for law in self.constitution["laws"]}
 
     def check_law(self, law_id: str) -> dict:
@@ -98,10 +109,10 @@ class GovernanceEngine:
 
         # G6: Check scope
         agent_id = proposal.get("created_by", "")
-        agent_config = self.agents_config["agents"].get(agent_id, {})
+        agent_config = self.agents_by_id.get(agent_id, {})
         agent_domain = agent_config.get("domain", "")
         proposal_domain = proposal.get("domain", "")
-        if agent_domain != "cross-domain" and agent_domain != proposal_domain:
+        if agent_domain.lower() != "cross-domain" and agent_domain.lower() != proposal_domain.lower():
             violations.append({"law": "G6", "detail": f"Agent {agent_id} cannot act in domain {proposal_domain}"})
 
         return {
@@ -110,6 +121,13 @@ class GovernanceEngine:
             "checked_at": datetime.utcnow().isoformat(),
             "laws_checked": ["G1", "G2", "G6"]
         }
+
+    def generate_lease(self, agent_id: str, domain: str, execution_id: str, 
+                        approved_intents: List[dict]) -> MissionLease:
+        """
+        Produce a Mission Lease for a specific approved proposal.
+        """
+        return create_mission_lease(agent_id, domain, execution_id, approved_intents)
 
 
 class Agent:
@@ -121,7 +139,7 @@ class Agent:
     def __init__(self, agent_id: str, governance: GovernanceEngine):
         self.governance = governance
         self.agent_id = agent_id
-        self.config = governance.agents_config["agents"].get(agent_id, {})
+        self.config = governance.agents_by_id.get(agent_id, {})
         self.name = self.config.get("name", agent_id)
         self.title = self.config.get("title", "")
         self.domain = self.config.get("domain", "")

@@ -7,6 +7,8 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
+import asyncio
+import uuid
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -21,6 +23,7 @@ from rich import box
 from agents.core import GovernanceEngine, Agent, load_config, DATA_DIR, ensure_data_dirs
 from agents.llm import LLMProvider
 from agents.boardroom import Boardroom
+from agents.sessions import SessionManager
 
 console = Console()
 
@@ -165,9 +168,9 @@ def approve_proposals(gov: GovernanceEngine):
             console.print(f"  [{color}]✓ {decision.upper()}[/]\n")
 
 
-def create_proposal_flow(gov: GovernanceEngine, llm: LLMProvider):
-    """Interactive flow to create a new proposal and run it through the boardroom."""
-    console.print("\n[bold cyan]═══ NEW PROPOSAL ═══[/]\n")
+async def create_proposal_flow_stateful(gov: GovernanceEngine, manager: SessionManager):
+    """Interactive flow to initiate a stateful LangGraph session."""
+    console.print("\n[bold cyan]═══ INITIATE SESSION ═══[/]\n")
 
     title = Prompt.ask("  Title")
     description = Prompt.ask("  Description")
@@ -177,42 +180,31 @@ def create_proposal_flow(gov: GovernanceEngine, llm: LLMProvider):
     domain = Prompt.ask("  Domain", choices=domains)
     impact = Prompt.ask("  Impact", choices=["low", "medium", "high", "critical"], default="medium")
 
-    # Create proposal via CEO agent
-    ceo = Agent("ceo_agent", gov)
-    proposal = ceo.create_proposal(title, description, domain, impact)
+    # Create the base proposal object
+    proposal_id = f"PRP-{datetime.utcnow().strftime('%y%m%d%H%M%S')}"
+    proposal = {
+        "proposal_id": proposal_id,
+        "title": title,
+        "description": description,
+        "domain": domain,
+        "impact": impact,
+        "created_by": "AGT-001",
+        "created_at": datetime.utcnow().isoformat(),
+        "status": "pending"
+    }
 
-    if proposal.get("status") == "rejected_constitutional":
-        console.print(f"[red]✗ PROPOSAL REJECTED — Constitutional violation:[/]")
-        for v in proposal["violations"]:
-            console.print(f"  → {v['law']}: {v['detail']}")
-        return
+    thread_id = f"THD-{uuid.uuid4().hex[:8]}"
+    console.print(f"\n[bold green]✓ Initialising Session: {thread_id}[/]")
+    console.print("[dim]  The graph will now process logic, planning, and governance layers...[/]\n")
 
-    console.print(f"\n[green]✓ Proposal {proposal['proposal_id']} created[/]\n")
+    # Start the async run in the background
+    # We use a task so the CLI remains responsive for status checks,
+    # but for first-time feedback, we can wait a few seconds or just tell them to check Pending.
+    asyncio.create_task(manager.run_proposal(proposal, thread_id))
+    
+    console.print(f"  [cyan]●[/] Background execution started.")
+    console.print(f"  [cyan]●[/] Monitor progress in [bold]Pending Graph Actions[/] or [bold]Status[/].\n")
 
-    # Run boardroom debate
-    if Confirm.ask("  Run Boardroom debate now?", default=True):
-        console.print("\n[dim]  Board agents deliberating...[/]\n")
-        boardroom = Boardroom(gov, llm)
-        result = boardroom.debate_proposal(proposal)
-        console.print(boardroom.format_result(result))
-
-        # If approved by board, ask gatekeeper
-        if result["decision"] == "APPROVED":
-            decision = Prompt.ask(
-                "  👑 Gatekeeper Final Decision",
-                choices=["approve", "reject"],
-                default="approve"
-            )
-            proposal["gatekeeper_decision"] = decision.upper()
-            proposal["gatekeeper_decided_at"] = datetime.utcnow().isoformat()
-            proposal["status"] = "approved" if decision == "approve" else "rejected"
-
-            prop_file = DATA_DIR / "proposals" / f"{proposal['proposal_id']}.json"
-            with open(prop_file, "w", encoding="utf-8") as f:
-                json.dump(proposal, f, indent=2)
-
-            color = "green" if decision == "approve" else "red"
-            console.print(f"\n  [{color}]✓ {decision.upper()} by Gatekeeper[/]\n")
 
 
 def show_tasks(gov: GovernanceEngine):
@@ -253,25 +245,72 @@ def show_tasks(gov: GovernanceEngine):
     console.print(table)
 
 
-def main_loop():
+async def show_pending_graph_actions(manager: SessionManager):
+    """Scan SQLite for sessions waiting for Gatekeeper input."""
+    console.print("\n[bold cyan]═══ PENDING GRAPH ACTIONS ═══[/]\n")
+    
+    pending = []
+    # alist() returns an async iterator of CheckpointTuple
+    async for checkpoint_tuple in manager.checkpointer.alist(config={}):
+        config = checkpoint_tuple.config
+        checkpoint = checkpoint_tuple.checkpoint
+        thread_id = config["configurable"]["thread_id"]
+        
+        # Get current state to see if it's waiting for gatekeeper
+        state = await manager.app.aget_state(config)
+        if state.next and "gatekeeper" in state.next:
+            pending.append((thread_id, state))
+
+    if not pending:
+        console.print("[dim]No sessions waiting for Gatekeeper approval.[/]")
+        return
+
+    for thread_id, state in pending:
+        data = state.values
+        proposal = data.get("proposal", {})
+        votes = data.get("votes", {})
+        
+        console.print(Panel(
+            f"[bold]Session ID:[/] {thread_id}\n"
+            f"[bold]Proposal:[/] {proposal.get('title', 'Untitled')}\n"
+            f"[bold]Board Vote:[/] YES {votes.get('yes_weight', 0):.1f} / NO {votes.get('no_weight', 0):.1f} → {votes.get('decision', 'PENDING')}\n"
+            f"[bold]Status:[/] [yellow]WAITING FOR GATEKEEPER[/]",
+            title=f"[bold cyan]{proposal.get('proposal_id', '???')}[/]",
+            border_style="yellow"
+        ))
+
+        if Confirm.ask(f"  Review session {thread_id} now?", default=True):
+            decision = Prompt.ask(
+                "  👑 Decision",
+                choices=["APPROVE", "REJECT", "SKIP"],
+                default="SKIP"
+            )
+            
+            if decision in ("APPROVE", "REJECT"):
+                reason = Prompt.ask("  Reason (optional)")
+                console.print("\n[dim]  Injecting decision and resuming graph...[/]")
+                await manager.provide_decision(thread_id, decision, reasoning=reason)
+                console.print(f"[green]✓ Decision '{decision}' executed.[/]")
+
+
+async def main_loop():
     """Main CLI loop for the Gatekeeper."""
     show_banner()
 
     try:
         gov = GovernanceEngine()
-    except FileNotFoundError as e:
-        console.print(f"[red]Config error: {e}[/]")
-        console.print("[dim]Run from the A.G.E.N.T.S. project root directory.[/]")
+        manager = await SessionManager.create()
+    except Exception as e:
+        console.print(f"[red]Initialisation error: {e}[/]")
         return
 
     # Determine LLM provider
-    provider = os.getenv("LLM_PROVIDER", "openai")
+    provider = os.getenv("LLM_PROVIDER", "ollama")
     try:
         llm = LLMProvider(provider=provider)
         console.print(f"[dim]  LLM: {provider} ({llm.model})[/]\n")
     except Exception as e:
         console.print(f"[yellow]  LLM not configured: {e}[/]")
-        console.print(f"[dim]  Set OPENAI_API_KEY or OLLAMA_URL in .env[/]\n")
         llm = None
 
     show_status(gov)
@@ -281,11 +320,14 @@ def main_loop():
         console.print("[dim]  1. Status        2. Domains       3. Constitution[/]")
         console.print("[dim]  4. Protocols     5. Proposals     6. New Proposal[/]")
         console.print("[dim]  7. Tasks         8. Audit Log     9. Exit[/]")
+        console.print("[dim]  10. [bold yellow]Pending Graph Actions[/][/]")
 
-        choice = Prompt.ask("\n  👑", choices=["1","2","3","4","5","6","7","8","9"], default="1")
+        choice = Prompt.ask("\n  👑", choices=["1","2","3","4","5","6","7","8","9","10"], default="1")
 
         if choice == "1":
             show_status(gov)
+        elif choice == "10":
+            await show_pending_graph_actions(manager)
         elif choice == "2":
             show_domains(gov)
         elif choice == "3":
@@ -296,28 +338,37 @@ def main_loop():
             approve_proposals(gov)
         elif choice == "6":
             if llm:
-                create_proposal_flow(gov, llm)
+                await create_proposal_flow_stateful(gov, manager)
             else:
-                console.print("[red]LLM not configured. Set OPENAI_API_KEY or OLLAMA_URL in .env[/]")
+                console.print("[red]LLM not configured.[/]")
         elif choice == "7":
             show_tasks(gov)
         elif choice == "8":
             # Show audit log
             ensure_data_dirs()
-            log_file = DATA_DIR / "audit_logs" / f"{datetime.utcnow().strftime('%Y-%m-%d')}.jsonl"
+            log_file = Path("data/audit_logs") / f"{datetime.now().strftime('%Y-%m-%d')}.jsonl"
             if log_file.exists():
-                console.print(f"\n[bold cyan]═══ AUDIT LOG ({datetime.utcnow().strftime('%Y-%m-%d')}) ═══[/]\n")
-                for line in log_file.read_text().strip().split("\n"):
-                    entry = json.loads(line)
-                    console.print(f"  [{entry.get('timestamp','?')[:19]}] {entry.get('agent_name','?')}: {entry.get('action','?')}")
-                    if entry.get("details"):
-                        console.print(f"    [dim]{json.dumps(entry['details'], indent=None)[:80]}[/]")
+                console.print(f"\n[bold cyan]═══ AUDIT LOG ({datetime.now().strftime('%Y-%m-%d')}) ═══[/]\n")
+                with open(log_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        try:
+                            entry = json.loads(line)
+                            ts = entry.get('timestamp','?')[:19].replace('T', ' ')
+                            agent = entry.get('agent_id','?')
+                            event = entry.get('event_type','?')
+                            msg = entry.get('status', entry.get('decision', ''))
+                            console.print(f"  [dim]{ts}[/] [bold cyan]{agent:7}[/] [yellow]{event:15}[/] {msg}")
+                        except:
+                            continue
             else:
                 console.print("[dim]No audit log for today.[/]")
         elif choice == "9":
-            console.print("\n[dim]  Gatekeeper disconnected. System remains governed.[/]\n")
+            await manager.close()
             break
 
 
 if __name__ == "__main__":
-    main_loop()
+    try:
+        asyncio.run(main_loop())
+    except KeyboardInterrupt:
+        console.print("\n[dim]  Gatekeeper disconnected. System remains governed.[/]\n")

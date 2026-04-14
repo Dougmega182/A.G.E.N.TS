@@ -1,0 +1,22 @@
+{
+  "voting_framework": {
+    "default_type": "weighted_majority",
+    "audit_has_veto": true,
+    "quorum": "All board agents must vote. Abstention = NO.",
+    "tie_break": "CEO Agent casts deciding vote. CEO tie = escalate to Gatekeeper.",
+    "vote_weights": {
+      "audit_agent": 1.5,
+      "executive_function_agent": 1.3,
+      "risk_agent": 1.2,
+      "strategy_agent": 1.0,
+      "ops_agent": 1.0,
+      "tech_agent": 1.0
+    },
+    "escalation_paths": {
+      "audit_veto_used": "Gatekeeper review required",
+      "unanimous_no": "Return to Planning Layer",
+      "constitutional_question": "Triumvirate review",
+      "adhd_override": "Executive Function Agent can defer non-critical votes during AMBER-1"
+    }
+  }
+}
