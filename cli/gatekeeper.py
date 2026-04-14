@@ -251,7 +251,7 @@ async def show_pending_graph_actions(manager: SessionManager):
     
     pending = []
     # alist() returns an async iterator of CheckpointTuple
-    async for checkpoint_tuple in manager.checkpointer.alist(config={}):
+    async for checkpoint_tuple in manager.checkpointer.alist(None):
         config = checkpoint_tuple.config
         checkpoint = checkpoint_tuple.checkpoint
         thread_id = config["configurable"]["thread_id"]

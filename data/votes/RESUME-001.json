@@ -1,0 +1,48 @@
+{
+  "proposal_id": "RESUME-001",
+  "votes": {
+    "strategy_agent": {
+      "vote": "YES",
+      "reason": "The proposal aligns with the Northern Star by verifying system reliability, which is foundational for self-improving machines. Low-impact tests are essential for maintaining operational integrity.",
+      "weight": 1.0,
+      "timestamp": "2026-04-14T03:53:59.608264"
+    },
+    "risk_agent": {
+      "vote": "YES",
+      "reason": "The proposal aligns with the Northern Star directive by ensuring system reliability through state persistence verification. Low-impact tests support continuous improvement without compromising governance.",
+      "weight": 1.2,
+      "timestamp": "2026-04-14T03:55:20.765293"
+    },
+    "audit_agent": {
+      "vote": "YES",
+      "reason": "The proposal aligns with the Northern Star directive by ensuring system reliability through state persistence verification, which is critical for a self-improving machine.",
+      "weight": 1.5,
+      "timestamp": "2026-04-14T03:56:32.514403"
+    },
+    "ops_agent": {
+      "vote": "YES",
+      "reason": "The proposal aligns with the Northern Star by ensuring system reliability through state persistence checks, which support self-governing, auditable operations.",
+      "weight": 1.0,
+      "timestamp": "2026-04-14T03:58:05.268633"
+    },
+    "tech_agent": {
+      "vote": "YES",
+      "reason": "The Persistence Test aligns with the Northern Star directive by verifying system reliability and state integrity, critical for a self-improving machine.",
+      "weight": 1.0,
+      "timestamp": "2026-04-14T03:59:00.926783"
+    },
+    "executive_function_agent": {
+      "vote": "YES",
+      "reason": "The persistence test aligns with the Northern Star directive by ensuring system reliability and robustness, which are foundational to compound progress.",
+      "weight": 1.3,
+      "timestamp": "2026-04-14T04:00:58.304103"
+    }
+  },
+  "yes_weight": 7.0,
+  "no_weight": 0,
+  "total_votes": 6,
+  "decision": "APPROVED",
+  "escalation": null,
+  "audit_veto_used": false,
+  "timestamp": "2026-04-14T04:00:58.304103"
+}

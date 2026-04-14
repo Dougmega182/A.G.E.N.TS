@@ -7,8 +7,10 @@ import os
 import hashlib
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Generator
 from .leases import create_mission_lease, MissionLease
+from .llm import LLMProvider
+from .prompt_builder import PromptBuilder
 
 
 CONFIG_DIR = Path(__file__).parent.parent / "ARCHIVE" / "config"
@@ -147,6 +149,8 @@ class Agent:
         self.charter = self.config.get("charter", "")
         self.constraints = self.config.get("constraints", [])
         self.system_prompt = self._load_system_prompt()
+        self.llm = LLMProvider()
+        self.memory_path = Path(__file__).parent.parent / "Individual Contributor Layer" / self.name / "memory" / "agent_memory.jsonl"
 
     def _load_system_prompt(self) -> str:
         """Load the agent's system prompt from its prompt file."""
@@ -204,6 +208,82 @@ You must ALWAYS:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry) + "\n")
         return log_entry
+
+    def load_history(self) -> List[Dict[str, str]]:
+        """Load conversation history from the agent's memory core."""
+        if not self.memory_path.exists():
+            return []
+        history = []
+        with open(self.memory_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    history.append(json.loads(line))
+        return history[-20:] # Keep last 20 turns for context
+
+    def save_history(self, role: str, content: str):
+        """Perspective: Save a turn to the agent's memory core."""
+        self.memory_path.parent.mkdir(parents=True, exist_ok=True)
+        entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "role": role,
+            "content": content
+        }
+        with open(self.memory_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+
+    async def chat(self, user_input: str) -> str:
+        """
+        [DEPRECATED] Execute a conversational turn with the agent synchronously.
+        Use astream_chat for production UI.
+        """
+        history = self.load_history()
+        system_prompt = PromptBuilder.build_system_prompt(
+            self.config, 
+            self.governance.constitution["laws"],
+            self.governance.mission["mission"]
+        )
+        final_prompt = PromptBuilder.inject_context(system_prompt, history)
+        
+        response = self.llm.chat(
+            system_prompt=final_prompt,
+            user_message=user_input
+        )
+        
+        # Persist turn
+        self.save_history("user", user_input)
+        self.save_history("assistant", response)
+        self.log_action("AGENT_CHAT_TURN", {"user_input": user_input, "response_length": len(response)})
+        return response
+
+    async def astream_chat(self, user_input: str) -> Generator[str, None, None]:
+        """
+        Execute a conversational turn with the agent as a stream of tokens.
+        Ensures persona consistency and memory persistence.
+        """
+        history = self.load_history()
+        
+        system_prompt = PromptBuilder.build_system_prompt(
+            self.config, 
+            self.governance.constitution["laws"],
+            self.governance.mission["mission"]
+        )
+        # We don't make agents omniscient. They only get their history.
+        final_prompt = PromptBuilder.inject_context(system_prompt, history)
+        
+        full_response = ""
+        async for token in self.llm.astream_chat(
+            system_prompt=final_prompt,
+            user_message=user_input
+        ):
+            full_response += token
+            yield token
+            
+        # Persist once complete
+        self.save_history("user", user_input)
+        self.save_history("assistant", full_response)
+        
+        # Log to audit trail (Tier 3)
+        self.log_action("AGENT_STREAM_TURN", {"user_input": user_input, "response_length": len(full_response)})
 
     def create_proposal(self, title: str, description: str, domain: str,
                         impact: str = "medium", task_type: str = "build") -> dict:

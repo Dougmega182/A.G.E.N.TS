@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>A.G.E.N.T.S. | Command Terminal</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#0a0a0c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/icons/icon-512.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #16161a;
+            --accent: #bb86fc;
+            --text: #e1e1e6;
+            --text-dim: #a1a1aa;
+            --border: #27272a;
+            --glass: rgba(22, 22, 26, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            color: var(--accent);
+        }
+
+        .agent-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .agent-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .agent-item:hover {
+            background: rgba(187, 134, 252, 0.05);
+            border-color: rgba(187, 134, 252, 0.2);
+        }
+
+        .agent-item.active {
+            background: rgba(187, 134, 252, 0.1);
+            border-color: var(--accent);
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .agent-title {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Main Chat Area */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at top right, #1a1a2e, #0a0a0c);
+        }
+
+        header {
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            z-index: 100;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-brand {
+            font-weight: 600;
+            color: var(--accent);
+            text-align: left;
+        }
+
+        .header-stat {
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .header-cost {
+            text-align: right;
+            color: #4ade80;
+            font-family: 'Fira Code', monospace;
+        }
+
+        #menu-toggle {
+            background: rgba(187, 134, 252, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--accent);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        #menu-toggle:hover {
+            background: rgba(187, 134, 252, 0.2);
+            border-color: var(--accent);
+        }
+
+        #current-agent-display {
+            font-weight: 600;
+        }
+
+        #chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        #chat-window::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50vw;
+            height: 50vw;
+            max-width: 512px;
+            max-height: 512px;
+            background: url('/static/icons/icon-512.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.04;
+            pointer-events: none;
+            filter: grayscale(1) brightness(2);
+            z-index: 0;
+        }
+
+        .message {
+            max-width: 95%;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .bubble {
+            padding: 16px 20px;
+            border-radius: 12px;
+            line-height: 1.6;
+            max-width: 90%;
+            font-size: 0.95rem;
+        }
+
+        .user .bubble {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: 500;
+        }
+
+        .assistant .bubble {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .bubble pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 30px 40px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 18px 60px 18px 24px;
+            border-radius: 50px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button#send-btn {
+            background: var(--accent);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        button#send-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            
+            #menu-toggle { display: flex !important; }
+
+            aside { 
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transition: left 0.3s ease;
+                box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+                background-color: var(--surface);
+                border-right: 1px solid var(--border);
+            }
+
+            aside.open { left: 0; }
+
+            .logo { display: block; margin-bottom: 20px; }
+            
+            #agent-list { 
+                display: block !important; 
+                flex-direction: column !important;
+            }
+            .agent-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; }
+            .agent-title { display: block; font-size: 0.75rem; }
+            .agent-name { font-size: 0.9rem; white-space: normal; }
+            
+            main { flex: 1; height: 100dvh; display: flex; flex-direction: column; }
+            header { padding: 10px 20px; flex-shrink: 0; background: var(--glass); }
+            #chat-window { flex: 1; padding: 20px; }
+            .input-container { 
+                flex-shrink: 0;
+                padding: 15px; 
+                padding-bottom: calc(15px + env(safe-area-inset-bottom));
+                background: var(--glass);
+                backdrop-filter: blur(10px);
+            }
+        }
+
+        /* Overlay */
+        #body-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+        #body-overlay.visible { display: block; }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">A.G.E.N.T.S.</div>
+        <div class="agent-list" id="agent-list">
+            <!-- Agents will be loaded here -->
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <div class="header-brand">A.G.E.N.T.S.</div>
+            <div class="header-stat" id="stat-tokens">TOKENS: 0</div>
+            <div class="header-cost" id="stat-spend">$0.00</div>
+        </header>
+
+        <div id="body-overlay"></div>
+
+        <div id="chat-window">
+            <!-- Messages appear here -->
+        </div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <button id="menu-toggle" title="Select Agents">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+                <input type="text" id="user-input" placeholder="Give a command to the team..." autocomplete="off">
+                <button id="send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentAgentId = "AGT-001";
+        
+        const agentListEl = document.getElementById('agent-list');
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const currentAgentDisplay = document.getElementById('current-agent-display');
+
+        async function loadAgents() {
+            const res = await fetch(`${API_BASE}/agents`);
+            const agents = await res.json();
+            
+            agentListEl.innerHTML = `
+                <div style="font-size: 0.6rem; color: var(--text-dim); margin-right: 15px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Roster</div>
+            ` + agents.map(a => `
+                <div class="agent-item">
+                    <div class="agent-name">${a.name}</div>
+                    <div class="agent-title">${a.title}</div>
+                </div>
+            `).join('');
+        }
+
+        const AGENT_COLOURS = {
+            "ARIA":   "#bb86fc",
+            "MARCUS": "#ff5252",
+            "ELI":    "#ffd740",
+            "JENNY":  "#69f0ae",
+            "OWEN":   "#448aff",
+            "NADIA":  "#e040fb",
+            "JAMES":  "#ffab40",
+            "LEO":    "#40c4ff",
+            "CLARA":  "#f5f5f5",
+            "VICTOR": "#ff5252",
+            "JAX":    "#b2ff59",
+            "REESE":  "#ffff00",
+            "ELENA":  "#18ffff",
+        };
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Clear previous UI placeholders
+            
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = `message user`;
+            userMsgDiv.innerHTML = `
+                <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px;">GATEKEEPER</div>
+                <div class="bubble">${text.replace(/\n/g, '<br>')}</div>
+            `;
+            chatWindow.appendChild(userMsgDiv);
+            userInput.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            let currentBubble = null;
+            let currentAgentName = "";
+
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }) // No agent_id needed
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            
+                            // Signal Detection: [NAME] START
+                            if (data.includes(' START')) {
+                                currentAgentName = data.replace(' START', '').replace('[', '').replace(']', '');
+                                const msgDiv = document.createElement('div');
+                                msgDiv.className = `message assistant`;
+                                const color = AGENT_COLOURS[currentAgentName] || "#bb86fc";
+                                msgDiv.innerHTML = `
+                                    <div style="font-size: 0.7rem; color: ${color}; margin-bottom: 5px; font-weight: bold;">${currentAgentName}</div>
+                                    <div class="bubble" id="bubble-${currentAgentName}" style="border-left: 4px solid ${color}">...</div>
+                                `;
+                                chatWindow.appendChild(msgDiv);
+                                currentBubble = document.getElementById(`bubble-${currentAgentName}`);
+                                fullText = "";
+                                continue;
+                            }
+                            
+                            if (data.includes(' END')) {
+                                if (currentBubble) currentBubble.id = ''; // Clean up
+                                continue;
+                            }
+
+                            // Token processing
+                            if (currentBubble && data.startsWith(`[${currentAgentName}]: `)) {
+                                const token = data.replace(`[${currentAgentName}]: `, '');
+                                fullText += token;
+                                
+                                // Live render
+                                let formatted = fullText.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                                formatted = formatted.replace(/\n/g, '<br>');
+                                currentBubble.innerHTML = formatted;
+                                chatWindow.scrollTop = chatWindow.scrollHeight;
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                if (currentBubble) currentBubble.innerHTML += ' <br>[ERROR] Connection lost.';
+            }
+        }
+
+        sendBtn.onclick = sendMessage;
+        userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const asideBar = document.querySelector('aside');
+        const overlay = document.getElementById('body-overlay');
+
+        function toggleMenu() {
+            asideBar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+        }
+
+        if (menuToggle) {
+            menuToggle.onclick = toggleMenu;
+            overlay.onclick = toggleMenu;
+        }
+
+        // Init
+        loadAgents();
+        
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(reg => console.log('Service Worker Registered'))
+                    .catch(err => console.log('Service Worker Selection Failed', err));
+            });
+        }
+        // Telemetry Polling
+        async function updateTelemetry() {
+            try {
+                const response = await fetch('/telemetry');
+                const data = await response.json();
+                document.getElementById('stat-tokens').innerText = `TOKENS: ${data.input_tokens + data.output_tokens}`;
+                document.getElementById('stat-spend').innerText = `$${data.total_cost.toFixed(2)}`;
+            } catch (err) {
+                console.error('Telemetry failed:', err);
+            }
+        }
+        setInterval(updateTelemetry, 3000);
+        updateTelemetry();
+    </script>
+</body>
+</html>
