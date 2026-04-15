@@ -1,0 +1,14 @@
+{
+  "id": "morning_brief_v1",
+  "type": "object",
+  "required": ["top_priorities", "risks", "schedule", "inputs", "insight", "first_action"],
+  "properties": {
+    "top_priorities": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 3, "maxItems": 3 },
+    "risks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "schedule": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "inputs": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "insight": { "type": "string", "minLength": 1 },
+    "first_action": { "type": "string", "minLength": 1 }
+  }
+}
+

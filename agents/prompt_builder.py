@@ -1,5 +1,6 @@
 from typing import List, Dict
 from pathlib import Path
+from .execution_mode import EXECUTION_OVERLAY_MINIMAL
 
 class PromptBuilder:
     """
@@ -8,7 +9,16 @@ class PromptBuilder:
     """
     
     @staticmethod
-    def build_system_prompt(agent_config: dict, laws: List[dict], mission: str) -> str:
+    def build_system_prompt(
+        agent_config: dict,
+        laws: List[dict],
+        mission: str,
+        *,
+        execution_mode: bool = False,
+        verbosity: str = "normal",
+        output_contract: str = "off",
+        required_output_format: str | None = None,
+    ) -> str:
         """Construct the core persona and rules for an agent."""
         name = agent_config.get("name", "Unknown Agent")
         title = agent_config.get("title", "")
@@ -19,7 +29,7 @@ class PromptBuilder:
         law_summary = "\n".join([f"  - {l['id']}: {l['rule']}" for l in laws])
         constraint_summary = "\n".join([f"  - {c}" for c in constraints])
         
-        return f"""You are {name}, the {title} of the A.G.E.N.T.S. network.
+        base = f"""You are {name}, the {title} of the A.G.E.N.T.S. network.
         
 MISSION: {mission}
 
@@ -40,6 +50,21 @@ OPERATIONAL STANCE:
 3. If a request violates a law or constraint, refuse politely but firmly, citing the specific law.
 4. You have access to your own memory core. Reference it for consistency.
 """
+
+        if execution_mode:
+            overlay = EXECUTION_OVERLAY_MINIMAL
+            if required_output_format:
+                overlay += (
+                    "\nREQUIRED OUTPUT FORMAT (return only this artifact):\n"
+                    f"{required_output_format}\n"
+                )
+            if verbosity == "minimal":
+                overlay += "\nVERBOSITY: minimal\n"
+            if output_contract and output_contract != "off":
+                overlay += f"\nOUTPUT CONTRACT: {output_contract}\n"
+            base += overlay
+
+        return base
 
     @staticmethod
     def inject_context(base_prompt: str, history: List[Dict[str, str]], global_context: str = None) -> str:

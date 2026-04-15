@@ -4,7 +4,8 @@ from fastapi.responses import StreamingResponse, RedirectResponse
 from pydantic import BaseModel
 from typing import Optional, Dict
 from .roster import AGENTS
-from .orchestrator import Orchestrator, TELEMETRY
+from .orchestrator import Orchestrator
+from .telemetry import TELEMETRY
 import os
 
 app = FastAPI(title="A.G.E.N.T.S. Interactive API")
@@ -45,8 +46,8 @@ async def list_agents():
 
 @app.get("/telemetry")
 async def get_telemetry():
-    """Return live token and cost stats."""
-    return TELEMETRY
+    """Return live token and cost stats in the new structured format."""
+    return TELEMETRY.get_stats()
 
 @app.post("/chat")
 async def chat_endpoint(req: ChatRequest):

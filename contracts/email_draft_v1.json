@@ -1,0 +1,11 @@
+{
+  "id": "email_draft_v1",
+  "type": "object",
+  "required": ["to", "subject", "body"],
+  "properties": {
+    "to": { "type": "string", "minLength": 1 },
+    "subject": { "type": "string", "minLength": 1 },
+    "body": { "type": "string", "minLength": 1 }
+  }
+}
+

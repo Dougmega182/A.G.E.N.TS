@@ -6,7 +6,15 @@ import asyncio
 # Ensure correct PYTHONPATH
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agents.graph import build_agents_graph
+import pytest
+
+try:
+    from agents.graph import build_agents_graph
+except ModuleNotFoundError as e:
+    # Optional dependency in some environments
+    if "langgraph" in str(e):
+        pytest.skip("langgraph not installed; skipping phase1 tests", allow_module_level=True)
+    raise
 
 async def test_basic_pipeline():
     app = build_agents_graph(persist=False)

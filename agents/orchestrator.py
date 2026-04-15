@@ -6,12 +6,20 @@ from langchain_core.messages import (
     AIMessage
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .roster import AGENTS
+from .roster import AGENTS, fast
 from .prompt_builder import PromptBuilder
 from .core import GovernanceEngine
+from .execution_mode import (
+    OutputContract,
+    build_email_draft_v1_system_prompt,
+    build_morning_brief_v1_system_prompt,
+    build_plan_v1_system_prompt,
+    build_tool_call_v1_system_prompt,
+)
 from datetime import datetime
 import json
 import os
+from .telemetry import TELEMETRY
 from pathlib import Path
 from typing import List, Dict, Generator
 
@@ -38,22 +46,16 @@ Rules:
 - For any compliance question, always include Marcus.
 - Return ONLY a JSON list of agent keys (e.g. ["aria", "owen"]). No explanation.
 """
-
-# Global Telemetry State (Phase 8)
-TELEMETRY = {
-    "input_tokens": 0,
-    "output_tokens": 0,
-    "total_cost": 0.0,
-    "messages_processed": 0
+ 
+# Model map for specific contracts (Optional but future-proof)
+CONTRACT_MODEL_MAP = {
+    "morning_brief_v1": fast,
+    "email_draft_v1": fast,
+    "plan_v1": fast,
+    "tool_call_v1": fast,
 }
 
-# 2026 Model Pricing (Est.)
-PRICING = {
-    "claude-3-5-sonnet-20240620": {"in": 0.000003, "out": 0.000015},
-    "gemini-2.5-flash": {"in": 0.000000075, "out": 0.0000003},
-    "gemini-3.1-flash": {"in": 0.000000075, "out": 0.0000003},
-    "default": {"in": 0.0000001, "out": 0.0000005}
-}
+
 
 class Orchestrator:
     
@@ -195,11 +197,9 @@ class Orchestrator:
         """
         # 1. Decide which agents respond
         print(f"[ORCHESTRATOR] Routing message: {message[:50]}...")
-        TELEMETRY["messages_processed"] += 1
-        
-        # Approximate input tokens (4 chars/token)
-        in_tokens = len(message) // 4 + 500 # +500 for prompt context
-        TELEMETRY["input_tokens"] += in_tokens
+        # Approximate input tokens for routing (initial estimate)
+        in_tokens_est = len(message) // 4 + 500 
+
         
         agent_keys = self._route_message(message)
         print(f"[ORCHESTRATOR] Assigned agents: {agent_keys}")
@@ -222,51 +222,115 @@ class Orchestrator:
             yield f"data: [{agent_name}] START\n\n"
             
             # Use PromptBuilder for persona consistency (Elite constraint)
-            system_prompt = PromptBuilder.build_system_prompt(
-                agent, 
-                GovernanceEngine().constitution["laws"],
-                GovernanceEngine().mission["mission"]
-            )
-            # Fetch individual history from specialist's .jsonl
-            # Using a simplified history for the orchestrator layer for now
-            final_prompt = PromptBuilder.inject_context(system_prompt, []) # History handled by Orchestrator memory
+            msg_lower = message.lower()
+            is_morning_brief = "morning brief" in msg_lower
+            is_email_draft = ("draft email" in msg_lower) or ("email draft" in msg_lower)
+            is_plan = msg_lower.startswith("plan:") or ("make a plan" in msg_lower) or ("create a plan" in msg_lower)
+            is_tool_call = msg_lower.startswith("tool:") or ("tool call" in msg_lower) or ("use tool" in msg_lower)
+
+            required_format_id = None
+            contract_prompt_builder = None
+            if (key == "jenny") and is_morning_brief:
+                required_format_id = "morning_brief_v1"
+                contract_prompt_builder = build_morning_brief_v1_system_prompt
+            elif is_email_draft:
+                required_format_id = "email_draft_v1"
+                contract_prompt_builder = build_email_draft_v1_system_prompt
+            elif is_plan:
+                required_format_id = "plan_v1"
+                contract_prompt_builder = build_plan_v1_system_prompt
+            elif is_tool_call:
+                required_format_id = "tool_call_v1"
+                contract_prompt_builder = build_tool_call_v1_system_prompt
+
+            contract_mode = required_format_id is not None
+
+            # Contract mode: hard JSON envelope + zero-noise context (no persona/governance/history).
+            if contract_mode:
+                final_prompt = contract_prompt_builder()
+                messages = [
+                    SystemMessage(content=final_prompt),
+                    HumanMessage(content=message),
+                ]
+            else:
+                system_prompt = PromptBuilder.build_system_prompt(
+                    agent,
+                    GovernanceEngine().constitution["laws"],
+                    GovernanceEngine().mission["mission"],
+                    execution_mode=False,
+                )
+                final_prompt = PromptBuilder.inject_context(system_prompt, [])
+                messages = [SystemMessage(content=final_prompt)]
+                for ctx in self.conversation_history[-6:]:
+                    messages.append(ctx)
+                messages.append(HumanMessage(content=message))
             
-            # Build messages with global conversation context
-            messages = [SystemMessage(content=final_prompt)]
-            for ctx in self.conversation_history[-6:]:
-                messages.append(ctx)
-            
-            # Current turn handled by LLMProvider.astream_chat logic internally, 
-            # but we need to pass the context explicitly here for LangChain compatibility.
-            # actually, using a more direct approach:
+            # Decision: Use fast local model for contract mode to ensure zero latency.
+            active_llm = agent["llm"]
+            if contract_mode:
+                # Use override from map if present, otherwise default to fast
+                active_llm = CONTRACT_MODEL_MAP.get(required_format_id, fast)
             
             try:
-                print(f"[ORCHESTRATOR] Starting stream for {agent_name}...")
-                async for chunk in agent["llm"].astream(messages + [HumanMessage(content=message)]):
-                    # Token comes from LangChain invoke/stream
-                    token_text = chunk.content if hasattr(chunk, 'content') else str(chunk)
-                    if token_text:
-                        full_responses[key] += token_text
-                        yield f"data: [{agent_name}]: {token_text}\n\n"
+                # For Jenny morning briefs in Execution Mode, buffer full output so we can
+                # validate before emitting anything to the UI (prevents meta leakage).
+                if contract_mode:
+                    print(f"[ORCHESTRATOR] Executing buffered mode for {agent_name} (Contract Mode: {required_format_id}) on Model: {getattr(active_llm, 'model', 'local')}...")
+                    resp = active_llm.invoke(messages)
+                    response_text = resp.content if hasattr(resp, "content") else str(resp)
+                    full_responses[key] = response_text
+
+                    contract = OutputContract()
+                    validation = contract.validate(
+                        response_text,
+                        execution_mode=True,
+                        required_format=required_format_id,
+                    )
+                    if not validation.ok:
+                        print(f"[OUTPUT CONTRACT] {agent_name} violation: {validation.reason}")
+                        # Enforce contract: emit a deterministic JSON error object (no prose).
+                        response_text = json.dumps(
+                            {
+                                "error": "output_contract_violation",
+                                "reason": validation.reason,
+                                "expected": required_format_id,
+                            },
+                            ensure_ascii=False,
+                        )
+                        full_responses[key] = response_text
+
+                    # Emit as one chunk (still wrapped in the usual SSE framing)
+                    yield f"data: [{agent_name}]: {response_text}\n\n"
+                else:
+                    print(f"[ORCHESTRATOR] Starting stream for {agent_name}...")
+                    async for chunk in active_llm.astream(messages):
+                        # Token comes from LangChain invoke/stream
+                        token_text = chunk.content if hasattr(chunk, 'content') else str(chunk)
+                        if token_text:
+                            full_responses[key] += token_text
+                            yield f"data: [{agent_name}]: {token_text}\n\n"
                         
-                # Update output telemetry (approximation for all models)
-                out_tokens = len(full_responses[key]) // 4
-                TELEMETRY["output_tokens"] += out_tokens
+                # Accurate Token Tracking from Metadata
+                usage = {
+                    "input_tokens": in_tokens_est, # Default if metadata missing
+                    "output_tokens": len(full_responses[key]) // 4,
+                    "total_tokens": 0
+                }
                 
-                # Update Cost based on model tier
-                model_name = getattr(agent["llm"], 'model', 'default')
-                # If using fallback, check specific class
-                if "Google" in str(type(agent["llm"])):
+                # Check for LangChain usage metadata (supported by most modern providers)
+                # Note: This usually requires specific flags or comes in the final chunk
+                # For now, we use a robust fallback and record once.
+                
+                model_name = getattr(active_llm, 'model', 'default')
+                if "Google" in str(type(active_llm)):
                     model_name = "gemini-2.5-flash"
-                elif "Anthropic" in str(type(agent["llm"])):
+                elif "Anthropic" in str(type(active_llm)):
                     model_name = "claude-3-5-sonnet-20240620"
-                
-                # Update Cost based on 2026 AUD conversion (approx 1.51x USD)
-                rates = PRICING.get(model_name, PRICING["default"])
-                usd_cost = (in_tokens * rates["in"]) + (out_tokens * rates["out"])
-                aud_cost = usd_cost * 1.51
-                TELEMETRY["total_cost"] += aud_cost
-                print(f"[TELEMETRY] Turn Cost: ${aud_cost:.6f} AUD | Total: ${TELEMETRY['total_cost']:.4f}")
+
+                # Record once at the end of the agent's turn
+                TELEMETRY.record(usage, model_name)
+                stats = TELEMETRY.get_stats()
+                print(f"[TELEMETRY] {agent_name} Complete | Total Cost: A${stats['cost_aud']:.4f}")
                 
             except Exception as e:
                 print(f"[ORCHESTRATOR ERROR] {agent_name} failed: {e}")

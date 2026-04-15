@@ -1,7 +1,7 @@
 # Environment
 .env
 .env.local
-
+credentials.json
 # Python
 __pycache__/
 *.py[cod]
@@ -29,3 +29,7 @@ data/tasks/
 
 # Node
 node_modules/
+
+# Projects & Archive
+PROJECTS/
+ARCHIVE/

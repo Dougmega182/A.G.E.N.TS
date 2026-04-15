@@ -128,21 +128,30 @@
             text-align: right;
             color: #4ade80;
             font-family: 'Fira Code', monospace;
+            font-weight: 500;
+        }
+
+        .budget-progress {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+            display: block;
         }
 
         #menu-toggle {
             background: rgba(187, 134, 252, 0.1);
             border: 1px solid var(--border);
-            border-radius: 50%;
+            border-radius: 12px;
             color: var(--accent);
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
+            margin-right: 15px; /* Separation from input */
         }
 
         #menu-toggle:hover {
@@ -226,9 +235,10 @@
 
         /* Input Area */
         .input-container {
-            padding: 30px 40px;
-            background: var(--glass);
+            padding: 20px 40px 40px;
+            background: linear-gradient(to top, var(--bg), transparent);
             backdrop-filter: blur(10px);
+            z-index: 10;
         }
 
         .input-wrapper {
@@ -340,7 +350,10 @@
         <header>
             <div class="header-brand">A.G.E.N.T.S.</div>
             <div class="header-stat" id="stat-tokens">TOKENS: 0</div>
-            <div class="header-cost" id="stat-spend">$0.00</div>
+            <div class="header-cost">
+                <span id="stat-spend">A$0.00</span>
+                <span class="budget-progress" id="stat-budget">/ A$10.00</span>
+            </div>
         </header>
 
         <div id="body-overlay"></div>
@@ -518,13 +531,25 @@
             try {
                 const response = await fetch('/telemetry');
                 const data = await response.json();
-                document.getElementById('stat-tokens').innerText = `TOKENS: ${data.input_tokens + data.output_tokens}`;
-                document.getElementById('stat-spend').innerText = `$${data.total_cost.toFixed(2)}`;
+                
+                // Update tokens
+                document.getElementById('stat-tokens').innerText = `TOKENS: ${data.tokens.toLocaleString()}`;
+                
+                // Update cost with A$ symbol (Australian Dollars)
+                // We use a smooth increment feel by only updating if values change
+                const costEl = document.getElementById('stat-spend');
+                const costStr = `A$${data.cost_aud.toFixed(2)}`;
+                if (costEl.innerText !== costStr) {
+                    costEl.innerText = costStr;
+                    // Pulse effect on update
+                    costEl.style.color = '#fff';
+                    setTimeout(() => costEl.style.color = '#4ade80', 500);
+                }
             } catch (err) {
                 console.error('Telemetry failed:', err);
             }
         }
-        setInterval(updateTelemetry, 3000);
+        setInterval(updateTelemetry, 5000); // 5s interval to avoid spam
         updateTelemetry();
     </script>
 </body>

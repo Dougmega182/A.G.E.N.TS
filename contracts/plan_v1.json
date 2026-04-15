@@ -1,0 +1,13 @@
+{
+  "id": "plan_v1",
+  "type": "object",
+  "required": ["goal", "assumptions", "steps", "risks", "first_action"],
+  "properties": {
+    "goal": { "type": "string", "minLength": 1 },
+    "assumptions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 0 },
+    "steps": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1 },
+    "risks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 0 },
+    "first_action": { "type": "string", "minLength": 1 }
+  }
+}
+

@@ -6,7 +6,14 @@ import asyncio
 # Ensure correct PYTHONPATH
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agents.sessions import SessionManager
+import pytest
+
+try:
+    from agents.sessions import SessionManager
+except ModuleNotFoundError as e:
+    if "langgraph" in str(e):
+        pytest.skip("langgraph not installed; skipping phase2 tests", allow_module_level=True)
+    raise
 
 async def test_persistence_and_interrupt():
     # Remove old DB for clean test
