@@ -1,0 +1,11 @@
+{
+  "id": "implementation_plan_v1",
+  "type": "object",
+  "required": ["project_name", "architecture", "steps", "risks"],
+  "properties": {
+    "project_name": { "type": "string" },
+    "architecture": { "type": "string" },
+    "steps": { "type": "array", "items": { "type": "string" } },
+    "risks": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -53,6 +53,21 @@ def _validate_schema(obj: Any, schema: Mapping[str, Any], *, _path: str = "$", _
                 min_len = rules.get("minLength")
                 if isinstance(min_len, int) and len(v.strip()) < min_len:
                     return ContractValidationResult(ok=False, reason=f"minLength_error:{_path}.{k}")
+                enum_vals = rules.get("enum")
+                if isinstance(enum_vals, list) and v not in enum_vals:
+                    return ContractValidationResult(ok=False, reason=f"enum_error:{_path}.{k}")
+            elif t == "number":
+                if not isinstance(v, (int, float)) or isinstance(v, bool):
+                    return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")
+            elif t == "integer":
+                if not isinstance(v, int) or isinstance(v, bool):
+                    return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")
+            elif t == "boolean":
+                if not isinstance(v, bool):
+                    return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")
+            elif t == "null":
+                if v is not None:
+                    return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")
             elif t == "array":
                 if not isinstance(v, list):
                     return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")

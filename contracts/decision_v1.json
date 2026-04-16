@@ -1,0 +1,23 @@
+{
+  "id": "decision_v1",
+  "type": "object",
+  "required": ["decision", "justification", "conditions", "impact"],
+  "properties": {
+    "decision": { "type": "string", "enum": ["APPROVE", "REJECT", "ESCALATE"] },
+    "justification": { 
+      "type": "string", 
+      "minLength": 20,
+      "description": "Must reference the risk_score, Sentinel critique, and risk_trend."
+    },
+    "conditions": { "type": "array", "items": { "type": "string" } },
+    "impact": {
+      "type": "object",
+      "required": ["cost", "days", "risk_delta"],
+      "properties": {
+        "cost": { "type": "number" },
+        "days": { "type": "integer" },
+        "risk_delta": { "type": "number" }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "critique_v1",
+  "type": "object",
+  "required": ["critique", "risk_flags"],
+  "properties": {
+    "critique": { "type": "string", "minLength": 20 },
+    "risk_flags": { "type": "array", "items": { "type": "string" } },
+    "logic_check": { "type": "string", "enum": ["PASS", "FAIL", "WARN"] },
+    "recommendation": { "type": "string", "enum": ["PROCEED", "CAUTION", "REJECT"] }
+  }
+}

@@ -6,22 +6,31 @@ from langchain_core.messages import (
     AIMessage
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .roster import AGENTS, fast
+from .roster import AGENTS, fast, gemini
 from .prompt_builder import PromptBuilder
 from .core import GovernanceEngine
 from .execution_mode import (
     OutputContract,
+    ContentQuality,
     build_email_draft_v1_system_prompt,
     build_morning_brief_v1_system_prompt,
     build_plan_v1_system_prompt,
     build_tool_call_v1_system_prompt,
+    build_decision_v1_system_prompt,
+    build_audit_log_v1_system_prompt,
+    build_critique_v1_system_prompt,
 )
+from .telemetry import TELEMETRY
+from .logic.event_bus import emit_event, generate_trace_id
+from .logic.event_analytics import get_recent_decisions_from_events, get_risk_trend_from_events
+from .operators.construction_op import ConstructionOperator
+from .logic.risk_engine import calculate_risk_score
 from datetime import datetime
 import json
 import os
-from .telemetry import TELEMETRY
+import re
 from pathlib import Path
-from typing import List, Dict, Generator
+from typing import List, Dict, Generator, Tuple
 
 # Orchestrator uses Gemini for high-speed routing to avoid local hardware lag
 router_llm = ChatGoogleGenerativeAI(
@@ -47,12 +56,12 @@ Rules:
 - Return ONLY a JSON list of agent keys (e.g. ["aria", "owen"]). No explanation.
 """
  
-# Model map for specific contracts (Optional but future-proof)
+# Model map for specific contracts (Forced to Gemini 2.5 Flash per user request)
 CONTRACT_MODEL_MAP = {
-    "morning_brief_v1": fast,
-    "email_draft_v1": fast,
-    "plan_v1": fast,
-    "tool_call_v1": fast,
+    "morning_brief_v1": gemini,
+    "email_draft_v1": gemini,
+    "plan_v1": gemini,
+    "tool_call_v1": gemini,
 }
 
 
@@ -197,6 +206,24 @@ class Orchestrator:
         """
         # 1. Decide which agents respond
         print(f"[ORCHESTRATOR] Routing message: {message[:50]}...")
+        
+        # Phase 3: Multi-Scenario Routing
+        msg_lower = message.lower()
+        trace_id = generate_trace_id()
+        
+        if msg_lower.startswith("variation:"):
+            async for chunk in self._run_generic_construction_loop("variation", message, trace_id):
+                yield chunk
+            return
+        elif msg_lower.startswith("rfi:"):
+            async for chunk in self._run_generic_construction_loop("rfi", message, trace_id):
+                yield chunk
+            return
+        elif msg_lower.startswith("delay:"):
+            async for chunk in self._run_generic_construction_loop("delay", message, trace_id):
+                yield chunk
+            return
+
         # Approximate input tokens for routing (initial estimate)
         in_tokens_est = len(message) // 4 + 500 
 
@@ -271,72 +298,85 @@ class Orchestrator:
                 # Use override from map if present, otherwise default to fast
                 active_llm = CONTRACT_MODEL_MAP.get(required_format_id, fast)
             
-            try:
-                # For Jenny morning briefs in Execution Mode, buffer full output so we can
-                # validate before emitting anything to the UI (prevents meta leakage).
-                if contract_mode:
-                    print(f"[ORCHESTRATOR] Executing buffered mode for {agent_name} (Contract Mode: {required_format_id}) on Model: {getattr(active_llm, 'model', 'local')}...")
-                    resp = active_llm.invoke(messages)
-                    response_text = resp.content if hasattr(resp, "content") else str(resp)
-                    full_responses[key] = response_text
-
-                    contract = OutputContract()
-                    validation = contract.validate(
-                        response_text,
-                        execution_mode=True,
-                        required_format=required_format_id,
-                    )
-                    if not validation.ok:
-                        print(f"[OUTPUT CONTRACT] {agent_name} violation: {validation.reason}")
-                        # Enforce contract: emit a deterministic JSON error object (no prose).
-                        response_text = json.dumps(
-                            {
-                                "error": "output_contract_violation",
-                                "reason": validation.reason,
-                                "expected": required_format_id,
-                            },
-                            ensure_ascii=False,
-                        )
+            # Attempt generation with optional retry for quality
+            max_attempts = 2
+            attempt = 0
+            while attempt < max_attempts:
+                attempt += 1
+                try:
+                    # For Jenny morning briefs in Execution Mode, buffer full output so we can
+                    # validate before emitting anything to the UI (prevents meta leakage).
+                    if contract_mode:
+                        print(f"[ORCHESTRATOR] Executing buffered mode for {agent_name} (Contract Mode: {required_format_id}) on Model: {getattr(active_llm, 'model', 'local')} (Attempt {attempt})...")
+                        resp = active_llm.invoke(messages)
+                        response_text = resp.content if hasattr(resp, "content") else str(resp)
                         full_responses[key] = response_text
 
-                    # Emit as one chunk (still wrapped in the usual SSE framing)
-                    yield f"data: [{agent_name}]: {response_text}\n\n"
-                else:
-                    print(f"[ORCHESTRATOR] Starting stream for {agent_name}...")
-                    async for chunk in active_llm.astream(messages):
-                        # Token comes from LangChain invoke/stream
-                        token_text = chunk.content if hasattr(chunk, 'content') else str(chunk)
-                        if token_text:
-                            full_responses[key] += token_text
-                            yield f"data: [{agent_name}]: {token_text}\n\n"
+                        contract = OutputContract()
+                        validation = contract.validate(
+                            response_text,
+                            execution_mode=True,
+                            required_format=required_format_id,
+                        )
                         
-                # Accurate Token Tracking from Metadata
-                usage = {
-                    "input_tokens": in_tokens_est, # Default if metadata missing
-                    "output_tokens": len(full_responses[key]) // 4,
-                    "total_tokens": 0
-                }
-                
-                # Check for LangChain usage metadata (supported by most modern providers)
-                # Note: This usually requires specific flags or comes in the final chunk
-                # For now, we use a robust fallback and record once.
-                
-                model_name = getattr(active_llm, 'model', 'default')
-                if "Google" in str(type(active_llm)):
-                    model_name = "gemini-2.5-flash"
-                elif "Anthropic" in str(type(active_llm)):
-                    model_name = "claude-3-5-sonnet-20240620"
+                        if not validation.ok:
+                            # Format failure: 
+                            emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=key, metadata={"contract": required_format_id, "reason": validation.reason})
+                            
+                            if attempt < max_attempts:
+                                print(f"[OUTPUT CONTRACT] {agent_name} format violation. Retrying...")
+                                emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "format_violation"})
+                                continue # Short circuit to next attempt
+                            
+                            # Final fail: emit a deterministic JSON error object (no prose).
+                            print(f"[OUTPUT CONTRACT] {agent_name} final format violation: {validation.reason}")
+                            response_text = json.dumps(
+                                {
+                                    "error": "output_contract_violation",
+                                    "reason": validation.reason,
+                                    "expected": required_format_id,
+                                },
+                                ensure_ascii=False,
+                            )
+                            full_responses[key] = response_text
+                        else:
+                            # Format is valid, now check content quality
+                            parsed_obj = contract._parse_json_object(response_text)
+                            quality = ContentQuality()
+                            quality_res = quality.check(parsed_obj, required_format_id)
+                            
+                            if not quality_res.ok and attempt < max_attempts:
+                                print(f"[QUALITY PASS] {agent_name} output weak: {quality_res.hint}. Retrying with hint...")
+                                emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "quality_weak", "hint": quality_res.hint})
+                                # Inject small hint and continue to retry
+                                hint_msg = HumanMessage(content=f"IMPROVE QUALITY: {quality_res.hint}")
+                                messages.append(hint_msg)
+                                continue
+                            
+                            elif not quality_res.ok:
+                                print(f"[QUALITY PASS] {agent_name} final quality failure: {quality_res.hint}. Using as-is.")
 
-                # Record once at the end of the agent's turn
-                TELEMETRY.record(usage, model_name)
-                stats = TELEMETRY.get_stats()
-                print(f"[TELEMETRY] {agent_name} Complete | Total Cost: A${stats['cost_aud']:.4f}")
-                
-            except Exception as e:
-                print(f"[ORCHESTRATOR ERROR] {agent_name} failed: {e}")
-                error_msg = f"\n[CONNECTION ERROR] {agent_name} failed. Ensure your API keys are in .env and Ollama is running."
-                yield f"data: [{agent_name}]: {error_msg}\n\n"
-                full_responses[key] = error_msg
+                        # If we reach here, we are done with this agent's turn (either success or final fail)
+                        yield f"data: [{agent_name}]: {response_text}\n\n"
+                        break 
+                    else:
+                        print(f"[ORCHESTRATOR] Starting stream for {agent_name}...")
+                        async for chunk in active_llm.astream(messages):
+                            # Token comes from LangChain invoke/stream
+                            token_text = chunk.content if hasattr(chunk, 'content') else str(chunk)
+                            if token_text:
+                                full_responses[key] += token_text
+                                yield f"data: [{agent_name}]: {token_text}\n\n"
+                        break # Normal stream doesn't retry currently
+                except Exception as e:
+                    print(f"[ORCHESTRATOR ERROR] {agent_name} failed: {e}")
+                    if attempt < max_attempts:
+                        print("Retrying...")
+                        continue
+                    error_msg = f"\n[CONNECTION ERROR] {agent_name} failed. Ensure your API keys are in .env and Ollama is running."
+                    yield f"data: [{agent_name}]: {error_msg}\n\n"
+                    full_responses[key] = error_msg
+                    break
                 
             yield f"data: [{agent_name}] END\n\n"
             
@@ -350,3 +390,211 @@ class Orchestrator:
         ])
         self.conversation_history.append(AIMessage(content=combined_response_str))
         self._log_interaction(message, full_responses)
+
+    async def _execute_contract_turn(
+        self, 
+        agent_key: str, 
+        prompt_builder, 
+        input_message: str,
+        contract_id: str,
+        execution_context: str = "",
+        trace_id: str = "N/A"
+    ) -> Tuple[str, bool, str]:
+        """Executes a single high-intelligence contract turn and returns raw response + validation status."""
+        agent = AGENTS.get(agent_key)
+        if not agent:
+            return json.dumps({"error": "agent_not_found"}), False, "agent_not_found"
+
+        agent_name = agent['name'].upper()
+        system_prompt = prompt_builder()
+        
+        # Inject execution context if provided (e.g. Risk score or Critique)
+        full_input = input_message
+        if execution_context:
+            full_input = f"CONTEXT:\n{execution_context}\n\nUSER REQUEST:\n{input_message}"
+
+        messages = [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=full_input)
+        ]
+        
+        # Contracts always use the designated contract model (Gemini 2.5 Flash)
+        active_llm = CONTRACT_MODEL_MAP.get(contract_id, gemini)
+        
+        print(f"[LOOP] Executing {agent_name} ({contract_id})...")
+        resp = active_llm.invoke(messages)
+        response_text = resp.content if hasattr(resp, "content") else str(resp)
+
+        # Basic contract validation
+        contract = OutputContract()
+        validation = contract.validate(
+            response_text,
+            execution_mode=True,
+            required_format=contract_id
+        )
+        
+        if not validation.ok:
+            print(f"[LOOP] {agent_key.upper()} format violation: {validation.reason}")
+            emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": validation.reason})
+            return response_text, False, validation.reason or "validation_failed"
+        
+        return response_text, True, ""
+
+    async def _run_generic_construction_loop(self, scenario_type: str, user_input: str, trace_id: str) -> Generator[str, None, None]:
+        """
+        Phase 3.5 Universal Construction Engine (Event-Driven):
+        Risk Engine -> Event Analytics (Trend/History) -> Nadia -> Sentinel -> Aria -> Jenny -> Unified Mutation
+        """
+        scenario_label = scenario_type.upper()
+        emit_event("LOOP_STARTED", trace_id, scenario=scenario_type, metadata={"input": user_input})
+        yield f"data: [SYSTEM] Initiating {scenario_label} Loop... [Trace: {trace_id[:8]}]\n\n"
+        contract_engine = OutputContract()
+        
+        # 0. LOAD TREND FROM EVENTS
+        risk_trend = get_risk_trend_from_events()
+        trend_str = f"RISK TREND: {risk_trend['direction'].upper()} (last 5: {risk_trend['avg_5']}, last 10: {risk_trend['avg_10']})"
+        yield f"data: [SYSTEM] Current Project Health: {trend_str}\n\n"
+
+        # 1. RISK SCORING (Scenario-Aware)
+        cost_match = re.search(r"(\d+)\s*k", user_input.lower())
+        days_match = re.search(r"(\d+)\s*day", user_input.lower())
+        cost = float(cost_match.group(1)) * 1000 if cost_match else 0
+        days = int(days_match.group(1)) if days_match else 0
+        
+        risk_score = calculate_risk_score(scenario_type, cost, days, user_input)
+        yield f"data: [SYSTEM] Calculated Risk Score: {risk_score}\n\n"
+        emit_event("RISK_SCORE_CALCULATED", trace_id, scenario=scenario_type, metadata={"risk_score": risk_score})
+
+        # 2. MEMORY LOAD FROM EVENTS
+        history = get_recent_decisions_from_events(n=5)
+        history_str = "No recent history."
+        if history:
+            history_str = "\n".join([f"- {h['timestamp']}: {h['decision']} (Type: {h.get('type','N/A')}, Cost: {h['cost']}, Risk: {h['risk_score']})" for h in history])
+        
+        # 3. NADIA: Generate Plan
+        yield f"data: [NADIA] START\n\n"
+        nadia_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\nRECENT HISTORY:\n{history_str}"
+        plan_raw, _, _ = await self._execute_contract_turn("nadia", build_plan_v1_system_prompt, user_input, "plan_v1", execution_context=nadia_context, trace_id=trace_id)
+        yield f"data: [NADIA]: {plan_raw}\n\n"
+        yield f"data: [NADIA] END\n\n"
+        emit_event("PLAN_GENERATED", trace_id, agent_id="nadia", scenario=scenario_type, metadata={"plan": plan_raw})
+
+        # 4. SENTINEL: Advisory Critique (Trend-Aware)
+        yield f"data: [SENTINEL] START\n\n"
+        critique_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}"
+        critique_input = f"Proposed Plan: {plan_raw}\n\nInput Details: {user_input}"
+        critique_raw, _, _ = await self._execute_contract_turn("sentinel", build_critique_v1_system_prompt, critique_input, "critique_v1", execution_context=critique_context, trace_id=trace_id)
+        yield f"data: [SENTINEL]: {critique_raw}\n\n"
+        yield f"data: [SENTINEL] END\n\n"
+        emit_event("CRITIQUE_GENERATED", trace_id, agent_id="sentinel", scenario=scenario_type, metadata={"critique": critique_raw})
+
+        # 5. ARIA: Justified Final Decision + Impact
+        yield f"data: [ARIA] START\n\n"
+        safety_alert = ""
+        if risk_score >= 0.85:
+            safety_alert = "--- SAFETY GATE ACTIVE ---\nACTION RESTRICTED: Risk Score is >= 0.85. You ARE NOT AUTHORISED to 'APPROVE'. You must either 'REJECT' or 'ESCALATE' to human review.\n--------------------------\n"
+        
+        aria_context = f"{safety_alert}SCENARIO TYPE: {scenario_label}\nRISK SCORE: {risk_score}\nPROJECT HEALTH: {trend_str}\nSENTINEL CRITIQUE: {critique_raw}\nRECENT HISTORY:\n{history_str}"
+        decision_input = f"Request: {user_input}\n\nPlan: {plan_raw}"
+        decision_raw, decision_valid, decision_error_reason = await self._execute_contract_turn("aria", build_decision_v1_system_prompt, decision_input, "decision_v1", execution_context=aria_context, trace_id=trace_id)
+        yield f"data: [ARIA]: {decision_raw}\n\n"
+        yield f"data: [ARIA] END\n\n"
+
+        # Conflict Detection + Technical Escalation Enforcement
+        decision_data = contract_engine._parse_json_object(decision_raw)
+        conflict_flag = ""
+        system_forced_escalation = (not decision_valid) or (decision_data is None)
+
+        if system_forced_escalation:
+            failure_reason = decision_error_reason or "decision_payload_unparseable"
+            if not decision_valid:
+                emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id="aria", scenario=scenario_type, metadata={"contract": "decision_v1", "reason": failure_reason, "forced_escalation": "true"})
+            decision_data = {
+                "decision": "ESCALATE",
+                "justification": f"Technical Logic Failure: decision_v1 validation failed ({failure_reason}). System-forced escalation to protect project integrity.",
+                "conditions": [
+                    "Manual human review required",
+                    "Re-run decision turn with valid contract payload"
+                ],
+                "impact": {"cost": 0, "days": 0, "risk_delta": 0}
+            }
+            decision_raw = json.dumps(decision_data, ensure_ascii=False)
+            yield f"data: [SYSTEM] Technical Logic Failure detected. Decision overridden to ESCALATE.\n\n"
+        else:
+            try:
+                critique_data = contract_engine._parse_json_object(critique_raw)
+                if critique_data and decision_data:
+                    sentinel_rec = str(critique_data.get("recommendation", "")).upper()
+                    aria_dec = str(decision_data.get("decision", "")).upper()
+                    if sentinel_rec == "REJECT" and aria_dec == "APPROVE":
+                        conflict_flag = " [PLANNING CONFLICT DETECTED: Sentinel recommended REJECT but Aria APPROVED]"
+            except:
+                pass
+        
+        emit_event("DECISION_MADE", trace_id, agent_id="aria", scenario=scenario_type, metadata={
+            "decision": decision_data.get("decision"),
+            "risk_score": risk_score,
+            "impact": decision_data.get("impact", {}),
+            "justification": decision_data.get("justification", ""),
+            "conflict": "true" if conflict_flag else "false",
+            "forced_by_system": "true" if system_forced_escalation else "false",
+            "validation_ok": "true" if decision_valid else "false",
+            "validation_reason": decision_error_reason or ""
+        })
+
+        # 6. JENNY: Comms
+        yield f"data: [JENNY] START\n\n"
+        email_raw, _, _ = await self._execute_contract_turn("jenny", build_email_draft_v1_system_prompt, f"Decision made: {decision_raw}", "email_draft_v1", trace_id=trace_id)
+        yield f"data: [JENNY]: {email_raw}\n\n"
+        yield f"data: [JENNY] END\n\n"
+
+        # 7. TOOL: Unified State Mutation (update_entity)
+        yield f"data: [SYSTEM] Updating project record...\n\n"
+        decision_text = str(decision_data.get("decision")).upper()
+        status = "approved" if decision_text == "APPROVE" else "rejected"
+        if decision_text == "ESCALATE":
+            status = "escalated"
+        
+        # Unified impact data from Aria / fallback impact for forced escalation
+        impact = decision_data.get("impact", {"cost": 0, "days": 0, "risk_delta": 0})
+        
+        tool_call = {
+            "trace_id": trace_id,
+            "tool_calls": [{
+                "tool": "update_entity",
+                "arguments": {
+                    "type": scenario_type,
+                    "risk_score": risk_score,
+                    "justification": decision_data.get("justification", "") + conflict_flag,
+                    "data": {
+                        "cost": impact.get("cost", 0),
+                        "days": impact.get("days", 0),
+                        "status": status,
+                        "reason": user_input,
+                        "risk_delta": impact.get("risk_delta", 0)
+                    }
+                }
+            }]
+        }
+        emit_event("ACTION_INTENT", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
+            "tool": "update_entity",
+            "status": status,
+            "forced_by_system": "true" if system_forced_escalation else "false"
+        })
+        mutation_ok = ConstructionOperator.handle_tool_call(tool_call)
+        if mutation_ok:
+            yield f"data: [SYSTEM] Record updated. {conflict_flag}\n\n"
+        else:
+            yield f"data: [SYSTEM] Record update failed.\n\n"
+
+        # 8. SENTINEL: Audit
+        yield f"data: [SENTINEL] START\n\n"
+        audit_input = f"Type: {scenario_label}\nRisk: {risk_score}\nTrend: {risk_trend['direction']}\nDecision: {decision_raw}"
+        audit_raw, _, _ = await self._execute_contract_turn("sentinel", build_audit_log_v1_system_prompt, audit_input, "audit_log_v1", trace_id=trace_id)
+        ConstructionOperator.log_to_sentinel(f"{scenario_label}_LOOP", "SENTINEL", audit_input, audit_raw)
+        yield f"data: [SENTINEL]: {audit_raw}\n\n"
+        yield f"data: [SENTINEL] END\n\n"
+        
+        emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type)
+        yield f"data: [SYSTEM] {scenario_label} Loop Complete.\n\n"
+

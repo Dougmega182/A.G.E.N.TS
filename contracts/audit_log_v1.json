@@ -1,0 +1,18 @@
+{
+  "id": "audit_log_v1",
+  "type": "object",
+  "required": ["audit_entry"],
+  "properties": {
+    "audit_entry": {
+      "type": "object",
+      "required": ["step", "agent", "input", "output", "timestamp"],
+      "properties": {
+        "step": { "type": "string" },
+        "agent": { "type": "string" },
+        "input": { "type": "string" },
+        "output": { "type": "string" },
+        "timestamp": { "type": "string" }
+      }
+    }
+  }
+}

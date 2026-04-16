@@ -17,6 +17,35 @@ cp .env.example .env
 python cli/gatekeeper.py
 ```
 
+## Live WebApp Monitoring
+
+Use the launcher to start the API and open the monitoring UI:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\launch.ps1
+```
+
+Default local endpoints:
+
+- WebApp: `http://localhost:8000/static/index.html`
+- Status: `http://localhost:8000/status`
+- Telemetry: `http://localhost:8000/telemetry`
+
+Scenario input prefixes for the live loop:
+
+- `Variation:`
+- `RFI:`
+- `Delay:`
+
+## Phase 3.6 Governance Behavior
+
+Phase 3.6 is now active and enforces blocking governance in the construction loop:
+
+- Invalid final decision contract output triggers a system-forced `ESCALATE`.
+- `ACTION_INTENT` is emitted before mutation.
+- `ACTION_EXECUTED` is emitted only after successful state persistence.
+- `CONTRACT_VALIDATION_FAILED` is emitted on validation failure paths.
+
 ## Architecture
 
 ```

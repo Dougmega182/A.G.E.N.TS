@@ -163,5 +163,14 @@ AGENTS = {
         "llm": gemini,
         "profile": load_profile("AGT-006"),
         "tools": []
+    },
+    "sentinel": {
+        "id": "AGT-010",
+        "name": "Sentinel",
+        "title": "System Auditor",
+        "triggers": ["sentinel", "audit", "critique", "verify", "safety"],
+        "llm": fast,
+        "profile": load_profile("AGT-010"),
+        "tools": []
     }
 }
