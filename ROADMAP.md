@@ -76,8 +76,16 @@ graph TD
 - `python run_governance_enforcement_test.py` → **PASS**
   - Scenario A: `ACTION_INTENT -> STATE_MUTATED -> ACTION_EXECUTED` observed in-order.
   - Scenario B: Invalid decision payload triggered `CONTRACT_VALIDATION_FAILED`, forced `ESCALATE`, and persisted `status=escalated`.
-- `pytest` → **PASS** (`8 passed, 3 skipped`)
+- `pytest` → **PASS** (`12 passed, 3 skipped`)
 - Diagnostics (`orchestrator.py`, `construction_op.py`, `event_bus.py`, `contracts.py`, `run_governance_enforcement_test.py`, `launch.ps1`) → **No issues**
+
+### Phase 3.6.1 Execution Gate Upgrade (COMPLETED)
+
+- [x] **Hard Completion Contract**: Construction loop now finalizes as `EXECUTED`, `PARTIALLY_EXECUTED`, or `FAILED` only.
+- [x] **Planner/Executor Separation**: Planner artifacts are generated first; mutation is executed via dedicated executor phase.
+- [x] **Executor Tool Lock**: Executor payload is validated against `tool_call_v1` and restricted to approved mutation tool usage.
+- [x] **Retry on No-Action**: Executor retries when no tool action is executed before producing final failure.
+- [x] **Terminal Telemetry**: `LOOP_COMPLETE` now includes execution summary metadata (`completion_status`, counts, attempts, error).
 
 ---
 
@@ -519,12 +527,21 @@ Consistency over brilliance.
 - Scenario A verifies `ACTION_INTENT -> STATE_MUTATED -> ACTION_EXECUTED` order.
 - Scenario B injects invalid decision payload and verifies forced escalation behavior.
 
+6. Execution gate hardening (`agents/orchestrator.py`, `agents/operators/construction_op.py`)
+- Added terminal execution contract normalization: `EXECUTED` / `PARTIALLY_EXECUTED` / `FAILED`.
+- Split planner output shaping from executor mutation phase in construction orchestration.
+- Enforced executor tool-lock via `tool_call_v1` contract + tool allowlist for mutation.
+- Added retry path when no tool action is executed before terminalizing failure.
+- Added final loop execution summary propagation via `LOOP_COMPLETE` metadata.
+
 ### Verification evidence
 
 - `python run_governance_enforcement_test.py` → PASS
   - Scenario A: ordered intent/mutation/execution telemetry confirmed.
   - Scenario B: `CONTRACT_VALIDATION_FAILED` + forced `ESCALATE` + persisted `status=escalated`.
-- `pytest` → PASS (`8 passed, 3 skipped`)
+- `pytest` → PASS (`12 passed, 3 skipped`)
+- Targeted execution tests: `python -m pytest tests/test_phase3_execution.py` → PASS (`6 passed`)
+- Runtime smoke: latest `LOOP_COMPLETE` includes terminal `completion_status` and action terminal events present.
 - VS Code diagnostics on touched files → PASS (no issues)
 
 ### Phase gate decision

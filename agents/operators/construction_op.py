@@ -34,67 +34,132 @@ class ConstructionOperator:
 
     @staticmethod
     def handle_tool_call(tool_json):
-        """
-        Interprets tool_call_v1 and mutates world_state.json
-        Example tool_json: { "trace_id": "uuid", "tool_calls": [...] }
-        """
         state = ConstructionOperator.load_state()
         from ..logic.event_bus import emit_event
 
-        
         try:
-            if isinstance(tool_json, str):
-                tool_data = json.loads(tool_json)
-            else:
-                tool_data = tool_json
-            
-            trace_id = tool_data.get("trace_id", "N/A")
+            tool_data = json.loads(tool_json) if isinstance(tool_json, str) else tool_json
+        except Exception as e:
+            return {
+                "completion_status": "FAILED",
+                "executed_count": 0,
+                "failed_count": 0,
+                "total_calls": 0,
+                "results": [],
+                "error": f"invalid_tool_payload: {e}"
+            }
 
-            for call in tool_data.get("tool_calls", []):
-                tool = call.get("tool")
-                args = call.get("arguments", {})
-                
-                if tool == "update_entity":
-                    entity_type = args.get("type", "variation") # variation, rfi, delay
-                    entity_data = args.get("data", {})
-                    
-                    # Standard fields
-                    cost = entity_data.get("cost", 0)
-                    days = entity_data.get("days", 0)
-                    status = entity_data.get("status", "pending")
-                    
-                    entry = {
-                        "timestamp": datetime.utcnow().isoformat(),
-                        "cost": cost,
-                        "days": days,
-                        "status": status,
-                        "reason": entity_data.get("reason", "No reason provided"),
-                        "risk_score": args.get("risk_score", 0)
-                    }
+        trace_id = tool_data.get("trace_id", "N/A")
+        calls = tool_data.get("tool_calls", [])
+        if not isinstance(calls, list) or len(calls) == 0:
+            emit_event("ACTION_BLOCKED", trace_id, metadata={
+                "reason": "no_tool_calls",
+                "completion_status": "FAILED"
+            })
+            return {
+                "completion_status": "FAILED",
+                "executed_count": 0,
+                "failed_count": 0,
+                "total_calls": 0,
+                "results": [],
+                "error": "no_tool_calls"
+            }
 
-                    # Route to correct bucket
-                    state_key = entity_type + "s" # variations, rfis, delays
-                    state.setdefault(state_key, []).append(entry)
+        results = []
+        executed_count = 0
+        failed_count = 0
+        scenarios = []
+        statuses = []
 
-                    if status == "approved" and entity_type == "variation":
-                        state["current_cost"] += cost
-                        state["current_duration"] += days
+        for call in calls:
+            tool = call.get("tool")
+            args = call.get("arguments", {})
+            if tool != "update_entity":
+                failed_count += 1
+                results.append({
+                    "tool": tool,
+                    "success": False,
+                    "error": "unsupported_tool"
+                })
+                continue
 
+            try:
+                entity_type = args.get("type", "variation")
+                entity_data = args.get("data", {})
+                cost = entity_data.get("cost", 0)
+                days = entity_data.get("days", 0)
+                status = entity_data.get("status", "pending")
+
+                entry = {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "cost": cost,
+                    "days": days,
+                    "status": status,
+                    "reason": entity_data.get("reason", "No reason provided"),
+                    "risk_score": args.get("risk_score", 0)
+                }
+
+                state_key = entity_type + "s"
+                state.setdefault(state_key, []).append(entry)
+                if status == "approved" and entity_type == "variation":
+                    state["current_cost"] += cost
+                    state["current_duration"] += days
+
+                executed_count += 1
+                scenarios.append(entity_type)
+                statuses.append(status)
+                results.append({
+                    "tool": tool,
+                    "success": True,
+                    "scenario": entity_type,
+                    "status": status
+                })
+            except Exception as e:
+                failed_count += 1
+                results.append({
+                    "tool": tool,
+                    "success": False,
+                    "error": str(e)
+                })
+
+        total_calls = len(calls)
+        completion_status = "FAILED"
+        if executed_count > 0 and failed_count == 0:
+            completion_status = "EXECUTED"
+        elif executed_count > 0 and failed_count > 0:
+            completion_status = "PARTIALLY_EXECUTED"
+
+        if executed_count > 0:
             ConstructionOperator.save_state(state)
             print(f"[OPERATOR] State updated.")
-            
-            # Emit mutation + execution confirmation events
             mutation_metadata = {
-                "scenario": entity_type if 'entity_type' in locals() else "unknown",
-                "status": status if 'status' in locals() else "unknown"
+                "scenario": scenarios[-1] if scenarios else "unknown",
+                "status": statuses[-1] if statuses else "unknown",
+                "completion_status": completion_status,
+                "executed_count": executed_count,
+                "failed_count": failed_count,
+                "total_calls": total_calls
             }
             emit_event("STATE_MUTATED", trace_id, metadata=mutation_metadata)
             emit_event("ACTION_EXECUTED", trace_id, metadata=mutation_metadata)
-            return True
+        else:
+            emit_event("ACTION_BLOCKED", trace_id, metadata={
+                "scenario": "unknown",
+                "status": "unknown",
+                "completion_status": completion_status,
+                "executed_count": executed_count,
+                "failed_count": failed_count,
+                "total_calls": total_calls
+            })
 
-        except Exception as e:
-            print(f"[OPERATOR ERROR] Failed to update state: {e}")
-            return False
+        return {
+            "completion_status": completion_status,
+            "executed_count": executed_count,
+            "failed_count": failed_count,
+            "total_calls": total_calls,
+            "results": results,
+            "error": "" if completion_status != "FAILED" else "no_supported_actions_executed"
+        }
 
     @staticmethod
     def log_to_sentinel(step, agent, input_data, output_data):

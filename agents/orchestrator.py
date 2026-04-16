@@ -25,12 +25,13 @@ from .logic.event_bus import emit_event, generate_trace_id
 from .logic.event_analytics import get_recent_decisions_from_events, get_risk_trend_from_events
 from .operators.construction_op import ConstructionOperator
 from .logic.risk_engine import calculate_risk_score
+from .tools import safe_file_write, safe_file_read, safe_list_files, safe_shell_command
 from datetime import datetime
 import json
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Generator, Tuple
+from typing import Any, List, Dict, Generator, Optional, Tuple
 
 # Orchestrator uses Gemini for high-speed routing to avoid local hardware lag
 router_llm = ChatGoogleGenerativeAI(
@@ -440,6 +441,157 @@ class Orchestrator:
         
         return response_text, True, ""
 
+    def _normalize_completion_status(self, mutation_result: Any) -> str:
+        if not isinstance(mutation_result, dict):
+            return "FAILED"
+
+        status = str(mutation_result.get("completion_status", "")).upper()
+        if status in {"EXECUTED", "PARTIALLY_EXECUTED", "FAILED"}:
+            return status
+
+        executed_count = mutation_result.get("executed_count", 0)
+        failed_count = mutation_result.get("failed_count", 0)
+        try:
+            executed_count = int(executed_count)
+        except Exception:
+            executed_count = 0
+        try:
+            failed_count = int(failed_count)
+        except Exception:
+            failed_count = 0
+
+        if executed_count > 0 and failed_count == 0:
+            return "EXECUTED"
+        if executed_count > 0 and failed_count > 0:
+            return "PARTIALLY_EXECUTED"
+        return "FAILED"
+
+    def _build_construction_executor_task(
+        self,
+        scenario_type: str,
+        trace_id: str,
+        risk_score: float,
+        justification: str,
+        impact: Dict[str, Any],
+        status: str,
+        user_input: str,
+    ) -> Dict[str, Any]:
+        return {
+            "trace_id": trace_id,
+            "tool_calls": [{
+                "tool": "update_entity",
+                "arguments": {
+                    "type": scenario_type,
+                    "risk_score": risk_score,
+                    "justification": justification,
+                    "data": {
+                        "cost": impact.get("cost", 0),
+                        "days": impact.get("days", 0),
+                        "status": status,
+                        "reason": user_input,
+                        "risk_delta": impact.get("risk_delta", 0)
+                    }
+                }
+            }]
+        }
+
+    def _enforce_executor_tool_calls(
+        self,
+        task_payload: Dict[str, Any],
+        trace_id: str,
+        scenario_type: str,
+    ) -> Tuple[bool, str]:
+        contract = OutputContract()
+        contract_res = contract.conforms_to_contract(task_payload, "tool_call_v1")
+        if not contract_res.ok:
+            reason = contract_res.reason or "tool_call_schema_invalid"
+            emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
+                "reason": reason,
+                "completion_status": "FAILED"
+            })
+            return False, reason
+
+        calls = task_payload.get("tool_calls", [])
+        unsupported = [c.get("tool") for c in calls if c.get("tool") != "update_entity"]
+        if unsupported:
+            reason = f"unsupported_executor_tools:{','.join([str(t) for t in unsupported])}"
+            emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
+                "reason": reason,
+                "completion_status": "FAILED"
+            })
+            return False, reason
+
+        return True, ""
+
+    def _run_construction_executor_phase(
+        self,
+        scenario_type: str,
+        trace_id: str,
+        task_payload: Dict[str, Any],
+        status: str,
+        system_forced_escalation: bool,
+        max_attempts: int = 2,
+    ) -> Dict[str, Any]:
+        last_result: Dict[str, Any] = {
+            "completion_status": "FAILED",
+            "executed_count": 0,
+            "failed_count": 0,
+            "total_calls": 0,
+            "results": [],
+            "error": "execution_not_started"
+        }
+
+        enforce_ok, enforce_reason = self._enforce_executor_tool_calls(task_payload, trace_id, scenario_type)
+        if not enforce_ok:
+            last_result["error"] = enforce_reason
+            return last_result
+
+        for attempt in range(1, max_attempts + 1):
+            emit_event("ACTION_INTENT", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
+                "tool": "update_entity",
+                "status": status,
+                "forced_by_system": "true" if system_forced_escalation else "false",
+                "attempt": attempt
+            })
+
+            raw_result = ConstructionOperator.handle_tool_call(task_payload)
+            if isinstance(raw_result, dict):
+                last_result = dict(raw_result)
+            else:
+                last_result = {
+                    "completion_status": "FAILED",
+                    "executed_count": 0,
+                    "failed_count": 0,
+                    "total_calls": 0,
+                    "results": [],
+                    "error": "invalid_executor_result"
+                }
+
+            completion_status = self._normalize_completion_status(last_result)
+            last_result["completion_status"] = completion_status
+            last_result["attempt"] = attempt
+
+            if completion_status in {"EXECUTED", "PARTIALLY_EXECUTED"}:
+                return last_result
+
+            executed_count = last_result.get("executed_count", 0)
+            try:
+                executed_count = int(executed_count)
+            except Exception:
+                executed_count = 0
+
+            if attempt < max_attempts and executed_count == 0:
+                emit_event("RETRY_TRIGGERED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
+                    "reason": "no_action_executed",
+                    "attempt": attempt,
+                    "next_attempt": attempt + 1
+                })
+                continue
+
+            break
+
+        return last_result
+
     async def _run_generic_construction_loop(self, scenario_type: str, user_input: str, trace_id: str) -> Generator[str, None, None]:
         """
         Phase 3.5 Universal Construction Engine (Event-Driven):
@@ -548,43 +700,53 @@ class Orchestrator:
         yield f"data: [JENNY]: {email_raw}\n\n"
         yield f"data: [JENNY] END\n\n"
 
-        # 7. TOOL: Unified State Mutation (update_entity)
+        # 7. EXECUTOR: Tool-bound state mutation
         yield f"data: [SYSTEM] Updating project record...\n\n"
         decision_text = str(decision_data.get("decision")).upper()
         status = "approved" if decision_text == "APPROVE" else "rejected"
         if decision_text == "ESCALATE":
             status = "escalated"
-        
-        # Unified impact data from Aria / fallback impact for forced escalation
+
         impact = decision_data.get("impact", {"cost": 0, "days": 0, "risk_delta": 0})
-        
-        tool_call = {
-            "trace_id": trace_id,
-            "tool_calls": [{
-                "tool": "update_entity",
-                "arguments": {
-                    "type": scenario_type,
-                    "risk_score": risk_score,
-                    "justification": decision_data.get("justification", "") + conflict_flag,
-                    "data": {
-                        "cost": impact.get("cost", 0),
-                        "days": impact.get("days", 0),
-                        "status": status,
-                        "reason": user_input,
-                        "risk_delta": impact.get("risk_delta", 0)
-                    }
-                }
-            }]
+        executor_task = self._build_construction_executor_task(
+            scenario_type=scenario_type,
+            trace_id=trace_id,
+            risk_score=risk_score,
+            justification=decision_data.get("justification", "") + conflict_flag,
+            impact=impact,
+            status=status,
+            user_input=user_input,
+        )
+
+        executor_result = self._run_construction_executor_phase(
+            scenario_type=scenario_type,
+            trace_id=trace_id,
+            task_payload=executor_task,
+            status=status,
+            system_forced_escalation=system_forced_escalation,
+            max_attempts=2,
+        )
+
+        completion_status = self._normalize_completion_status(executor_result)
+        executor_result["completion_status"] = completion_status
+
+        execution_summary = {
+            "completion_status": completion_status,
+            "executed_count": executor_result.get("executed_count", 0),
+            "failed_count": executor_result.get("failed_count", 0),
+            "total_calls": executor_result.get("total_calls", 0),
+            "attempt": executor_result.get("attempt", 1),
+            "error": executor_result.get("error", "")
         }
-        emit_event("ACTION_INTENT", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
-            "tool": "update_entity",
-            "status": status,
-            "forced_by_system": "true" if system_forced_escalation else "false"
-        })
-        mutation_ok = ConstructionOperator.handle_tool_call(tool_call)
-        if mutation_ok:
+
+        if completion_status == "EXECUTED":
+            yield f"data: [SYSTEM] EXECUTION STATUS: EXECUTED\n\n"
             yield f"data: [SYSTEM] Record updated. {conflict_flag}\n\n"
+        elif completion_status == "PARTIALLY_EXECUTED":
+            yield f"data: [SYSTEM] EXECUTION STATUS: PARTIALLY_EXECUTED\n\n"
+            yield f"data: [SYSTEM] Record updated with partial failures.\n\n"
         else:
+            yield f"data: [SYSTEM] EXECUTION STATUS: FAILED\n\n"
             yield f"data: [SYSTEM] Record update failed.\n\n"
 
         # 8. SENTINEL: Audit
@@ -595,6 +757,6 @@ class Orchestrator:
         yield f"data: [SENTINEL]: {audit_raw}\n\n"
         yield f"data: [SENTINEL] END\n\n"
         
-        emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type)
-        yield f"data: [SYSTEM] {scenario_label} Loop Complete.\n\n"
+        emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata=execution_summary)
+        yield f"data: [SYSTEM] {scenario_label} Loop Complete. FINAL STATUS: {completion_status}\n\n"
 

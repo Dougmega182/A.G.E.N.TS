@@ -46,6 +46,16 @@ Phase 3.6 is now active and enforces blocking governance in the construction loo
 - `ACTION_EXECUTED` is emitted only after successful state persistence.
 - `CONTRACT_VALIDATION_FAILED` is emitted on validation failure paths.
 
+## Execution Gate (DO > TALK)
+
+The orchestrator now enforces execution-first completion in construction loops:
+
+- Every loop ends with terminal execution status: `EXECUTED`, `PARTIALLY_EXECUTED`, or `FAILED`.
+- Planner and executor responsibilities are split in orchestration code.
+- Executor path is tool-locked to `tool_call_v1` payload shape and `update_entity` for construction mutation.
+- If no tool action executes, executor retries once before finalizing as `FAILED`.
+- `LOOP_COMPLETE` carries execution summary metadata including completion status and attempt count.
+
 ## Architecture
 
 ```
