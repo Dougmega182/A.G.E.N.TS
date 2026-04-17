@@ -11,6 +11,7 @@ from typing import Optional, List, Dict, Generator
 from .leases import create_mission_lease, MissionLease
 from .llm import LLMProvider
 from .prompt_builder import PromptBuilder
+from .logic.event_bus import LOG_ROOT
 
 
 CONFIG_DIR = Path(__file__).parent.parent / "ARCHIVE" / "config"
@@ -28,8 +29,9 @@ def load_config(name: str) -> dict:
 
 def ensure_data_dirs():
     """Create runtime data directories if they don't exist."""
-    for subdir in ["tasks", "proposals", "votes", "audit_logs", "reflections", "briefs"]:
+    for subdir in ["tasks", "proposals", "votes", "reflections", "briefs"]:
         (DATA_DIR / subdir).mkdir(parents=True, exist_ok=True)
+    LOG_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 class GovernanceEngine:
@@ -204,7 +206,7 @@ You must ALWAYS:
             "action": action,
             "details": details
         }
-        log_file = DATA_DIR / "audit_logs" / f"{datetime.utcnow().strftime('%Y-%m-%d')}.jsonl"
+        log_file = LOG_ROOT / f"{datetime.utcnow().strftime('%Y-%m-%d')}.jsonl"
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry) + "\n")
         return log_entry

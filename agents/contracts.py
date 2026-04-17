@@ -47,6 +47,9 @@ def _validate_schema(obj: Any, schema: Mapping[str, Any], *, _path: str = "$", _
                 continue
             v = obj[k]
             t = rules.get("type")
+            const_val = rules.get("const")
+            if const_val is not None and v != const_val:
+                return ContractValidationResult(ok=False, reason=f"const_error:{_path}.{k}")
             if t == "string":
                 if not _is_nonempty_string(v):
                     return ContractValidationResult(ok=False, reason=f"type_error:{_path}.{k}")
@@ -124,8 +127,20 @@ def _validate_schema(obj: Any, schema: Mapping[str, Any], *, _path: str = "$", _
     return ContractValidationResult(ok=False, reason=f"unsupported_schema_type:{schema_type}:{_path}")
 
 
-
 def validate_against_contract(obj: Any, contract_id: str) -> ContractValidationResult:
     schema = load_contract(contract_id)
     return _validate_schema(obj, schema)
+
+
+def validate_action_intent(payload: Any) -> ContractValidationResult:
+    """Validates an action intent against the action_intent_v1 schema.
+    
+    Once an intent is created, it is immutable. Execution must receive the same object that was approved.
+    """
+    return validate_against_contract(payload, "action_intent_v1")
+
+
+
+
+
 

@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from agents.orchestrator import Orchestrator
 from agents.logic.event_analytics import _read_all_events
+from agents.logic.event_bus import EVENTS_LOG_PATH
 
 
 async def _run_message(message: str):
@@ -21,7 +22,7 @@ async def _run_message(message: str):
 def _latest_trace_id() -> str:
     events = _read_all_events()
     if not events:
-        raise RuntimeError("No events found in data/events.log.jsonl")
+        raise RuntimeError(f"No events found in {EVENTS_LOG_PATH}")
     return events[-1]["trace_id"]
 
 

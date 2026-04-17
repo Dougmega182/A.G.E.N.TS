@@ -3,10 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, RedirectResponse
 from pydantic import BaseModel
 from typing import Optional, Dict
+from pathlib import Path
+import json
 from .roster import AGENTS
 from .orchestrator import Orchestrator
 from .telemetry import TELEMETRY
+from . import firewall
+from .firewall import PreflightApprovalError
+from .logic.event_bus import EVENTS_LOG_PATH
 import os
+import asyncio
 
 app = FastAPI(title="A.G.E.N.T.S. Interactive API")
 
@@ -27,6 +33,19 @@ async def root():
 
 class ChatRequest(BaseModel):
     message: str
+
+class ApprovalDecisionRequest(BaseModel):
+    request_id: str
+    decision: str
+    decided_by: Optional[str] = "gatekeeper"
+    reason: Optional[str] = ""
+
+class DraftSummaryUpdateRequest(BaseModel):
+    draft_id: str
+    summary: str
+
+class TaskExecuteRequest(BaseModel):
+    request_id: str
 
 @app.get("/status")
 async def get_status():
@@ -49,6 +68,149 @@ async def get_telemetry():
     """Return live token and cost stats in the new structured format."""
     return TELEMETRY.get_stats()
 
+@app.get("/preflight/approvals")
+async def get_preflight_approvals(status: Optional[str] = None, limit: int = 100):
+    return {
+        "items": firewall.list_requests(status=status, limit=limit),
+        "count": len(firewall.list_requests(status=status, limit=limit))
+    }
+
+@app.get("/preflight/approvals/{request_id}")
+async def get_preflight_approval(request_id: str):
+    item = firewall.get_request(request_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="approval_request_not_found")
+    return item
+
+@app.post("/preflight/approvals/decide")
+async def decide_preflight_approval(req: ApprovalDecisionRequest):
+    try:
+        return firewall.decide_request(
+            request_id=req.request_id,
+            decision=req.decision,
+            decided_by=req.decided_by or "gatekeeper",
+            reason=req.reason or "",
+        )
+    except PreflightApprovalError as e:
+        raise HTTPException(status_code=404, detail={"reason": e.reason, "details": e.details})
+
+@app.get("/preflight/drafts")
+async def get_preflight_drafts(action: Optional[str] = None, limit: int = 100):
+    items = firewall.list_drafts(action=action, limit=limit)
+    return {
+        "items": items,
+        "count": len(items)
+    }
+
+@app.get("/preflight/drafts/{draft_id}")
+async def get_preflight_draft(draft_id: str):
+    item = firewall.get_draft(draft_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="preflight_draft_not_found")
+    return item
+
+@app.post("/preflight/drafts/summary")
+async def update_preflight_draft_summary(req: DraftSummaryUpdateRequest):
+    try:
+        return firewall.update_draft_summary(draft_id=req.draft_id, summary=req.summary)
+    except PreflightApprovalError as e:
+        raise HTTPException(status_code=404, detail={"reason": e.reason, "details": e.details})
+
+@app.post("/preflight/tasks/execute")
+async def execute_preflight_task(req: TaskExecuteRequest):
+    """Manually execute a task from the queue that has already been approved."""
+    try:
+        # Use a new method on PreflightApprovalEngine to execute the task
+        result = await firewall.execute_task(request_id=req.request_id)
+        return {"status": "success", "result": result}
+    except PreflightApprovalError as e:
+        raise HTTPException(status_code=400, detail={"reason": e.reason, "details": e.details})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/preflight/events")
+async def get_preflight_events(limit: int = 200):
+    if not EVENTS_LOG_PATH.exists():
+        return {"items": [], "count": 0}
+
+    rows = []
+    with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except Exception:
+                continue
+            if str(event.get("scenario", "")).lower() == "preflight" or str(event.get("type", "")).startswith("APPROVAL_") or str(event.get("type", "")).startswith("ACTION_") or str(event.get("type", "")).startswith("EXTERNAL_ACTION_"):
+                rows.append(event)
+
+    rows = list(reversed(rows))[:max(1, limit)]
+    return {"items": rows, "count": len(rows)}
+
+@app.get("/events/stream")
+async def event_stream():
+    """SSE endpoint that tails events.log.jsonl in real-time."""
+    async def event_generator():
+        last_position = 0
+        while True:
+            if not EVENTS_LOG_PATH.exists():
+                await asyncio.sleep(1) # Wait if file doesn't exist yet
+                continue
+
+            with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+                f.seek(last_position)
+                new_events = f.readlines()
+                last_position = f.tell()
+
+                for event_line in new_events:
+                    event_line = event_line.strip()
+                    if event_line:
+                        yield f"data: {event_line}\n\n"
+            await asyncio.sleep(0.1) # Short delay to prevent busy-waiting
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+@app.get("/project/health")
+async def get_project_health():
+    """Returns real project health derived from the event stream."""
+    from .logic.event_analytics import get_risk_trend_from_events, get_outcome_signal
+
+    trend = get_risk_trend_from_events()
+    variation_signal = get_outcome_signal("variation", limit=5)
+    
+    return {
+        "risk_trend": trend,
+        "outcome_signal": variation_signal,
+    }
+
+
+@app.get("/decisions/latest")
+async def get_latest_decisions(limit: int = 5, scenario: Optional[str] = None):
+    """Returns latest DECISION_FINALIZED_V1 events — the canonical decision record."""
+    if not EVENTS_LOG_PATH.exists():
+        return {"items": [], "count": 0}
+
+    events = []
+    with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except Exception:
+                continue
+            if event.get("type") == "DECISION_FINALIZED_V1":
+                if scenario and event.get("scenario", "").lower() != scenario.lower():
+                    continue
+                events.append(event)
+
+    latest = list(reversed(events))[:max(1, limit)]
+    return {"items": latest, "count": len(latest)}
+
+
 @app.post("/chat")
 async def chat_endpoint(req: ChatRequest):
     """The unified multi-agent chat endpoint via Orchestrated streaming."""
@@ -64,3 +226,4 @@ async def chat_endpoint(req: ChatRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

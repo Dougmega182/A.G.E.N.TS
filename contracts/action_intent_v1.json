@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Action Intent V1",
+  "description": "Schema defining a frozen intent object for external system orchestration.",
+  "type": "object",
+  "required": [
+    "action",
+    "agent_id",
+    "parameters",
+    "trace_id",
+    "requires_approval",
+    "status"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "The action to be performed (e.g., 'send_email', 'create_event')."
+    },
+    "agent_id": {
+      "type": "string",
+      "description": "The ID of the agent initiating the action (e.g., 'AGT-009')."
+    },
+    "parameters": {
+      "type": "object",
+      "description": "The exact payload of parameters required for execution."
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "A unique identifier for tracing the action intent."
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "description": "Indicates if the action intent requires human approval. Must always be true.",
+      "const": true
+    },
+    "status": {
+      "type": "string",
+      "description": "The current status of the action intent.",
+      "enum": ["pending", "approved", "rejected"]
+    }
+  }
+}

@@ -16,24 +16,22 @@ if anthropic_key and anthropic_key != "missing":
         anthropic_api_key=anthropic_key
     )
 else:
-    # Fallback to Gemini for the entire senior tier
     senior = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
+        model="gemini-3-flash-preview",
         google_api_key=os.getenv("GOOGLE_API_KEY", "missing"),
         temperature=0.7
     )
 
-# Fast Tier: Using local Ollama (via LangChain's OpenAI compatibility or Ollama class)
-# Standardizing on local performance to ensure zero-lag routing
+# Fast Tier: Using local Ollama
 from langchain_community.chat_models import ChatOllama
 fast = ChatOllama(
     model=os.getenv("OLLAMA_MODEL", "qwen3:8b"),
     base_url=os.getenv("OLLAMA_URL", "http://localhost:11434")
 )
 
-# Gemini Tier: High Intelligence & Long Context (Phase 7)
+# Gemini Tier: High Intelligence & Long Context
 gemini = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     google_api_key=os.getenv("GOOGLE_API_KEY", "missing"),
     temperature=0.7
 )
@@ -45,132 +43,88 @@ def load_profile(agent_id: str) -> str:
         return path.read_text(encoding="utf-8")
     return f"You are agent {agent_id}. Maintain your unique expert persona at all times."
 
-# Master Roster of Agents always present in the room
+# Master Roster - Core Active Team only
 AGENTS = {
     "aria": {
         "id": "AGT-001",
         "name": "Aria",
-        "title": "CEO",
-        "triggers": ["aria", "ceo", "strategy", "board", "coordinate"],
+        "title": "Chief Executive Officer (CEO)",
+        "triggers": ["aria", "ceo", "strategy", "board", "vision", "coordinate", "final decision"],
         "llm": senior,
         "profile": load_profile("AGT-001"),
-        "tools": []
-    },
-    "marcus": {
-        "id": "AGT-003",
-        "name": "Marcus",
-        "title": "Chief Audit Officer",
-        "triggers": ["marcus", "audit", "compliance", "veto", "review", "check"],
-        "llm": senior,
-        "profile": load_profile("AGT-003"),
-        "tools": []
-    },
-    "eli": {
-        "id": "AGT-002",
-        "name": "Eli",
-        "title": "Chief ADHD Officer",
-        "triggers": ["eli", "overwhelm", "focus", "prioritise", "energy", "adhd", "momentum"],
-        "llm": senior,
-        "profile": load_profile("AGT-002"),
-        "tools": []
-    },
-    "jenny": {
-        "id": "AGT-009",
-        "name": "Jenny",
-        "title": "Personal Assistant",
-        "triggers": ["jenny", "schedule", "calendar", "email", "meeting", "book", "remind"],
-        "llm": fast,
-        "profile": load_profile("AGT-009"),
-        "tools": []
-    },
-    "owen": {
-        "id": "AGT-008",
-        "name": "Owen",
-        "title": "Intelligence & Learning",
-        "triggers": ["owen", "analyse", "learn", "improve", "reflect", "data", "code", "build", "write"],
-        "llm": senior,
-        "profile": load_profile("AGT-008"),
-        "tools": []
+        "active": True,
+        "owns": ["decision"]
     },
     "nadia": {
         "id": "AGT-004",
         "name": "Nadia",
-        "title": "Chief Strategy Officer",
-        "triggers": ["nadia", "strategic", "northern star", "long term", "vision", "plan"],
+        "title": "Planner / System Designer",
+        "triggers": ["nadia", "strategic", "long term", "vision", "northern star", "plan"],
         "llm": senior,
         "profile": load_profile("AGT-004"),
-        "tools": []
+        "active": True,
+        "owns": ["planning"]
     },
-    "james": {
-        "id": "AGT-005",
-        "name": "James",
-        "title": "Chief Risk Officer",
-        "triggers": ["james", "risk", "threat", "danger", "worst case", "exposure"],
+    "tucker": {
+        "id": "AGT-012",
+        "name": "Tucker",
+        "title": "Engineer",
+        "triggers": ["tucker", "build", "code", "engineer", "implement", "architecture"],
         "llm": senior,
-        "profile": load_profile("AGT-005"),
-        "tools": []
+        "profile": load_profile("AGT-012"),
+        "active": True,
+        "owns": ["execution"]
     },
-    "leo": {
-        "id": "AGT-007",
-        "name": "Leo",
-        "title": "Chief Technology Officer",
-        "triggers": ["leo", "tech", "architecture", "infrastructure", "system", "technical"],
-        "llm": gemini,
-        "profile": load_profile("AGT-007"),
-        "tools": []
+    "jenny": {
+        "id": "AGT-009",
+        "name": "Jenny",
+        "title": "Executive Personal Assistant (PA)",
+        "triggers": ["jenny", "schedule", "calendar", "email", "meeting", "book", "remind"],
+        "llm": gemini, # Upgraded to Gemini for reliability
+        "profile": load_profile("AGT-009"),
+        "active": True,
+        "owns": ["communication"]
     },
-    "clara": {
-        "id": "AGT-021",
-        "name": "Clara",
-        "title": "Chief Integrity Officer",
-        "triggers": ["clara", "integrity", "truth", "verify", "fact check", "honest"],
-        "llm": senior,
-        "profile": load_profile("AGT-021"),
-        "tools": []
-    },
-    "victor": {
-        "id": "AGT-022",
-        "name": "Victor",
-        "title": "CISO",
-        "triggers": ["victor", "security", "breach", "threat", "cyber", "protect"],
-        "llm": fast,
-        "profile": load_profile("AGT-022"),
-        "tools": []
-    },
-    "jax": {
-        "id": "AGT-011",
-        "name": "Jax",
-        "title": "Content Generation",
-        "triggers": ["jax", "write", "create", "generate", "content", "creative"],
-        "llm": gemini,
-        "profile": load_profile("AGT-011"),
-        "tools": []
-    },
-    "reese": {
-        "id": "AGT-020",
-        "name": "Reese",
-        "title": "Interrogation Lead",
-        "triggers": ["reese", "challenge", "stress test", "question", "poke holes", "devil"],
-        "llm": senior,
-        "profile": load_profile("AGT-020"),
-        "tools": []
-    },
-    "elena": {
-        "id": "AGT-006",
-        "name": "Elena",
-        "title": "Chief Operations Officer",
-        "triggers": ["elena", "operations", "resources", "capacity", "timeline", "delivery"],
-        "llm": gemini,
-        "profile": load_profile("AGT-006"),
-        "tools": []
-    },
-    "sentinel": {
+    "wall-e": {
         "id": "AGT-010",
-        "name": "Sentinel",
-        "title": "System Auditor",
-        "triggers": ["sentinel", "audit", "critique", "verify", "safety"],
+        "name": "WALL-E",
+        "title": "System Auditor / Compliance",
+        "triggers": ["wall-e", "audit", "critique", "verify", "safety"],
         "llm": fast,
         "profile": load_profile("AGT-010"),
-        "tools": []
+        "active": True,
+        "owns": ["audit"]
+    },
+    "eli": {
+        "id": "AGT-002",
+        "name": "Eli",
+        "title": "Chief Momentum Officer (CADO)",
+        "triggers": ["eli", "overwhelm", "focus", "prioritise", "energy", "adhd", "momentum"],
+        "llm": senior,
+        "profile": load_profile("AGT-002"),
+        "active": True,
+        "owns": ["momentum"]
+    },
+    "owen": {
+        "id": "AGT-008",
+        "name": "Owen",
+        "title": "Intelligence & Learning Officer",
+        "triggers": ["owen", "analyse", "learn", "improve", "reflect", "data", "machine learning"],
+        "llm": senior,
+        "profile": load_profile("AGT-008"),
+        "active": True,
+        "owns": ["intelligence"]
     }
+}
+
+# Disabled latent agents (kept for reference but not routed)
+LATENT_AGENTS = {
+    "marcus": {"id": "AGT-003", "name": "Marcus"},
+    "james": {"id": "AGT-005", "name": "James"},
+    "leo": {"id": "AGT-007", "name": "Leo"},
+    "elena": {"id": "AGT-006", "name": "Elena"},
+    "jax": {"id": "AGT-011", "name": "Jax"},
+    "clara": {"id": "AGT-021", "name": "Clara"},
+    "victor": {"id": "AGT-022", "name": "Victor"},
+    "reese": {"id": "AGT-020", "name": "Reese"}
 }

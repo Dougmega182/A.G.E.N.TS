@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 
@@ -48,9 +49,10 @@ def log_event(agent_id: str, event_type: str, summary: dict, state: dict = None)
         "prev_status": state.get("status") if state else None,
         **summary
     }
-    os.makedirs("data/audit_logs", exist_ok=True)
+    log_root = Path("Agent logs")
+    log_root.mkdir(parents=True, exist_ok=True)
     with open(
-        f"data/audit_logs/{datetime.utcnow().date()}.jsonl", 
+        log_root / f"{datetime.utcnow().date()}.jsonl",
         "a", encoding="utf-8"
     ) as f:
         f.write(json.dumps(entry) + "\n")

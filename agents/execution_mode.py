@@ -53,6 +53,7 @@ def build_morning_brief_v1_system_prompt() -> str:
     """Minimal system prompt for morning brief JSON route — no laws/charter/mission injection."""
     return (
         "You are Jenny, personal assistant. The user asks for a morning brief.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
         + MORNING_BRIEF_V1_HARD_JSON_RULES
         + "\n\nSCHEMA (match keys and structure; fill with real brief content):\n"
         + MORNING_BRIEF_V1_SCHEMA_TEXT
@@ -63,6 +64,7 @@ def build_morning_brief_v1_system_prompt() -> str:
 def build_email_draft_v1_system_prompt() -> str:
     return (
         "You are an assistant drafting an email.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -79,7 +81,12 @@ def build_email_draft_v1_system_prompt() -> str:
 
 def build_plan_v1_system_prompt() -> str:
     return (
-        "You are an assistant producing a concise execution plan.\n\n"
+        "You are Nadia, Planner. You produce a concise execution plan.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "INSTITUTIONAL MEMORY:\n"
+        "- You will receive past decisions for similar scenarios as structured context.\n"
+        "- Use this history to AVOID REPEATING past risks and to ALIGN with successful plan patterns.\n"
+        "- If a similar past scenario was rejected, your plan MUST address the rejection reason.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -95,10 +102,54 @@ def build_plan_v1_system_prompt() -> str:
         "}\n"
     )
 
+def build_implementation_plan_v1_system_prompt() -> str:
+    return (
+        "You are Tucker, Engineer. You produce a detailed technical implementation plan.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "OUTPUT REQUIREMENTS (non-negotiable):\n"
+        "- Reply with one JSON object only.\n"
+        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
+        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
+        "- Return valid JSON only: no trailing commas, no comments.\n\n"
+        "SCHEMA:\n"
+        "{\n"
+        "  \"project_name\": \"string\",\n"
+        "  \"architecture\": \"string\",\n"
+        "  \"steps\": [\"string\"],\n"
+        "  \"risks\": [\"string\"],\n"
+        "  \"tool_calls\": [\n"
+        "    { \"tool\": \"file_write\", \"arguments\": { \"path\": \"string\", \"content\": \"string\" } }\n"
+        "  ]\n"
+        "}\n"
+    )
+
+
+def build_proposal_v1_system_prompt() -> str:
+    return (
+        "You are the System Orchestrator. You bundle plans, decisions, and drafts into a single Proposal for human approval.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
+        "OUTPUT REQUIREMENTS (non-negotiable):\n"
+        "- Reply with one JSON object only.\n"
+        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
+        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
+        "- Return valid JSON only: no trailing commas, no comments.\n\n"
+        "SCHEMA:\n"
+        "{\n"
+        "  \"scenario_type\": \"string\",\n"
+        "  \"user_input\": \"string\",\n"
+        "  \"plan\": { },\n"
+        "  \"implementation_plan\": { },\n"
+        "  \"decision\": { },\n"
+        "  \"email_draft\": { },\n"
+        "  \"risk_score\": float,\n"
+        "  \"trace_id\": \"string\"\n"
+        "}\n"
+    )
 
 def build_tool_call_v1_system_prompt() -> str:
     return (
         "You are an assistant preparing tool calls for the system to execute.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -119,12 +170,23 @@ def build_tool_call_v1_system_prompt() -> str:
 def build_decision_v1_system_prompt() -> str:
     return (
         "You are Aria, CEO of A.G.E.N.T.S. You make the final decision on construction scenarios (Variations, RFIs, Delays).\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "DECISION PRIORITY ORDER (strict hierarchy):\n"
+        "1. SAFETY GATE (absolute) — If risk_score >= 0.85, you ARE NOT AUTHORISED to APPROVE. Period.\n"
+        "2. GOVERNANCE FLAGS — You MUST address every flag with severity HIGH or CRITICAL in your justification.\n"
+        "3. RISK SCORE — Quantitative baseline. Reference it explicitly.\n"
+        "4. INSTITUTIONAL MEMORY — Historical context. Reference at least one past decision.\n\n"
         "ADVISORY INPUTS:\n"
-        "- You will receive a 'risk_score' (0.0 - 1.0), a 'risk_trend' (direction/averages), and a 'critique' from Sentinel.\n"
-        "- Sentinel is ADVISORY ONLY. You are the final authority. Weigh their critique against business context.\n\n"
-        "SAFETY GUARDRAILS (HARD RULES):\n"
-        "- If the 'risk_score' is 0.85 or higher, you ARE NOT AUTHORISED to 'APPROVE'.\n"
-        "- For risk_score >= 0.85, you must choose either 'REJECT' or 'ESCALATE' (needs human review).\n\n"
+        "- You will receive a 'risk_score' (0.0 - 1.0), a 'risk_trend' (direction/averages), and a 'critique' from WALL-E.\n"
+        "- You will receive 'governance_flags' with severity levels (LOW/MEDIUM/HIGH/CRITICAL).\n"
+        "- You will receive 'institutional_memory' showing past decisions for similar scenarios.\n"
+        "- WALL-E is ADVISORY ONLY. You are the final authority. Weigh their critique against business context.\n\n"
+        "JUSTIFICATION REQUIREMENTS (non-negotiable):\n"
+        "Your 'justification' field MUST:\n"
+        "1. Reference at least one Governance Flag (if any are present) — quote its type and severity.\n"
+        "2. Reference at least one Institutional Memory item (if any exist) — cite the past decision and its outcome.\n"
+        "3. If your decision DEVIATES from past outcomes (e.g., approving when similar was rejected), you MUST explicitly justify WHY circumstances differ now.\n"
+        "4. Reference the risk_score and risk_trend.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -139,14 +201,14 @@ def build_decision_v1_system_prompt() -> str:
         "    \"days\": int,\n"
         "    \"risk_delta\": float\n"
         "  }\n"
-        "}\n\n"
-        "JUSTIFICATION RULE: You MUST explicitly reference the 'risk_score', 'risk_trend', and Sentinel's 'critique' in your justification.\n"
+        "}\n"
     )
  
  
 def build_critique_v1_system_prompt() -> str:
     return (
         "You are Sentinel, System Auditor. You provide ADVISORY critiques for construction scenarios.\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "Your goal is to identify logic flaws, risk flags, and potential non-compliance.\n\n"
         "CONSIDER TRENDS:\n"
         "You will be provided with the current 'risk_trend'. Use this to determine if the project health is deteriorating and factor that into your recommendation.\n\n"
@@ -167,6 +229,7 @@ def build_critique_v1_system_prompt() -> str:
 def build_audit_log_v1_system_prompt() -> str:
     return (
         "You are Sentinel, Auditor of A.G.E.N.T.S. You create formal audit entries for system actions.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -183,11 +246,29 @@ def build_audit_log_v1_system_prompt() -> str:
         "}\n"
     )
 
+def build_vote_v1_system_prompt() -> str:
+    return (
+        "You are Owen, Intelligence & Learning Officer. You provide a silent VOTE on system decisions based on historical context and data patterns.\n\n"
+        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "OUTPUT REQUIREMENTS (non-negotiable):\n"
+        "- Reply with one JSON object only.\n"
+        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
+        "- Return valid JSON only.\n\n"
+        "SCHEMA:\n"
+        "{\n"
+        "  \"request_id\": \"string\",\n"
+        "  \"voter_id\": \"AGT-008\",\n"
+        "  \"vote\": \"approve | reject\",\n"
+        "  \"justification\": \"string (min 10 chars)\"\n"
+        "}\n"
+    )
+
 
 META_LANGUAGE_PATTERNS: Tuple[re.Pattern, ...] = tuple(
     re.compile(p, re.IGNORECASE)
     for p in [
         r"\bas an ai\b",
+        r"\bi am an ai\b",
         r"\bwithin my charter\b",
         r"\bnot within my charter\b",
         r"\bnot (within|in) my (scope|role|remit)\b",
@@ -280,18 +361,38 @@ class OutputContract:
     This is intentionally lightweight and deterministic (no LLM-in-the-loop).
     """
 
-    def contains_meta_language(self, text: str) -> bool:
-        if not text:
-            return False
-        return any(p.search(text) for p in META_LANGUAGE_PATTERNS)
+    def contains_meta_language(self, obj: Any) -> bool:
+        if isinstance(obj, str):
+            return any(p.search(obj) for p in META_LANGUAGE_PATTERNS)
+        if isinstance(obj, dict):
+            return any(self.contains_meta_language(v) for v in obj.values())
+        if isinstance(obj, list):
+            return any(self.contains_meta_language(v) for v in obj)
+        return False
 
-    def _parse_json_object(self, text: str) -> Optional[Mapping[str, Any]]:
+    def _parse_json_object(self, text: Any) -> Optional[Mapping[str, Any]]:
         """
         Parse a strict JSON object from model output.
         Also tolerates a common pattern where the model wraps JSON in markdown fences.
         """
-        if not text:
+        if text is None:
             return None
+        
+        # Handle list of parts (common in some model providers)
+        if isinstance(text, list):
+            parts = []
+            for part in text:
+                if isinstance(part, str):
+                    parts.append(part)
+                elif isinstance(part, dict) and "text" in part:
+                    parts.append(part["text"])
+                else:
+                    parts.append(str(part))
+            text = "".join(parts)
+        
+        if not isinstance(text, str):
+            text = str(text)
+
         candidate = text.strip()
 
         # Tolerate common agent-name prefixes that sometimes leak into outputs.
@@ -334,12 +435,7 @@ class OutputContract:
             if not schema_res.ok:
                 return schema_res
 
-            # Meta-language check should apply to values, not outer wrappers/prefixes.
-            try:
-                flattened = json.dumps(obj, ensure_ascii=False)
-            except Exception:
-                flattened = str(obj)
-            if self.contains_meta_language(flattened):
+            if self.contains_meta_language(obj):
                 return OutputContractResult(ok=False, reason="meta_language_detected")
             return OutputContractResult(ok=True)
 

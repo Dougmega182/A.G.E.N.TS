@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Proposal Bundle V1",
+  "description": "A complete bundle of plans, decisions, and artifacts for human approval.",
+  "type": "object",
+  "required": ["scenario_type", "user_input", "plan", "implementation_plan", "decision", "email_draft"],
+  "properties": {
+    "scenario_type": { "type": "string" },
+    "user_input": { "type": "string" },
+    "plan": { "type": "object" },
+    "implementation_plan": { "type": "object" },
+    "decision": { "type": "object" },
+    "email_draft": { "type": "object" },
+    "risk_score": { "type": "number" },
+    "trace_id": { "type": "string" }
+  }
+}

@@ -91,6 +91,22 @@
             margin-top: 4px;
         }
 
+        header {
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            display: grid;
+            grid-template-columns: auto auto 1fr auto auto auto auto;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
         /* Main Chat Area */
         main {
             flex: 1;
@@ -99,44 +115,144 @@
             background: radial-gradient(circle at top right, #1a1a2e, #0a0a0c);
         }
 
-        header {
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border);
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+        .dashboard-grid {
+            flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            align-items: center;
-            z-index: 100;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-auto-rows: minmax(200px, auto);
+            gap: 15px;
+            padding: 15px;
+            overflow-y: auto;
         }
+
+        .dashboard-panel {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .dashboard-panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        /* Adjustments for existing chat components within a panel */
+        .dashboard-panel .chat-window,
+        .dashboard-panel .event-feed,
+        .dashboard-panel .approval-queue,
+        .dashboard-panel .task-queue {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px; /* For scrollbar */
+        }
+        .dashboard-panel .chat-window::-webkit-scrollbar,
+        .dashboard-panel .event-feed::-webkit-scrollbar,
+        .dashboard-panel .approval-queue::-webkit-scrollbar,
+        .dashboard-panel .task-queue::-webkit-scrollbar {
+            width: 8px;
+        }
+        .dashboard-panel .chat-window::-webkit-scrollbar-thumb,
+        .dashboard-panel .event-feed::-webkit-scrollbar-thumb,
+        .dashboard-panel .approval-queue::-webkit-scrollbar-thumb,
+        .dashboard-panel .task-queue::-webkit-scrollbar-thumb {
+            background-color: var(--border);
+            border-radius: 4px;
+        }
+
+        .dashboard-panel .message {
+            max-width: 100%; /* Override default message width */
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .dashboard-panel .input-container {
+            padding: 15px 0 0 0; /* Adjust padding for panel */
+            background: none; /* Remove gradient background */
+            backdrop-filter: none;
+        }
+
+        .dashboard-panel .input-wrapper {
+            margin: 0;
+        }
+
+        .dashboard-panel input {
+            padding: 12px 18px;
+            border-radius: 25px;
+        }
+        .dashboard-panel button#send-btn {
+            width: 38px;
+            height: 38px;
+        }
+
+        /* Responsive adjustments for dashboard grid */
+        @media (min-width: 1025px) {
+            .dashboard-grid {
+                grid-template-columns: 2fr 1fr; /* Example: Two wide columns, one narrow */
+                grid-auto-rows: 1fr; /* Make rows expand to fill space */
+            }
+
+            .chat-panel {
+                grid-column: span 1; /* Chat takes one column */
+                grid-row: span 2; /* Chat takes two rows */
+            }
+            .event-feed-panel {
+                grid-column: 2;
+                grid-row: 1;
+            }
+            .approval-queue-panel {
+                grid-column: 2;
+                grid-row: 2;
+            }
+            .project-health-panel {
+                grid-column: span 1;
+            }
+            .agent-roster-panel {
+                grid-column: span 1;
+            }
+        }
+
 
         .header-brand {
             font-weight: 600;
             color: var(--accent);
-            text-align: left;
         }
 
-        .header-stat {
-            text-align: center;
+        .header-clock {
             color: var(--text-dim);
-        }
-
-        .header-cost {
-            text-align: right;
-            color: #4ade80;
             font-family: 'Fira Code', monospace;
-            font-weight: 500;
+            border-right: 1px solid var(--border);
+            padding-right: 20px;
         }
 
-        .budget-progress {
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            margin-top: 2px;
-            display: block;
+        .header-stat-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.6rem;
+            margin-right: 5px;
+        }
+
+        .stat-value {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .gemini-value { color: #448aff; }
+        .ollama-value { color: #69f0ae; }
+        .cost-value { color: #4ade80; }
+        .saved-value { color: #ffd740; }
 
         #menu-toggle {
             background: rgba(187, 134, 252, 0.1);
@@ -349,29 +465,85 @@
     <main>
         <header>
             <div class="header-brand">A.G.E.N.T.S.</div>
-            <div class="header-stat" id="stat-tokens">TOKENS: 0</div>
-            <div class="header-cost">
-                <span id="stat-spend">A$0.00</span>
-                <span class="budget-progress" id="stat-budget">/ A$10.00</span>
+            <div class="header-clock" id="header-clock">--:--:--</div>
+            
+            <div class="header-stat-group">
+                <span class="stat-label">Gemini API TOKENS:</span>
+                <span class="stat-value gemini-value" id="stat-gemini-tokens">0</span>
+            </div>
+
+            <div class="header-stat-group">
+                <span class="stat-label">Ollama API TOKENS:</span>
+                <span class="stat-value ollama-value" id="stat-ollama-tokens">0</span>
+            </div>
+
+            <div class="header-stat-group">
+                <span class="stat-label">Gemini Spend A$:</span>
+                <span class="stat-value cost-value" id="stat-gemini-spend">0.00</span>
+            </div>
+
+            <div class="header-stat-group">
+                <span class="stat-label">Ollama Use Saved A$:</span>
+                <span class="stat-value saved-value" id="stat-ollama-saved">0.00</span>
             </div>
         </header>
 
         <div id="body-overlay"></div>
 
-        <div id="chat-window">
-            <!-- Messages appear here -->
-        </div>
-
-        <div class="input-container">
-            <div class="input-wrapper">
-                <button id="menu-toggle" title="Select Agents">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                </button>
-                <input type="text" id="user-input" placeholder="Give a command to the team..." autocomplete="off">
-                <button id="send-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
+        <div class="dashboard-grid">
+            <!-- Chat Panel -->
+            <div class="dashboard-panel chat-panel">
+                <div class="dashboard-panel-title">Command & Control</div>
+                <div class="chat-window" id="chat-window">
+                    <!-- Messages appear here -->
+                </div>
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <button id="menu-toggle" title="Select Agents">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        </button>
+                        <input type="text" id="user-input" placeholder="Give a command to the team..." autocomplete="off">
+                        <button id="send-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
             </div>
+
+            <!-- Live Event Feed Panel -->
+            <div class="dashboard-panel event-feed-panel">
+                <div class="dashboard-panel-title">Live Event Feed</div>
+                <div class="event-feed" id="event-feed">
+                    <!-- Events will be streamed here -->
+                </div>
+            </div>
+
+            <!-- Approval Queue Panel -->
+            <div class="dashboard-panel approval-queue-panel">
+                <div class="dashboard-panel-title">Approval Queue</div>
+                <div class="approval-queue" id="approval-queue">
+                    <!-- Pending approvals appear here -->
+                </div>
+            </div>
+
+            <!-- Project Health Panel (Placeholder) -->
+            <div class="dashboard-panel project-health-panel">
+                <div class="dashboard-panel-title">Project Health</div>
+                <div id="project-health-content">
+                    <p>Risk Trend: <span id="risk-trend">Loading...</span></p>
+                    <!-- More health metrics can go here -->
+                </div>
+            </div>
+            
+            <!-- Task Queue Panel -->
+            <div class="dashboard-panel task-queue-panel">
+                <div class="dashboard-panel-title">Task Queue</div>
+                <div class="task-queue" id="task-queue">
+                    <!-- Approved tasks ready for execution appear here -->
+                    <p style="color: var(--text-dim); font-size: 0.85rem;">No tasks ready for execution.</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -380,6 +552,7 @@
         let currentAgentId = "AGT-001";
         
         const agentListEl = document.getElementById('agent-list');
+        const taskQueueEl = document.getElementById('task-queue');
         const chatWindow = document.getElementById('chat-window');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
@@ -390,7 +563,7 @@
             const res = await fetch(`${API_BASE}/agents`);
             const agents = await res.json();
             
-            agentListEl.innerHTML = `
+            const agentHtml = `
                 <div style="font-size: 0.6rem; color: var(--text-dim); margin-right: 15px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Roster</div>
             ` + agents.map(a => `
                 <div class="agent-item">
@@ -398,6 +571,61 @@
                     <div class="agent-title">${a.title}</div>
                 </div>
             `).join('');
+
+            agentListEl.innerHTML = agentHtml;
+        }
+
+        async function loadTaskQueue() {
+            try {
+                // Fetch approved tasks
+                const response = await fetch(`${API_BASE}/preflight/approvals?status=approved`);
+                const data = await response.json();
+                
+                taskQueueEl.innerHTML = '';
+                if (data.items.length === 0) {
+                    taskQueueEl.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No tasks ready for execution.</p>';
+                    return;
+                }
+
+                data.items.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.className = 'task-item';
+                    taskDiv.style.borderBottom = '1px solid var(--border)';
+                    taskDiv.style.paddingBottom = '10px';
+                    taskDiv.style.marginBottom = '10px';
+                    
+                    taskDiv.innerHTML = `
+                        <p style="font-size: 0.85rem;"><strong>Action:</strong> ${task.action}</p>
+                        <p style="font-size: 0.85rem;"><strong>Agent:</strong> ${task.agent_id}</p>
+                        <p style="font-size: 0.75rem; color: var(--text-dim);">${task.summary || 'No summary'}</p>
+                        <div style="margin-top: 10px;">
+                            <button class="execute-btn" data-request-id="${task.request_id}" style="background-color: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">Execute</button>
+                        </div>
+                    `;
+                    taskQueueEl.appendChild(taskDiv);
+                });
+
+                taskQueueEl.querySelectorAll('.execute-btn').forEach(btn => {
+                    btn.onclick = () => executeTask(btn.dataset.requestId);
+                });
+            } catch (err) {
+                console.error('Failed to load task queue:', err);
+            }
+        }
+
+        async function executeTask(requestId) {
+            try {
+                const response = await fetch(`${API_BASE}/preflight/tasks/execute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: requestId })
+                });
+                const result = await response.json();
+                console.log('Execution result:', result);
+                loadTaskQueue(); // Refresh queue
+            } catch (err) {
+                console.error('Failed to execute task:', err);
+            }
         }
 
         const AGENT_COLOURS = {
@@ -526,31 +754,185 @@
                     .catch(err => console.log('Service Worker Selection Failed', err));
             });
         }
-        // Telemetry Polling
+        // Telemetry & Clock
+        function tick() {
+            const now = new Date();
+            document.getElementById('header-clock').innerText = now.toLocaleString('en-AU', {
+                dateStyle: 'medium',
+                timeStyle: 'medium'
+            });
+        }
+        setInterval(tick, 1000);
+        tick();
+
         async function updateTelemetry() {
             try {
                 const response = await fetch('/telemetry');
                 const data = await response.json();
                 
-                // Update tokens
-                document.getElementById('stat-tokens').innerText = `TOKENS: ${data.tokens.toLocaleString()}`;
+                document.getElementById('stat-gemini-tokens').innerText = data.gemini_tokens.toLocaleString();
+                document.getElementById('stat-ollama-tokens').innerText = data.ollama_tokens.toLocaleString();
                 
-                // Update cost with A$ symbol (Australian Dollars)
-                // We use a smooth increment feel by only updating if values change
-                const costEl = document.getElementById('stat-spend');
-                const costStr = `A$${data.cost_aud.toFixed(2)}`;
-                if (costEl.innerText !== costStr) {
-                    costEl.innerText = costStr;
-                    // Pulse effect on update
-                    costEl.style.color = '#fff';
-                    setTimeout(() => costEl.style.color = '#4ade80', 500);
+                const spendEl = document.getElementById('stat-gemini-spend');
+                const spendStr = data.gemini_cost_aud.toFixed(2);
+                if (spendEl.innerText !== spendStr) {
+                    spendEl.innerText = spendStr;
+                    spendEl.style.color = '#fff';
+                    setTimeout(() => spendEl.style.color = '#4ade80', 500);
+                }
+
+                const savedEl = document.getElementById('stat-ollama-saved');
+                const savedStr = data.ollama_saved_aud.toFixed(2);
+                if (savedEl.innerText !== savedStr) {
+                    savedEl.innerText = savedStr;
+                    savedEl.style.color = '#fff';
+                    setTimeout(() => savedEl.style.color = '#ffd740', 500);
                 }
             } catch (err) {
                 console.error('Telemetry failed:', err);
             }
         }
-        setInterval(updateTelemetry, 5000); // 5s interval to avoid spam
+        setInterval(updateTelemetry, 5000); 
         updateTelemetry();
+
+        // Live Event Feed Integration
+        const eventFeed = document.getElementById('event-feed');
+        if (typeof EventSource !== 'undefined') {
+            const eventSource = new EventSource(`${API_BASE}/events/stream`);
+
+            eventSource.onmessage = function(event) {
+                const eventData = JSON.parse(event.data);
+                const eventLine = document.createElement('div');
+                eventLine.className = 'event-line';
+                
+                let color = 'var(--text-dim)';
+                if (eventData.type && eventData.type.includes('APPROVAL_REQUESTED')) {
+                    color = '#ffcc00'; // Yellow for approval requests
+                } else if (eventData.type && eventData.type.includes('ACTION_APPROVED')) {
+                    color = '#00cc66'; // Green for approved actions
+                } else if (eventData.type && eventData.type.includes('ACTION_BLOCKED') || eventData.type && eventData.type.includes('EXTERNAL_ACTION_REJECTED')) {
+                    color = '#ff3333'; // Red for blocked/rejected actions
+                } else if (eventData.type && eventData.type.includes('ACTION_EXECUTED')) {
+                    color = '#66ccff'; // Blue for executed actions
+                } else if (eventData.type && eventData.type.includes('ACTION_INTENT_CREATED')) {
+                    color = '#9966cc'; // Purple for intent creation
+                }
+                
+                eventLine.style.color = color;
+                eventLine.style.fontFamily = 'Fira Code, monospace';
+                eventLine.style.fontSize = '0.75rem';
+                eventLine.style.marginBottom = '5px';
+                eventLine.innerHTML = `[${new Date(eventData.timestamp).toLocaleTimeString()}] <strong>${eventData.type || 'UNKNOWN'}</strong>: ${eventData.metadata ? JSON.stringify(eventData.metadata) : ''}`;
+                
+                eventFeed.appendChild(eventLine);
+                eventFeed.scrollTop = eventFeed.scrollHeight;
+            };
+
+            eventSource.onerror = function(err) {
+                console.error("EventSource failed:", err);
+                eventSource.close();
+            };
+        } else {
+            eventFeed.innerHTML = '<p style="color: var(--text-dim);">Your browser does not support Server-Sent Events.</p>';
+        }
+
+        // Approval Queue Integration
+        const approvalQueue = document.getElementById('approval-queue');
+
+        async function loadApprovalQueue() {
+            try {
+                const response = await fetch(`${API_BASE}/preflight/approvals?status=pending`);
+                const data = await response.json();
+                
+                approvalQueue.innerHTML = ''; // Clear previous requests
+                if (data.items.length === 0) {
+                    approvalQueue.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No pending approval requests.</p>';
+                    return;
+                }
+
+                data.items.forEach(request => {
+                    const requestDiv = document.createElement('div');
+                    requestDiv.className = 'approval-request';
+                    requestDiv.style.borderBottom = '1px solid var(--border)';
+                    requestDiv.style.paddingBottom = '10px';
+                    requestDiv.style.marginBottom = '10px';
+                    requestDiv.innerHTML = `
+                        <p style="font-size: 0.85rem;"><strong>Action:</strong> ${request.action}</p>
+                        <p style="font-size: 0.85rem;"><strong>Agent:</strong> ${request.agent_id}</p>
+                        <p style="font-size: 0.85rem;"><strong>Summary:</strong> ${request.summary || 'N/A'}</p>
+                        <pre style="background: #000; padding: 8px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.7rem; overflow-x: auto; margin-top: 5px;">${JSON.stringify(request.payload, null, 2)}</pre>
+                        <div style="margin-top: 10px;">
+                            <button class="approve-btn" data-request-id="${request.request_id}" style="background-color: #00cc66; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Approve</button>
+                            <button class="reject-btn" data-request-id="${request.request_id}" style="background-color: #ff3333; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reject</button>
+                        </div>
+                    `;
+                    approvalQueue.appendChild(requestDiv);
+                });
+
+                // Add event listeners for buttons
+                approvalQueue.querySelectorAll('.approve-btn').forEach(button => {
+                    button.onclick = () => decideApproval(button.dataset.requestId, 'approved');
+                });
+                approvalQueue.querySelectorAll('.reject-btn').forEach(button => {
+                    button.onclick = () => decideApproval(button.dataset.requestId, 'rejected');
+                });
+
+            } catch (err) {
+                console.error('Failed to load approval queue:', err);
+                approvalQueue.innerHTML = '<p style="color: var(--text-dim);">Failed to load approval requests.</p>';
+            }
+        }
+
+        async function decideApproval(requestId, decision) {
+            try {
+                const response = await fetch(`${API_BASE}/preflight/approvals/decide`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: requestId, decision: decision, decided_by: "gatekeeper" })
+                });
+                const result = await response.json();
+                console.log(`Approval ${decision} for ${requestId}:`, result);
+                loadApprovalQueue(); // Refresh the queue
+            } catch (err) {
+                console.error(`Failed to decide approval for ${requestId}:`, err);
+            }
+        }
+
+        // Initial load and periodic refresh
+        loadApprovalQueue();
+        setInterval(loadApprovalQueue, 10000); // Refresh every 10 seconds
+        
+        loadTaskQueue();
+        setInterval(loadTaskQueue, 10000); // Refresh task queue every 10 seconds
+
+        // Project Health Integration
+        const riskTrendEl = document.getElementById('risk-trend');
+
+        async function updateProjectHealth() {
+            try {
+                // For now, we'll use mock data. In a real scenario, this would fetch from an API.
+                const mockRiskTrend = (Math.random() * 10).toFixed(2); // Mock value
+                riskTrendEl.innerText = mockRiskTrend;
+
+                // Add some basic color coding based on the risk trend
+                if (parseFloat(mockRiskTrend) > 7) {
+                    riskTrendEl.style.color = '#ff3333'; // High risk: Red
+                } else if (parseFloat(mockRiskTrend) > 4) {
+                    riskTrendEl.style.color = '#ffcc00'; // Medium risk: Yellow
+                } else {
+                    riskTrendEl.style.color = '#00cc66'; // Low risk: Green
+                }
+
+            } catch (err) {
+                console.error('Failed to update project health:', err);
+                riskTrendEl.innerText = 'Error';
+                riskTrendEl.style.color = 'var(--text-dim)';
+            }
+        }
+
+        // Initial load and periodic refresh
+        updateProjectHealth();
+        setInterval(updateProjectHealth, 15000); // Refresh every 15 seconds
     </script>
 </body>
 </html>

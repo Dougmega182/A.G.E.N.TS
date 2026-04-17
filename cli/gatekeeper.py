@@ -24,6 +24,7 @@ from agents.core import GovernanceEngine, Agent, load_config, DATA_DIR, ensure_d
 from agents.llm import LLMProvider
 from agents.boardroom import Boardroom
 from agents.sessions import SessionManager
+from agents.logic.event_bus import LOG_ROOT
 
 console = Console()
 
@@ -346,7 +347,7 @@ async def main_loop():
         elif choice == "8":
             # Show audit log
             ensure_data_dirs()
-            log_file = Path("data/audit_logs") / f"{datetime.now().strftime('%Y-%m-%d')}.jsonl"
+            log_file = LOG_ROOT / f"{datetime.now().strftime('%Y-%m-%d')}.jsonl"
             if log_file.exists():
                 console.print(f"\n[bold cyan]═══ AUDIT LOG ({datetime.now().strftime('%Y-%m-%d')}) ═══[/]\n")
                 with open(log_file, "r", encoding="utf-8") as f:

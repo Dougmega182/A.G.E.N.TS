@@ -1,0 +1,2 @@
+{"timestamp": "2026-04-16T13:25:59.097604", "role": "user", "content": "Build me a simple powershell .ps1 file that when doubled clicked it prints out hello world and does not close the terminal"}
+{"timestamp": "2026-04-16T13:25:59.097604", "role": "assistant", "agent_id": "AGT-012", "content": "\n[CONNECTION ERROR] ATLAS failed. Ensure your API keys are in .env and Ollama is running."}

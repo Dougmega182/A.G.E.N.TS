@@ -23,7 +23,7 @@ graph TD
 ## ✅ Phase 1: Core Foundation (COMPLETED)
 *Goal: Establish the deterministic execution engine and agent roster.*
 
-- [x] **Agent Roster Implementation**: Formalized Aria (CEO), Nadia (Planning), Sentinel (Audit), and Jenny (Comms).
+- [x] **Agent Roster Implementation**: Formalized Aria (CEO), Nadia (Planning), WALL-E (Audit), and Jenny (Comms).
 - [x] **Modular Governance Engine**: Established the Constitutional framework (Laws of Robotics + Mission).
 - [x] **Basic Execution Loop**: Implemented a reactive loop to process variations.
 - [x] **State Persistence**: Created `world_state.json` as the initial source of truth.
@@ -36,7 +36,7 @@ graph TD
 - [x] **Scenario-Aware Risk Engine**: Implemented scaled risk scoring (0.0 - 1.0).
 - [x] **Sentintel (The Auditor)**: Formalized AGT-010 to provide structured advisory critiques.
 - [x] **Hard Safety Gates**: Programmatically blocked "Approvals" for risks >= 0.85.
-- [x] **Conflict Detection Engine**: Logged disagreements between Sentinel and Aria.
+- [x] **Conflict Detection Engine**: Logged disagreements between WALL-E and Aria.
 
 ---
 
@@ -89,12 +89,13 @@ graph TD
 
 ---
 
-## 🚀 Phase 4: External System Orchestration (PLANNED)
+## 🚀 Phase 4: External System Orchestration (COMPLETED)
 *Goal: Empowering agents to act in the physical world.*
 
-- [ ] **The controlled Gmail Operator**: Restricted draft-only communication with human-in-the-loop.
-- [ ] **The Calendar Sentinel**: Auto-scheduling of RFI deadlines and Variation site visits.
-- [ ] **Live Telemetry Dashboard**: Real-time visual view of events, traces, and project health.
+- [x] **The controlled Gmail Operator**: Restricted draft-only communication with human-in-the-loop.
+- [x] **The Calendar WALL-E**: Auto-scheduling of RFI deadlines and Variation site visits.
+- [x] **Live Telemetry Dashboard**: Real-time visual view of events, traces, and project health.
+- [x] **LLM Upgrade**: Migrated default high-performance model to stable **Gemini 3 Flash (preview)**.
 - [ ] **External API Integration**: Connecting A.G.E.N.T.S. to construction management systems (e.g. Procore/Aconex).
 
 ---
@@ -137,8 +138,8 @@ Create these agents:
 Aria → CEO / decision authority  
 Nadia → Planner / system designer  
 Jenny → PA / comms / coordination  
-Atlas → Engineer (writes code, reviews architecture)  
-Sentinel → Auditor (logs, compliance, validation)
+Tucker → Engineer (writes code, reviews architecture)  
+WALL-E → Auditor (logs, compliance, validation)
 ```
 
 ---
@@ -147,9 +148,9 @@ Sentinel → Auditor (logs, compliance, validation)
 
 * Aria → decides
 * Nadia → plans
-* Atlas → builds
+* Tucker → builds
 * Jenny → communicates
-* Sentinel → checks
+* WALL-E → checks
 
 No overlap. No fluff.
 
@@ -160,9 +161,9 @@ No overlap. No fluff.
 Each must output structured results:
 
 * Nadia → `plan_v1`
-* Atlas → `implementation_plan_v1`
+* Tucker → `implementation_plan_v1`
 * Jenny → `email_draft_v1`
-* Sentinel → `audit_log_v1`
+* WALL-E → `audit_log_v1`
 
 ---
 
@@ -185,8 +186,8 @@ You can say:
 And:
 
 * Nadia plans
-* Atlas outputs code steps
-* Sentinel validates
+* Tucker outputs code steps
+* WALL-E validates
 
 ---
 
@@ -240,7 +241,7 @@ Input → Nadia (plan)
 → Aria (decision)  
 → Jenny (email)  
 → Tool call (update project)  
-→ Sentinel (audit log)
+→ WALL-E (audit log)
 ```
 
 ---
@@ -272,7 +273,7 @@ ALL automatically
 
 ---
 
-# 🧠 PHASE 2 — PLANNING & REASONING (WEEK 6–10)
+# 🧠 PHASE 2 — PLANNING & REASONING ✅ COMPLETE
 
 ### Goal:
 
@@ -280,39 +281,38 @@ Make it **intelligent**, not scripted
 
 ---
 
-## Step 2.1 — Add heuristics
+## Step 2.1 — Governance Engine ✅
 
-```python
-if cost > 10000:
-    escalate = True
-```
-
----
-
-## Step 2.2 — Add risk scoring
-
-```python
-risk_score = cost_weight + delay_weight + complexity_weight
-```
+Severity-based flags (LOW → MEDIUM → HIGH → CRITICAL):
+- Cost thresholds: >$10k (MEDIUM), >$25k (HIGH), >$50k (CRITICAL)
+- Schedule thresholds: >3d (LOW), >7d (HIGH), >14d (CRITICAL)
+- Risk momentum: >0.50 (MEDIUM), >0.75 (HIGH), >0.85 (CRITICAL)
 
 ---
 
-## Step 2.3 — Multi-agent reasoning
+## Step 2.2 — Enforcement & Integrity Hardening ✅
 
-Nadia proposes
-Aria evaluates
-Sentinel flags risks
+- Orchestrator-level overrides (Aria cannot bypass governance)
+- Reasoning quality validation (deterministic, not prompt-based)
+- Outcome-weighted memory (score_outcome: +1/0/-1, net signal)
 
 ---
 
-## Step 2.4 — Memory
+## Step 2.3 — Decision Finalizer (Canonical Decision Layer) ✅
 
-Store:
+- Single `finalize_decision()` function — ALL post-decision logic
+- `DECISION_FINALIZED_V1` event — the debug anchor event
+- Override chain: CONTRACT_FAILURE → GOVERNANCE_CRITICAL → SAFETY_GATE
+- Rule: Only ONE component changes decisions — the orchestrator via the finalizer
 
-* past variations
-* outcomes
+---
 
-Use for future decisions
+## Step 2.4 — Dashboard & Observability ✅
+
+- Project Health panel: real risk trend + outcome signal from event stream
+- Event Feed: `DECISION_FINALIZED_V1` anchor events visually distinct
+- API endpoints: `/project/health`, `/decisions/latest`
+- Replaced all mock data with real event-derived analytics
 
 ---
 
@@ -320,8 +320,11 @@ Use for future decisions
 
 System adapts decisions based on:
 
-* past data
-* risk patterns
+* past data (structured memory with outcome weighting)
+* risk patterns (governance engine + safety gate)
+* Owen's intelligence and machine learning
+* Canonical decision records (DECISION_FINALIZED_V1)
+
 
 ---
 

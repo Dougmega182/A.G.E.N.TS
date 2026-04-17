@@ -4,34 +4,46 @@ from typing import Dict, Any
 class TelemetryManager:
     def __init__(self):
         self.total_tokens = 0
-        self.input_tokens = 0
-        self.output_tokens = 0
+        self.gemini_tokens = 0
+        self.ollama_tokens = 0
+        
         self.total_cost_aud = 0.0
-        self.total_cost_usd = 0.0
+        self.gemini_cost_aud = 0.0
+        self.ollama_saved_aud = 0.0 # Cost avoided by using local models
+        
         self.messages_processed = 0
         self.last_updated = datetime.utcnow().isoformat()
 
     def record(self, usage: Dict[str, int], model_name: str = "default"):
         """
         Record usage for a single request. 
-        Expected usage format: {"input_tokens": int, "output_tokens": int, "total_tokens": int}
         """
         normalized = self.normalize_usage(usage)
         
-        self.input_tokens += normalized["input_tokens"]
-        self.output_tokens += normalized["output_tokens"]
-        self.total_tokens += normalized["total_tokens"]
+        tokens = normalized["total_tokens"]
+        self.total_tokens += tokens
         self.messages_processed += 1
         
         costs = self.calculate_cost(normalized, model_name)
-        self.total_cost_usd += costs["usd"]
-        self.total_cost_aud += costs["aud"]
         
+        # Categorize by model provider
+        m_lower = model_name.lower()
+        if "gemini" in m_lower:
+            self.gemini_tokens += tokens
+            self.gemini_cost_aud += costs["aud"]
+        elif "ollama" in m_lower or m_lower == "local" or "llama" in m_lower:
+            self.ollama_tokens += tokens
+            # "Saved" is what it WOULD have cost on a standard paid model
+            self.ollama_saved_aud += costs["aud_saved"]
+        else:
+            # Fallback
+            self.gemini_tokens += tokens
+            self.gemini_cost_aud += costs["aud"]
+
+        self.total_cost_aud = self.gemini_cost_aud
         self.last_updated = datetime.utcnow().isoformat()
 
     def normalize_usage(self, raw: Dict[str, Any]) -> Dict[str, int]:
-        """Normalize usage across different providers."""
-        # LangChain often provides usage_metadata with these keys
         return {
             "input_tokens": raw.get("input_tokens") or raw.get("prompt_tokens") or 0,
             "output_tokens": raw.get("output_tokens") or raw.get("completion_tokens") or 0,
@@ -39,38 +51,33 @@ class TelemetryManager:
         }
 
     def calculate_cost(self, usage: Dict[str, int], model_name: str) -> Dict[str, float]:
-        """
-        Calculate cost based on 2026 pricing estimates.
-        Base rates (USD per 1M tokens):
-        - Gemini/Flash: $0.075 in / $0.30 out
-        - Default fallback: slightly higher safety margin
-        """
-        # Pricing per 1M tokens (USD)
+        # Pricing per 1M tokens (USD) - 2026 Estimates
         rates = {
-            "gemini-2.5-flash": {"in": 0.075, "out": 0.30},
-            "gemini-3.1-flash": {"in": 0.075, "out": 0.30},
-            "claude-3-5-sonnet-20240620": {"in": 3.00, "out": 15.00}, # SONNET is more expensive
+            "gemini-3-flash-preview": {"in": 0.075, "out": 0.30},
             "default": {"in": 0.10, "out": 0.40}
         }
         
-        # Get rate or fallback
         rate = rates.get(model_name, rates["default"])
         
         in_cost = (usage["input_tokens"] * rate["in"]) / 1_000_000
         out_cost = (usage["output_tokens"] * rate["out"]) / 1_000_000
         
         usd = in_cost + out_cost
-        aud = usd * 1.5 # 2026 rough conversion factor as requested
+        aud = usd * 1.5 
         
-        return {"usd": usd, "aud": aud}
+        return {
+            "usd": usd, 
+            "aud": aud,
+            "aud_saved": aud # Used for local model savings calculation
+        }
 
     def get_stats(self) -> Dict[str, Any]:
         return {
-            "tokens": self.total_tokens,
-            "input_tokens": self.input_tokens,
-            "output_tokens": self.output_tokens,
-            "cost_aud": round(self.total_cost_aud, 4),
-            "cost_usd": round(self.total_cost_usd, 4),
+            "total_tokens": self.total_tokens,
+            "gemini_tokens": self.gemini_tokens,
+            "ollama_tokens": self.ollama_tokens,
+            "gemini_cost_aud": round(self.gemini_cost_aud, 4),
+            "ollama_saved_aud": round(self.ollama_saved_aud, 4),
             "messages_processed": self.messages_processed,
             "last_updated": self.last_updated
         }

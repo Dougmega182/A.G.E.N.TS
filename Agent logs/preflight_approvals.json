@@ -1,0 +1,2692 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-04-16T22:39:15.936164",
+  "requests": [
+    {
+      "request_id": "APR-2E3B51A11163",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "target": "dalepsaila@gmail.com",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Send draft review email for: Phase4 Test Subject",
+      "metadata": {
+        "operator": "gmail"
+      },
+      "payload": {
+        "to": "dalepsaila@gmail.com",
+        "subject": "RESPONSE TO EMAIL (Phase4 Test Subject) DRAFT",
+        "body": "Phase4 body"
+      },
+      "payload_hash": "90bc2ff850403017e30680cab7b507ae9c889a37d6965c5f542f4aba88877853",
+      "fingerprint": "2a234cb00accdf7c40d97ba0c3179c07c49589b70f3a85b1c982c81c446e3990",
+      "created_at": "2026-04-16T03:16:07.426080",
+      "decided_at": "2026-04-16T22:38:15.251624",
+      "decided_by": "gatekeeper",
+      "decision_reason": ""
+    },
+    {
+      "request_id": "APR-2062F3F9290A",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "target": "primary",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Create calendar event: Phase4 Test Event",
+      "metadata": {
+        "operator": "calendar"
+      },
+      "payload": {
+        "summary": "Phase4 Test Event",
+        "description": "phase4 test",
+        "start_time": "2026-04-20T10:00:00Z",
+        "end_time": "2026-04-20T11:00:00Z"
+      },
+      "payload_hash": "03cc4210be89bd93cf4d224dd62519189285790fac20c7344f849d6396c3799d",
+      "fingerprint": "2703b7cb0c1a0ff9c4a033ebae5e9954aca9e9e137b4881c7cd4048a37f37753",
+      "created_at": "2026-04-16T03:16:22.704890",
+      "decided_at": "2026-04-16T22:38:17.079078",
+      "decided_by": "gatekeeper",
+      "decision_reason": ""
+    },
+    {
+      "request_id": "APR-CEE7672C0143",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "target": "dalepsaila@gmail.com",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Send draft review email for: Phase4 Approval Smoke",
+      "metadata": {
+        "operator": "gmail"
+      },
+      "payload": {
+        "to": "dalepsaila@gmail.com",
+        "subject": "RESPONSE TO EMAIL (Phase4 Approval Smoke) DRAFT",
+        "body": "body"
+      },
+      "payload_hash": "efb1c33778f201ea0fcb08efeeae178dd5d9ac1a0d3c6e150fb52df8b8cca6d5",
+      "fingerprint": "c5adeb2e97f04a1a024af44b8751ac4038ca2c5ff0a4cd91b0c103cd2c0dc585",
+      "created_at": "2026-04-16T03:17:02.454956",
+      "decided_at": "2026-04-16T03:17:02.474333",
+      "decided_by": "gatekeeper",
+      "decision_reason": "smoke"
+    },
+    {
+      "request_id": "APR-6D5A64A40BF7",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "target": "dalepsaila@gmail.com",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Send draft review email for: Phase4 Draft Endpoint",
+      "metadata": {
+        "operator": "gmail"
+      },
+      "payload": {
+        "to": "dalepsaila@gmail.com",
+        "subject": "RESPONSE TO EMAIL (Phase4 Draft Endpoint) DRAFT",
+        "body": "body for draft endpoint test"
+      },
+      "payload_hash": "dcd119b1ed87dc2c8e8f5e66661b6dd7b69469e59b981df9f7955d17f75184d2",
+      "fingerprint": "a31f52b3c91e874b534a60adc4e88bf40a97a27a9bdb9b95a07f83e067b638a1",
+      "created_at": "2026-04-16T03:25:46.529663",
+      "decided_at": "2026-04-16T22:38:18.580136",
+      "decided_by": "gatekeeper",
+      "decision_reason": ""
+    },
+    {
+      "request_id": "APR-C4DA9DB415FD",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "target": "dalepsaila@gmail.com",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Send draft review email for: Phase4 Smoke Subject",
+      "metadata": {
+        "operator": "gmail"
+      },
+      "payload": {
+        "to": "dalepsaila@gmail.com",
+        "subject": "RESPONSE TO EMAIL (Phase4 Smoke Subject) DRAFT",
+        "body": "Smoke body"
+      },
+      "payload_hash": "bf528d46d775ecdaaf51f2d264379b84e0e914bb232c93ee4f370dc3a5cd2822",
+      "fingerprint": "a58f93b910efe43bd849a7b2fac942c35e91454882b610262d2a869c0d94779c",
+      "created_at": "2026-04-16T03:48:52.419174",
+      "decided_at": "2026-04-16T22:38:20.051005",
+      "decided_by": "gatekeeper",
+      "decision_reason": ""
+    },
+    {
+      "request_id": "APR-793A21745D85",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "target": "primary",
+      "agent_id": "jenny",
+      "trace_id": "N/A",
+      "summary": "Create calendar event: Phase4 Smoke Event",
+      "metadata": {
+        "operator": "calendar"
+      },
+      "payload": {
+        "summary": "Phase4 Smoke Event",
+        "description": "Smoke",
+        "start_time": "2026-04-20T10:00:00Z",
+        "end_time": "2026-04-20T11:00:00Z"
+      },
+      "payload_hash": "68d88cae2ad67ee141e30988b230aa66e3183b4e6f48dd4b4137b3408de759c9",
+      "fingerprint": "24ca94dde505631760aea18e43ffbc10df7c6c3490b2bcf69713e654b20682b8",
+      "created_at": "2026-04-16T03:48:52.431852",
+      "decided_at": "2026-04-16T03:48:52.450893",
+      "decided_by": "smoke",
+      "decision_reason": "runtime_smoke"
+    },
+    {
+      "request_id": "APR-62A5D8FEA354",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:36:46.217663",
+      "decided_at": "2026-04-16T06:36:46.244968",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-52365131BEA7",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:36:46.256708",
+      "decided_at": "2026-04-16T06:36:46.263945",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-9BC2A2F9ABC8",
+      "status": "approved",
+      "action": "non_existent_action",
+      "agent_id": "AGT-XYZ",
+      "trace_id": "no_trace",
+      "summary": "Auto-generated approval request for external action.",
+      "metadata": {
+        "auto_generated": true
+      },
+      "payload": {},
+      "payload_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "fingerprint": "aa113ba35715e847679e5a6a0b8860576cf069ba47718fb42546fa44b78a6820",
+      "created_at": "2026-04-16T06:36:46.275143",
+      "decided_at": "2026-04-16T22:38:20.789774",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "non_existent_action",
+        "agent_id": "AGT-XYZ",
+        "parameters": {},
+        "trace_id": "no_trace",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Auto-generated approval request for external action.",
+        "metadata": {
+          "auto_generated": true
+        }
+      }
+    },
+    {
+      "request_id": "APR-F0CB5DC37605",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:36:46.287070",
+      "decided_at": "2026-04-16T06:36:46.300169",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-F38B199597D0",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:36:46.312694",
+      "decided_at": "2026-04-16T06:36:46.320439",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-B91FD0D97D8A",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:36:46.332768",
+      "decided_at": "2026-04-16T06:36:46.340311",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-12E5AD607BE4",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:37:43.442374",
+      "decided_at": "2026-04-16T06:37:43.467386",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-DD8027B3F941",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:37:43.479355",
+      "decided_at": "2026-04-16T06:37:43.486923",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-EB4EFA3E2F04",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:37:43.502859",
+      "decided_at": "2026-04-16T06:37:43.516379",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-256B80F5A921",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:37:43.528630",
+      "decided_at": "2026-04-16T06:37:43.537181",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-CB4C24269E7D",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:37:43.551490",
+      "decided_at": "2026-04-16T06:37:43.560088",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-2072F540194C",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+        "body": "Test body"
+      },
+      "payload_hash": "1e34985f1d88f993d298340842291a03698be93fca3e0ba5a659a7a5fc45b78b",
+      "fingerprint": "0caa62a95c94f9a00c30a9b6e82d3a3502e904045d056ea41b5bb04d66fe559d",
+      "created_at": "2026-04-16T06:37:43.573400",
+      "decided_at": "2026-04-16T06:37:43.581128",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+          "body": "Test body"
+        },
+        "trace_id": "trace_gmail_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-BF8F2AE9BD04",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_pending",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Pending Subject) DRAFT",
+        "body": "Pending body"
+      },
+      "payload_hash": "734e92d765f5fafd520c0628532ebdf803507dd808e248606eeb8965b66b019c",
+      "fingerprint": "6457d3274519f52b86bbc9fda28e3abc33df57957b1c2515c8fd37a679e55074",
+      "created_at": "2026-04-16T06:37:43.618083",
+      "decided_at": "2026-04-16T22:38:21.581729",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Pending Subject) DRAFT",
+          "body": "Pending body"
+        },
+        "trace_id": "trace_gmail_pending",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-C56C958A75FD",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "agent_id": "test_agent",
+      "trace_id": "trace_calendar_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "summary": "Test Event",
+        "description": "Desc",
+        "start_time": "2099-01-01T09:00:00Z",
+        "end_time": "2099-01-01T10:00:00Z"
+      },
+      "payload_hash": "1729f75bf410b0f331d48585fb8a2473f446da40511ec03d64ff95455f71239c",
+      "fingerprint": "df27141c2ac6b5b4bbff8e4ea4b88b8942259e0abea3f3f4a65cfecf321df529",
+      "created_at": "2026-04-16T06:37:43.772903",
+      "decided_at": "2026-04-16T06:37:43.780533",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "calendar_create_event",
+        "agent_id": "test_agent",
+        "parameters": {
+          "summary": "Test Event",
+          "description": "Desc",
+          "start_time": "2099-01-01T09:00:00Z",
+          "end_time": "2099-01-01T10:00:00Z"
+        },
+        "trace_id": "trace_calendar_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-8BE9636B35FB",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:38:40.117827",
+      "decided_at": "2026-04-16T06:38:40.145317",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-5D86605EC1D0",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:38:40.161034",
+      "decided_at": "2026-04-16T06:38:40.168257",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-3E5AE88CEAEB",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:38:40.186367",
+      "decided_at": "2026-04-16T06:38:40.200466",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-D032775DEF27",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:38:40.212718",
+      "decided_at": "2026-04-16T06:38:40.221733",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-8266376AD12C",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:38:40.236184",
+      "decided_at": "2026-04-16T06:38:40.244162",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-ED1B56830E6E",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+        "body": "Test body"
+      },
+      "payload_hash": "1e34985f1d88f993d298340842291a03698be93fca3e0ba5a659a7a5fc45b78b",
+      "fingerprint": "0caa62a95c94f9a00c30a9b6e82d3a3502e904045d056ea41b5bb04d66fe559d",
+      "created_at": "2026-04-16T06:38:40.258550",
+      "decided_at": "2026-04-16T06:38:40.266457",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+          "body": "Test body"
+        },
+        "trace_id": "trace_gmail_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-1FAF20E0A862",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "agent_id": "test_agent",
+      "trace_id": "trace_calendar_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "summary": "Test Event",
+        "description": "Desc",
+        "start_time": "2099-01-01T09:00:00Z",
+        "end_time": "2099-01-01T10:00:00Z"
+      },
+      "payload_hash": "1729f75bf410b0f331d48585fb8a2473f446da40511ec03d64ff95455f71239c",
+      "fingerprint": "df27141c2ac6b5b4bbff8e4ea4b88b8942259e0abea3f3f4a65cfecf321df529",
+      "created_at": "2026-04-16T06:38:40.454528",
+      "decided_at": "2026-04-16T06:38:40.464067",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "calendar_create_event",
+        "agent_id": "test_agent",
+        "parameters": {
+          "summary": "Test Event",
+          "description": "Desc",
+          "start_time": "2099-01-01T09:00:00Z",
+          "end_time": "2099-01-01T10:00:00Z"
+        },
+        "trace_id": "trace_calendar_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-F72EA139AD30",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:39:34.162966",
+      "decided_at": "2026-04-16T06:39:35.017361",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-8AF5A5B64033",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:39:35.029908",
+      "decided_at": "2026-04-16T06:39:35.038122",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-AA3606FAB460",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:39:35.056155",
+      "decided_at": "2026-04-16T06:39:35.068581",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-B6F5E651EEC4",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:39:35.082382",
+      "decided_at": "2026-04-16T06:39:35.089388",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-6920B7DF2A85",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:39:35.102157",
+      "decided_at": "2026-04-16T06:39:35.110206",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-EBE3CF31D908",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+        "body": "Test body"
+      },
+      "payload_hash": "1e34985f1d88f993d298340842291a03698be93fca3e0ba5a659a7a5fc45b78b",
+      "fingerprint": "0caa62a95c94f9a00c30a9b6e82d3a3502e904045d056ea41b5bb04d66fe559d",
+      "created_at": "2026-04-16T06:39:35.124836",
+      "decided_at": "2026-04-16T06:39:35.132935",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+          "body": "Test body"
+        },
+        "trace_id": "trace_gmail_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-0979298C80CB",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "agent_id": "test_agent",
+      "trace_id": "trace_calendar_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "summary": "Test Event",
+        "description": "Desc",
+        "start_time": "2099-01-01T09:00:00Z",
+        "end_time": "2099-01-01T10:00:00Z"
+      },
+      "payload_hash": "1729f75bf410b0f331d48585fb8a2473f446da40511ec03d64ff95455f71239c",
+      "fingerprint": "df27141c2ac6b5b4bbff8e4ea4b88b8942259e0abea3f3f4a65cfecf321df529",
+      "created_at": "2026-04-16T06:39:35.296361",
+      "decided_at": "2026-04-16T06:39:35.304165",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "calendar_create_event",
+        "agent_id": "test_agent",
+        "parameters": {
+          "summary": "Test Event",
+          "description": "Desc",
+          "start_time": "2099-01-01T09:00:00Z",
+          "end_time": "2099-01-01T10:00:00Z"
+        },
+        "trace_id": "trace_calendar_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-AB2F76D6EF77",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:40:21.770497",
+      "decided_at": "2026-04-16T06:40:22.653437",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-9F2B035651FA",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:40:22.667739",
+      "decided_at": "2026-04-16T06:40:22.674945",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-8A313D849794",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:40:22.693949",
+      "decided_at": "2026-04-16T06:40:22.707397",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-245DD097253B",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:40:22.720671",
+      "decided_at": "2026-04-16T06:40:22.729341",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-79A237CB3FBD",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:40:22.742361",
+      "decided_at": "2026-04-16T06:40:22.751351",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-CD5E308FE0C5",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+        "body": "Test body"
+      },
+      "payload_hash": "1e34985f1d88f993d298340842291a03698be93fca3e0ba5a659a7a5fc45b78b",
+      "fingerprint": "0caa62a95c94f9a00c30a9b6e82d3a3502e904045d056ea41b5bb04d66fe559d",
+      "created_at": "2026-04-16T06:40:22.766883",
+      "decided_at": "2026-04-16T06:40:22.774970",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+          "body": "Test body"
+        },
+        "trace_id": "trace_gmail_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-77DC33377044",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "agent_id": "test_agent",
+      "trace_id": "trace_calendar_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "summary": "Test Event",
+        "description": "Desc",
+        "start_time": "2099-01-01T09:00:00Z",
+        "end_time": "2099-01-01T10:00:00Z"
+      },
+      "payload_hash": "1729f75bf410b0f331d48585fb8a2473f446da40511ec03d64ff95455f71239c",
+      "fingerprint": "df27141c2ac6b5b4bbff8e4ea4b88b8942259e0abea3f3f4a65cfecf321df529",
+      "created_at": "2026-04-16T06:40:22.943978",
+      "decided_at": "2026-04-16T06:40:22.953237",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "calendar_create_event",
+        "agent_id": "test_agent",
+        "parameters": {
+          "summary": "Test Event",
+          "description": "Desc",
+          "start_time": "2099-01-01T09:00:00Z",
+          "end_time": "2099-01-01T10:00:00Z"
+        },
+        "trace_id": "trace_calendar_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-064A19EB90F8",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:47:39.454473",
+      "decided_at": "2026-04-16T06:47:40.318753",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-B4471A14F7E5",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:47:40.331485",
+      "decided_at": "2026-04-16T06:47:40.339685",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-7B2CDCC4CB12",
+      "status": "rejected",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:47:40.359722",
+      "decided_at": "2026-04-16T06:47:40.373716",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-414858B9B2C3",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:47:40.387052",
+      "decided_at": "2026-04-16T06:47:40.395363",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-ABC8FFAABF51",
+      "status": "approved",
+      "action": "test_action",
+      "agent_id": "AGT-001",
+      "trace_id": "test_trace_123",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "param1": "value1",
+        "param2": 123
+      },
+      "payload_hash": "10bff9b06c906964a2571cff4bd0ecaaded9575103cd7022099499bc023ec322",
+      "fingerprint": "12490994f791f2269c99887b70facde6dc0571e8decc3c80a75dc3fdd8b2fdf3",
+      "created_at": "2026-04-16T06:47:40.409751",
+      "decided_at": "2026-04-16T06:47:40.418369",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "test_action",
+        "agent_id": "AGT-001",
+        "parameters": {
+          "param1": "value1",
+          "param2": 123
+        },
+        "trace_id": "test_trace_123",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-A90CF313BE5E",
+      "status": "approved",
+      "action": "gmail_send_review",
+      "agent_id": "test_agent",
+      "trace_id": "trace_gmail_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "to": "test@example.com",
+        "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+        "body": "Test body"
+      },
+      "payload_hash": "1e34985f1d88f993d298340842291a03698be93fca3e0ba5a659a7a5fc45b78b",
+      "fingerprint": "0caa62a95c94f9a00c30a9b6e82d3a3502e904045d056ea41b5bb04d66fe559d",
+      "created_at": "2026-04-16T06:47:40.434480",
+      "decided_at": "2026-04-16T06:47:40.444638",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "gmail_send_review",
+        "agent_id": "test_agent",
+        "parameters": {
+          "to": "test@example.com",
+          "subject": "RESPONSE TO EMAIL (Test Subject) DRAFT",
+          "body": "Test body"
+        },
+        "trace_id": "trace_gmail_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-04AD49447703",
+      "status": "approved",
+      "action": "calendar_create_event",
+      "agent_id": "test_agent",
+      "trace_id": "trace_calendar_approved",
+      "summary": "",
+      "metadata": {},
+      "payload": {
+        "summary": "Test Event",
+        "description": "Desc",
+        "start_time": "2099-01-01T09:00:00Z",
+        "end_time": "2099-01-01T10:00:00Z"
+      },
+      "payload_hash": "1729f75bf410b0f331d48585fb8a2473f446da40511ec03d64ff95455f71239c",
+      "fingerprint": "df27141c2ac6b5b4bbff8e4ea4b88b8942259e0abea3f3f4a65cfecf321df529",
+      "created_at": "2026-04-16T06:47:40.610702",
+      "decided_at": "2026-04-16T06:47:40.619783",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "calendar_create_event",
+        "agent_id": "test_agent",
+        "parameters": {
+          "summary": "Test Event",
+          "description": "Desc",
+          "start_time": "2099-01-01T09:00:00Z",
+          "end_time": "2099-01-01T10:00:00Z"
+        },
+        "trace_id": "trace_calendar_approved",
+        "requires_approval": true,
+        "status": "pending"
+      }
+    },
+    {
+      "request_id": "APR-355DD4F19909",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "38337d79-6419-45f3-8598-01559de2e26e",
+      "summary": "Proposed variation action: APPROVE - Budget within limits...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.4,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: +10k, +2 days for site prep",
+        "plan": {
+          "goal": "Resolve site prep needs",
+          "assumptions": [
+            "Stable soil"
+          ],
+          "steps": [
+            "Step 1",
+            "Step 2",
+            "Step 3"
+          ],
+          "risks": [
+            "Weather"
+          ],
+          "first_action": "Assess site"
+        },
+        "implementation_plan": {
+          "technical_goal": "Excavate and level",
+          "architecture_impact": "None",
+          "implementation_steps": [
+            "Dig",
+            "Fill"
+          ],
+          "validation_criteria": [
+            "Level surface"
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "Budget within limits",
+          "conditions": [],
+          "impact": {
+            "cost": 10000.0,
+            "days": 2,
+            "risk_delta": 0.1
+          }
+        },
+        "email_draft": {
+          "to": "client@example.com",
+          "subject": "Variation Approval",
+          "body": "Your variation has been approved."
+        },
+        "risk_score": 0.4,
+        "trace_id": "38337d79-6419-45f3-8598-01559de2e26e"
+      },
+      "payload_hash": "f4989646ac54f64e8987614ad238da6dea733ea681b60f1e6e80390f59db5c8c",
+      "fingerprint": "37f6278cb8d7d502093c68971fab464da9d5c677e3ce183c3d98bcf42144766b",
+      "created_at": "2026-04-16T12:55:09.892480",
+      "decided_at": "2026-04-16T22:38:22.303408",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: +10k, +2 days for site prep",
+          "plan": {
+            "goal": "Resolve site prep needs",
+            "assumptions": [
+              "Stable soil"
+            ],
+            "steps": [
+              "Step 1",
+              "Step 2",
+              "Step 3"
+            ],
+            "risks": [
+              "Weather"
+            ],
+            "first_action": "Assess site"
+          },
+          "implementation_plan": {
+            "technical_goal": "Excavate and level",
+            "architecture_impact": "None",
+            "implementation_steps": [
+              "Dig",
+              "Fill"
+            ],
+            "validation_criteria": [
+              "Level surface"
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "Budget within limits",
+            "conditions": [],
+            "impact": {
+              "cost": 10000.0,
+              "days": 2,
+              "risk_delta": 0.1
+            }
+          },
+          "email_draft": {
+            "to": "client@example.com",
+            "subject": "Variation Approval",
+            "body": "Your variation has been approved."
+          },
+          "risk_score": 0.4,
+          "trace_id": "38337d79-6419-45f3-8598-01559de2e26e"
+        },
+        "trace_id": "38337d79-6419-45f3-8598-01559de2e26e",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - Budget within limits...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.4,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T22:39:15.936164"
+    },
+    {
+      "request_id": "APR-4162827C32F4",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "252ec33e-8eb3-4fbd-b778-94bb2609b03b",
+      "summary": "Proposed variation action: APPROVE - Budget within limits...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.4,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: +10k, +2 days for site prep",
+        "plan": {
+          "goal": "Resolve site prep needs",
+          "assumptions": [
+            "Stable soil"
+          ],
+          "steps": [
+            "Step 1",
+            "Step 2",
+            "Step 3"
+          ],
+          "risks": [
+            "Weather"
+          ],
+          "first_action": "Assess site"
+        },
+        "implementation_plan": {
+          "technical_goal": "Excavate and level",
+          "architecture_impact": "None",
+          "implementation_steps": [
+            "Dig",
+            "Fill"
+          ],
+          "validation_criteria": [
+            "Level surface"
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "Budget within limits",
+          "conditions": [],
+          "impact": {
+            "cost": 10000.0,
+            "days": 2,
+            "risk_delta": 0.1
+          }
+        },
+        "email_draft": {
+          "to": "client@example.com",
+          "subject": "Variation Approval",
+          "body": "Your variation has been approved."
+        },
+        "risk_score": 0.4,
+        "trace_id": "252ec33e-8eb3-4fbd-b778-94bb2609b03b"
+      },
+      "payload_hash": "fb4defe633c9a60efbb194fe5eb1c33fe5580188fbfdcc1bcab7565f7278c505",
+      "fingerprint": "0930bf376c027841daded867cbdb616451d5012be434898cdaa739a13915eb06",
+      "created_at": "2026-04-16T13:05:58.462178",
+      "decided_at": "2026-04-16T22:38:23.145644",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: +10k, +2 days for site prep",
+          "plan": {
+            "goal": "Resolve site prep needs",
+            "assumptions": [
+              "Stable soil"
+            ],
+            "steps": [
+              "Step 1",
+              "Step 2",
+              "Step 3"
+            ],
+            "risks": [
+              "Weather"
+            ],
+            "first_action": "Assess site"
+          },
+          "implementation_plan": {
+            "technical_goal": "Excavate and level",
+            "architecture_impact": "None",
+            "implementation_steps": [
+              "Dig",
+              "Fill"
+            ],
+            "validation_criteria": [
+              "Level surface"
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "Budget within limits",
+            "conditions": [],
+            "impact": {
+              "cost": 10000.0,
+              "days": 2,
+              "risk_delta": 0.1
+            }
+          },
+          "email_draft": {
+            "to": "client@example.com",
+            "subject": "Variation Approval",
+            "body": "Your variation has been approved."
+          },
+          "risk_score": 0.4,
+          "trace_id": "252ec33e-8eb3-4fbd-b778-94bb2609b03b"
+        },
+        "trace_id": "252ec33e-8eb3-4fbd-b778-94bb2609b03b",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - Budget within limits...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.4,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T22:39:14.935635"
+    },
+    {
+      "request_id": "APR-D1FACC05AD92",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "00b32c20-661e-4b33-9482-8d41dfb5779b",
+      "summary": "Proposed variation action: APPROVE - Budget within limits...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.4,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: +10k, +2 days for site prep",
+        "plan": {
+          "goal": "Resolve site prep needs",
+          "assumptions": [
+            "Stable soil"
+          ],
+          "steps": [
+            "Step 1",
+            "Step 2",
+            "Step 3"
+          ],
+          "risks": [
+            "Weather"
+          ],
+          "first_action": "Assess site"
+        },
+        "implementation_plan": {
+          "technical_goal": "Excavate and level",
+          "architecture_impact": "None",
+          "implementation_steps": [
+            "Dig",
+            "Fill"
+          ],
+          "validation_criteria": [
+            "Level surface"
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "Budget within limits",
+          "conditions": [],
+          "impact": {
+            "cost": 10000.0,
+            "days": 2,
+            "risk_delta": 0.1
+          }
+        },
+        "email_draft": {
+          "to": "client@example.com",
+          "subject": "Variation Approval",
+          "body": "Your variation has been approved."
+        },
+        "risk_score": 0.4,
+        "trace_id": "00b32c20-661e-4b33-9482-8d41dfb5779b"
+      },
+      "payload_hash": "aa4aa90738b440c71fed37a4490ce0553a8472da680ec6c13b182f83197d2242",
+      "fingerprint": "299218212887bef73af4f8fd47b3fc6b1aba20cd1e144792c77aa3cc8d87fc2b",
+      "created_at": "2026-04-16T13:08:23.595598",
+      "decided_at": "2026-04-16T22:38:25.909967",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: +10k, +2 days for site prep",
+          "plan": {
+            "goal": "Resolve site prep needs",
+            "assumptions": [
+              "Stable soil"
+            ],
+            "steps": [
+              "Step 1",
+              "Step 2",
+              "Step 3"
+            ],
+            "risks": [
+              "Weather"
+            ],
+            "first_action": "Assess site"
+          },
+          "implementation_plan": {
+            "technical_goal": "Excavate and level",
+            "architecture_impact": "None",
+            "implementation_steps": [
+              "Dig",
+              "Fill"
+            ],
+            "validation_criteria": [
+              "Level surface"
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "Budget within limits",
+            "conditions": [],
+            "impact": {
+              "cost": 10000.0,
+              "days": 2,
+              "risk_delta": 0.1
+            }
+          },
+          "email_draft": {
+            "to": "client@example.com",
+            "subject": "Variation Approval",
+            "body": "Your variation has been approved."
+          },
+          "risk_score": 0.4,
+          "trace_id": "00b32c20-661e-4b33-9482-8d41dfb5779b"
+        },
+        "trace_id": "00b32c20-661e-4b33-9482-8d41dfb5779b",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - Budget within limits...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.4,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T22:39:11.457287"
+    },
+    {
+      "request_id": "APR-AD07403AF379",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "f37400be-9486-49c0-af2d-eea849f11114",
+      "summary": "Proposed variation action: ESCALATE - Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escal...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.0,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+        "plan": {
+          "goal": "Create and verify a 'hello_world.ps1' script in the root directory that displays 'Hello World' and waits for user input to close.",
+          "assumptions": [
+            "A PowerShell environment is available and accessible.",
+            "The user has appropriate permissions to create and execute files in the target root directory."
+          ],
+          "steps": [
+            "Navigate to the root directory.",
+            "Create a new file named 'hello_world.ps1'.",
+            "Add the line 'Write-Host 'Hello World'' to 'hello_world.ps1'.",
+            "Add the line 'Read-Host 'Press Enter to close...'' to 'hello_world.ps1'.",
+            "Save the 'hello_world.ps1' file.",
+            "Execute the 'hello_world.ps1' script from a PowerShell console to verify its functionality."
+          ],
+          "risks": [
+            "Incorrect file path or name causing the script to be created in the wrong location or with the wrong name.",
+            "Syntax errors in the PowerShell script preventing it from running or functioning as intended.",
+            "Insufficient permissions to create, save, or execute the '.ps1' file.",
+            "The script might not correctly wait for user input, closing immediately."
+          ],
+          "first_action": "Navigate to the designated root directory."
+        },
+        "implementation_plan": {
+          "technical_goal": "Create a `hello_world.ps1` PowerShell script in the root directory that outputs \"Hello World\" and pauses for user input before exiting.",
+          "architecture_impact": "Minimal. This involves creating a single script file on the local file system. No changes to system configuration, network topology, or existing software architecture are anticipated.",
+          "implementation_steps": [
+            "Identify and navigate to the designated root directory where the script will reside.",
+            "Create a new file named `hello_world.ps1` in the identified root directory.",
+            "Open `hello_world.ps1` for editing using a text editor or PowerShell cmdlets (e.g., `Set-Content`).",
+            "Add the following lines of PowerShell code to `hello_world.ps1`:\n```powershell\nWrite-Host 'Hello World'\nRead-Host 'Press Enter to close...'\n```",
+            "Save the `hello_world.ps1` file.",
+            "Open a PowerShell console.",
+            "Navigate to the root directory containing `hello_world.ps1` within the PowerShell console.",
+            "Execute the script by typing `.\\hello_world.ps1` and pressing Enter."
+          ],
+          "validation_criteria": [
+            "The file `hello_world.ps1` must exist in the specified root directory.",
+            "The content of `hello_world.ps1` must exactly contain `Write-Host 'Hello World'` followed by `Read-Host 'Press Enter to close...'`, ensuring proper syntax and line breaks.",
+            "When `hello_world.ps1` is executed from a PowerShell console, it must display the text \"Hello World\" on the console.",
+            "After displaying \"Hello World\", the script must pause execution and display a prompt (e.g., \"Press Enter to close...\") until the user presses the Enter key.",
+            "The script must terminate successfully after the user presses Enter."
+          ]
+        },
+        "decision": {
+          "decision": "ESCALATE",
+          "justification": "Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escalation to protect project integrity.",
+          "conditions": [
+            "Manual human review required",
+            "Re-run decision turn with valid contract payload"
+          ],
+          "impact": {
+            "cost": 0,
+            "days": 0,
+            "risk_delta": 0
+          }
+        },
+        "email_draft": {
+          "to": "Project Lead",
+          "subject": "Urgent Escalation: Technical Logic Failure in Decision Process",
+          "body": "Dear Project Lead,\n\nThis email is to inform you of an urgent escalation in the decision-making process.\n\n**Decision:** ESCALATE\n**Justification:** Technical Logic Failure: decision_v1 validation failed (meta_language_detected). This system-forced escalation is necessary to protect project integrity.\n\n**Required Actions:**\n- Manual human review is required.\n- The decision turn must be re-run with a valid contract payload.\n\n**Impact:**\n- Cost: 0\n- Days: 0\n- Risk Delta: 0\n\nPlease address this issue as soon as possible.\n\nBest regards,\n[Your Name/System]"
+        },
+        "risk_score": 0.0,
+        "trace_id": "f37400be-9486-49c0-af2d-eea849f11114"
+      },
+      "payload_hash": "35b7cf5bc7050e3c5c41a83fc831b362bad2756c505d9092bc3a2db3c82c1a16",
+      "fingerprint": "2f6f8474e732459ebf4e0d2f772b32efa29e87bb443b0770855337c21c3e7efb",
+      "created_at": "2026-04-16T14:07:07.182420",
+      "decided_at": "2026-04-16T14:07:16.148395",
+      "decided_by": "gatekeeper",
+      "decision_reason": "Proof of work verification.",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+          "plan": {
+            "goal": "Create and verify a 'hello_world.ps1' script in the root directory that displays 'Hello World' and waits for user input to close.",
+            "assumptions": [
+              "A PowerShell environment is available and accessible.",
+              "The user has appropriate permissions to create and execute files in the target root directory."
+            ],
+            "steps": [
+              "Navigate to the root directory.",
+              "Create a new file named 'hello_world.ps1'.",
+              "Add the line 'Write-Host 'Hello World'' to 'hello_world.ps1'.",
+              "Add the line 'Read-Host 'Press Enter to close...'' to 'hello_world.ps1'.",
+              "Save the 'hello_world.ps1' file.",
+              "Execute the 'hello_world.ps1' script from a PowerShell console to verify its functionality."
+            ],
+            "risks": [
+              "Incorrect file path or name causing the script to be created in the wrong location or with the wrong name.",
+              "Syntax errors in the PowerShell script preventing it from running or functioning as intended.",
+              "Insufficient permissions to create, save, or execute the '.ps1' file.",
+              "The script might not correctly wait for user input, closing immediately."
+            ],
+            "first_action": "Navigate to the designated root directory."
+          },
+          "implementation_plan": {
+            "technical_goal": "Create a `hello_world.ps1` PowerShell script in the root directory that outputs \"Hello World\" and pauses for user input before exiting.",
+            "architecture_impact": "Minimal. This involves creating a single script file on the local file system. No changes to system configuration, network topology, or existing software architecture are anticipated.",
+            "implementation_steps": [
+              "Identify and navigate to the designated root directory where the script will reside.",
+              "Create a new file named `hello_world.ps1` in the identified root directory.",
+              "Open `hello_world.ps1` for editing using a text editor or PowerShell cmdlets (e.g., `Set-Content`).",
+              "Add the following lines of PowerShell code to `hello_world.ps1`:\n```powershell\nWrite-Host 'Hello World'\nRead-Host 'Press Enter to close...'\n```",
+              "Save the `hello_world.ps1` file.",
+              "Open a PowerShell console.",
+              "Navigate to the root directory containing `hello_world.ps1` within the PowerShell console.",
+              "Execute the script by typing `.\\hello_world.ps1` and pressing Enter."
+            ],
+            "validation_criteria": [
+              "The file `hello_world.ps1` must exist in the specified root directory.",
+              "The content of `hello_world.ps1` must exactly contain `Write-Host 'Hello World'` followed by `Read-Host 'Press Enter to close...'`, ensuring proper syntax and line breaks.",
+              "When `hello_world.ps1` is executed from a PowerShell console, it must display the text \"Hello World\" on the console.",
+              "After displaying \"Hello World\", the script must pause execution and display a prompt (e.g., \"Press Enter to close...\") until the user presses the Enter key.",
+              "The script must terminate successfully after the user presses Enter."
+            ]
+          },
+          "decision": {
+            "decision": "ESCALATE",
+            "justification": "Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escalation to protect project integrity.",
+            "conditions": [
+              "Manual human review required",
+              "Re-run decision turn with valid contract payload"
+            ],
+            "impact": {
+              "cost": 0,
+              "days": 0,
+              "risk_delta": 0
+            }
+          },
+          "email_draft": {
+            "to": "Project Lead",
+            "subject": "Urgent Escalation: Technical Logic Failure in Decision Process",
+            "body": "Dear Project Lead,\n\nThis email is to inform you of an urgent escalation in the decision-making process.\n\n**Decision:** ESCALATE\n**Justification:** Technical Logic Failure: decision_v1 validation failed (meta_language_detected). This system-forced escalation is necessary to protect project integrity.\n\n**Required Actions:**\n- Manual human review is required.\n- The decision turn must be re-run with a valid contract payload.\n\n**Impact:**\n- Cost: 0\n- Days: 0\n- Risk Delta: 0\n\nPlease address this issue as soon as possible.\n\nBest regards,\n[Your Name/System]"
+          },
+          "risk_score": 0.0,
+          "trace_id": "f37400be-9486-49c0-af2d-eea849f11114"
+        },
+        "trace_id": "f37400be-9486-49c0-af2d-eea849f11114",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: ESCALATE - Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escal...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.0,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T14:07:16.164296"
+    },
+    {
+      "request_id": "APR-C8F4C64F5C14",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "a2f0cc3d-c591-43d0-95ec-8e3234702370",
+      "summary": "Proposed variation action: APPROVE - The `risk_score` for this variation is 0.0, indicating exceptionally low risk. The overall project `...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.0,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+        "plan": {
+          "goal": "Create a 'hello_world.ps1' file in the root directory that displays 'Hello World' and waits for user input to close.",
+          "assumptions": [
+            "The execution environment supports PowerShell.",
+            "The root directory is accessible for file creation.",
+            "The user has permissions to create and execute files."
+          ],
+          "steps": [
+            "Create a new file named 'hello_world.ps1' in the designated root directory.",
+            "Add the line 'Write-Host \"Hello World\"' to the 'hello_world.ps1' file.",
+            "Add the line 'Read-Host \"Press Enter to close...\" | Out-Null' to the 'hello_world.ps1' file to pause execution until user input."
+          ],
+          "risks": [
+            "File creation may fail due to incorrect path or insufficient permissions.",
+            "PowerShell might not be available or correctly configured in the target environment.",
+            "The script might not pause as expected if the execution environment closes immediately after script completion."
+          ],
+          "first_action": "Create the 'hello_world.ps1' file in the root directory."
+        },
+        "implementation_plan": {
+          "technical_goal": "Create a 'hello_world.ps1' file in the root directory that displays 'Hello World' and waits for user input to close.",
+          "architecture_impact": "Minimal; introduces a new script file without altering existing system architecture or dependencies.",
+          "implementation_steps": [
+            "Define the content for 'hello_world.ps1' including a 'Write-Host' command for 'Hello World' and a 'Read-Host' command to pause execution.",
+            "Use the 'file_write' tool to create 'hello_world.ps1' in the root directory with the defined content."
+          ],
+          "validation_criteria": [
+            "Verify that 'hello_world.ps1' exists in the root directory.",
+            "Execute 'hello_world.ps1' from a PowerShell console.",
+            "Confirm that the output 'Hello World' is displayed.",
+            "Confirm that the script pauses, displaying 'Press Enter to close...', and waits for user input.",
+            "Confirm that the script terminates after pressing Enter."
+          ],
+          "tool_calls": [
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "hello_world.ps1",
+                "content": "Write-Host \"Hello World\"\nRead-Host \"Press Enter to close...\" | Out-Null"
+              }
+            }
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "The `risk_score` for this variation is 0.0, indicating exceptionally low risk. The overall project `risk_trend` is stable. Sentinel's `critique` explicitly states that the proposed and implementation plans are clear, concise, logically sound, and well-prepared for execution. While Sentinel noted minor risk flags regarding PowerShell availability, permissions, and the implicit definition of 'root directory', these are inherent environmental considerations for this simple task and do not warrant rejection or escalation given the minimal risk profile and the stable project health.",
+          "conditions": [
+            "Confirm that the execution environment has PowerShell installed and correctly configured.",
+            "Verify that the agent has sufficient permissions to create and execute the file in the designated root directory."
+          ],
+          "impact": {
+            "cost": 0.0,
+            "days": 0,
+            "risk_delta": 0.0
+          }
+        },
+        "email_draft": {
+          "to": "Relevant Stakeholders",
+          "subject": "Decision: Approval for Proposed Change",
+          "body": "The proposed change has been **APPROVED**.\n\nThis decision is based on the exceptionally low `risk_score` (0.0) for this variation and a stable overall project `risk_trend`. Sentinel's critique confirmed that the proposed and implementation plans are clear, concise, logically sound, and well-prepared for execution. Minor risk flags noted by Sentinel regarding PowerShell availability, permissions, and the implicit definition of 'root directory' are considered inherent environmental considerations for this simple task and do not warrant rejection or escalation given the minimal risk profile and stable project health.\n\nPlease note the following conditions for proceeding:\n*   Confirm that the execution environment has PowerShell installed and correctly configured.\n*   Verify that the agent has sufficient permissions to create and execute the file in the designated root directory.\n\nThe anticipated impact of this change is minimal, with no expected cost increase ($0.0), no additional days to the schedule (0 days), and no change in risk (0.0 risk delta)."
+        },
+        "risk_score": 0.0,
+        "trace_id": "a2f0cc3d-c591-43d0-95ec-8e3234702370"
+      },
+      "payload_hash": "493f9267b63d8bb35de456cf7a6b4f035519c77fa74dfc4fcc35e5d0f428ceeb",
+      "fingerprint": "ebf1e0c61b0087be8f5ae6727a8d07b1bafd36c785cba7db9e4406d6203e882a",
+      "created_at": "2026-04-16T14:10:53.153387",
+      "decided_at": "2026-04-16T14:10:56.985731",
+      "decided_by": "gatekeeper",
+      "decision_reason": "Proof of work verification.",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+          "plan": {
+            "goal": "Create a 'hello_world.ps1' file in the root directory that displays 'Hello World' and waits for user input to close.",
+            "assumptions": [
+              "The execution environment supports PowerShell.",
+              "The root directory is accessible for file creation.",
+              "The user has permissions to create and execute files."
+            ],
+            "steps": [
+              "Create a new file named 'hello_world.ps1' in the designated root directory.",
+              "Add the line 'Write-Host \"Hello World\"' to the 'hello_world.ps1' file.",
+              "Add the line 'Read-Host \"Press Enter to close...\" | Out-Null' to the 'hello_world.ps1' file to pause execution until user input."
+            ],
+            "risks": [
+              "File creation may fail due to incorrect path or insufficient permissions.",
+              "PowerShell might not be available or correctly configured in the target environment.",
+              "The script might not pause as expected if the execution environment closes immediately after script completion."
+            ],
+            "first_action": "Create the 'hello_world.ps1' file in the root directory."
+          },
+          "implementation_plan": {
+            "technical_goal": "Create a 'hello_world.ps1' file in the root directory that displays 'Hello World' and waits for user input to close.",
+            "architecture_impact": "Minimal; introduces a new script file without altering existing system architecture or dependencies.",
+            "implementation_steps": [
+              "Define the content for 'hello_world.ps1' including a 'Write-Host' command for 'Hello World' and a 'Read-Host' command to pause execution.",
+              "Use the 'file_write' tool to create 'hello_world.ps1' in the root directory with the defined content."
+            ],
+            "validation_criteria": [
+              "Verify that 'hello_world.ps1' exists in the root directory.",
+              "Execute 'hello_world.ps1' from a PowerShell console.",
+              "Confirm that the output 'Hello World' is displayed.",
+              "Confirm that the script pauses, displaying 'Press Enter to close...', and waits for user input.",
+              "Confirm that the script terminates after pressing Enter."
+            ],
+            "tool_calls": [
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "hello_world.ps1",
+                  "content": "Write-Host \"Hello World\"\nRead-Host \"Press Enter to close...\" | Out-Null"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "The `risk_score` for this variation is 0.0, indicating exceptionally low risk. The overall project `risk_trend` is stable. Sentinel's `critique` explicitly states that the proposed and implementation plans are clear, concise, logically sound, and well-prepared for execution. While Sentinel noted minor risk flags regarding PowerShell availability, permissions, and the implicit definition of 'root directory', these are inherent environmental considerations for this simple task and do not warrant rejection or escalation given the minimal risk profile and the stable project health.",
+            "conditions": [
+              "Confirm that the execution environment has PowerShell installed and correctly configured.",
+              "Verify that the agent has sufficient permissions to create and execute the file in the designated root directory."
+            ],
+            "impact": {
+              "cost": 0.0,
+              "days": 0,
+              "risk_delta": 0.0
+            }
+          },
+          "email_draft": {
+            "to": "Relevant Stakeholders",
+            "subject": "Decision: Approval for Proposed Change",
+            "body": "The proposed change has been **APPROVED**.\n\nThis decision is based on the exceptionally low `risk_score` (0.0) for this variation and a stable overall project `risk_trend`. Sentinel's critique confirmed that the proposed and implementation plans are clear, concise, logically sound, and well-prepared for execution. Minor risk flags noted by Sentinel regarding PowerShell availability, permissions, and the implicit definition of 'root directory' are considered inherent environmental considerations for this simple task and do not warrant rejection or escalation given the minimal risk profile and stable project health.\n\nPlease note the following conditions for proceeding:\n*   Confirm that the execution environment has PowerShell installed and correctly configured.\n*   Verify that the agent has sufficient permissions to create and execute the file in the designated root directory.\n\nThe anticipated impact of this change is minimal, with no expected cost increase ($0.0), no additional days to the schedule (0 days), and no change in risk (0.0 risk delta)."
+          },
+          "risk_score": 0.0,
+          "trace_id": "a2f0cc3d-c591-43d0-95ec-8e3234702370"
+        },
+        "trace_id": "a2f0cc3d-c591-43d0-95ec-8e3234702370",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - The `risk_score` for this variation is 0.0, indicating exceptionally low risk. The overall project `...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.0,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T14:10:57.000100"
+    },
+    {
+      "request_id": "APR-196832CC6045",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "c6b67730-c8fc-4157-830f-fc217e43d285",
+      "summary": "Proposed variation action: ESCALATE - Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escal...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.0,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+        "plan": {
+          "goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input to close.",
+          "assumptions": [
+            "The environment has write permissions to the root directory",
+            "PowerShell syntax is required for the content",
+            "The file does not already exist or can be safely overwritten"
+          ],
+          "steps": [
+            "Initialize file creation for 'hello_world.ps1' at the root path",
+            "Inject the command 'Write-Host \"Hello World\"' into the file",
+            "Inject the command 'Read-Host \"Press Enter to close\"' to handle the wait condition",
+            "Save the file and verify its presence in the directory"
+          ],
+          "risks": [
+            "Insufficient permissions to write to the root directory",
+            "Antivirus or security software flagging the script creation",
+            "Execution policy restrictions on PowerShell scripts"
+          ],
+          "first_action": "Create the file 'hello_world.ps1' in the root directory with the specified content."
+        },
+        "implementation_plan": {
+          "technical_goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input to close.",
+          "architecture_impact": "Adds a standalone utility script to the root directory. No impact on core system architecture.",
+          "implementation_steps": [
+            "Prepare the PowerShell script content with Write-Host and Read-Host commands.",
+            "Write the script content to a file named 'hello_world.ps1' in the root directory."
+          ],
+          "validation_criteria": [
+            "The file 'hello_world.ps1' must exist in the root directory.",
+            "The file content must include 'Write-Host \"Hello World\"'.",
+            "The file content must include 'Read-Host \"Press Enter to close\"'."
+          ],
+          "tool_calls": [
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "hello_world.ps1",
+                "content": "Write-Host \"Hello World\"\nRead-Host \"Press Enter to close\""
+              }
+            }
+          ]
+        },
+        "decision": {
+          "decision": "ESCALATE",
+          "justification": "Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escalation to protect project integrity.",
+          "conditions": [
+            "Manual human review required",
+            "Re-run decision turn with valid contract payload"
+          ],
+          "impact": {
+            "cost": 0,
+            "days": 0,
+            "risk_delta": 0
+          }
+        },
+        "email_draft": {
+          "to": "Project Oversight Committee",
+          "subject": "System Escalation: Technical Logic Failure (decision_v1)",
+          "body": "Dear Team,\n\nPlease be advised that the system has triggered a formal ESCALATION for the current project turn.\n\nReason: Technical Logic Failure. Validation for decision_v1 failed due to meta_language_detected. This escalation is system-forced to protect project integrity.\n\nRequired Actions:\n- Manual human review is now required.\n- The decision turn must be re-run with a valid contract payload.\n\nImpact Analysis:\n- Cost: 0\n- Schedule: 0 days\n- Risk Delta: 0\n\nPlease proceed with the manual review as per standard operating procedures."
+        },
+        "risk_score": 0.0,
+        "trace_id": "c6b67730-c8fc-4157-830f-fc217e43d285"
+      },
+      "payload_hash": "eb797809fde555f3aaab444e140a7ba9aa269192787737e278e2efdad5e6cb80",
+      "fingerprint": "8f2974915ba168dc3d343604219ea17e04aede361752f9ce022bed58b19841ac",
+      "created_at": "2026-04-16T14:20:57.088221",
+      "decided_at": "2026-04-16T14:21:02.080561",
+      "decided_by": "gatekeeper",
+      "decision_reason": "Proof of work verification.",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+          "plan": {
+            "goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input to close.",
+            "assumptions": [
+              "The environment has write permissions to the root directory",
+              "PowerShell syntax is required for the content",
+              "The file does not already exist or can be safely overwritten"
+            ],
+            "steps": [
+              "Initialize file creation for 'hello_world.ps1' at the root path",
+              "Inject the command 'Write-Host \"Hello World\"' into the file",
+              "Inject the command 'Read-Host \"Press Enter to close\"' to handle the wait condition",
+              "Save the file and verify its presence in the directory"
+            ],
+            "risks": [
+              "Insufficient permissions to write to the root directory",
+              "Antivirus or security software flagging the script creation",
+              "Execution policy restrictions on PowerShell scripts"
+            ],
+            "first_action": "Create the file 'hello_world.ps1' in the root directory with the specified content."
+          },
+          "implementation_plan": {
+            "technical_goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input to close.",
+            "architecture_impact": "Adds a standalone utility script to the root directory. No impact on core system architecture.",
+            "implementation_steps": [
+              "Prepare the PowerShell script content with Write-Host and Read-Host commands.",
+              "Write the script content to a file named 'hello_world.ps1' in the root directory."
+            ],
+            "validation_criteria": [
+              "The file 'hello_world.ps1' must exist in the root directory.",
+              "The file content must include 'Write-Host \"Hello World\"'.",
+              "The file content must include 'Read-Host \"Press Enter to close\"'."
+            ],
+            "tool_calls": [
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "hello_world.ps1",
+                  "content": "Write-Host \"Hello World\"\nRead-Host \"Press Enter to close\""
+                }
+              }
+            ]
+          },
+          "decision": {
+            "decision": "ESCALATE",
+            "justification": "Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escalation to protect project integrity.",
+            "conditions": [
+              "Manual human review required",
+              "Re-run decision turn with valid contract payload"
+            ],
+            "impact": {
+              "cost": 0,
+              "days": 0,
+              "risk_delta": 0
+            }
+          },
+          "email_draft": {
+            "to": "Project Oversight Committee",
+            "subject": "System Escalation: Technical Logic Failure (decision_v1)",
+            "body": "Dear Team,\n\nPlease be advised that the system has triggered a formal ESCALATION for the current project turn.\n\nReason: Technical Logic Failure. Validation for decision_v1 failed due to meta_language_detected. This escalation is system-forced to protect project integrity.\n\nRequired Actions:\n- Manual human review is now required.\n- The decision turn must be re-run with a valid contract payload.\n\nImpact Analysis:\n- Cost: 0\n- Schedule: 0 days\n- Risk Delta: 0\n\nPlease proceed with the manual review as per standard operating procedures."
+          },
+          "risk_score": 0.0,
+          "trace_id": "c6b67730-c8fc-4157-830f-fc217e43d285"
+        },
+        "trace_id": "c6b67730-c8fc-4157-830f-fc217e43d285",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: ESCALATE - Technical Logic Failure: decision_v1 validation failed (meta_language_detected). System-forced escal...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.0,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T14:21:02.093849"
+    },
+    {
+      "request_id": "APR-AE0AE9D2D288",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "cc4fcfe9-8e5a-4ca6-b8c4-ee99a47178aa",
+      "summary": "Proposed variation action: APPROVE - The 'risk_score' is currently 0.0, supported by a 'risk_trend' that is DECREASING (averaging 0.14 ov...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.0,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+        "plan": {
+          "goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input before closing.",
+          "assumptions": [
+            "The root directory is writable by the current process.",
+            "PowerShell is installed and accessible in the environment.",
+            "The user has permissions to create files in the root folder."
+          ],
+          "steps": [
+            "Define the content of the PowerShell script: Write-Host 'Hello World'; Read-Host 'Press Enter to close...'",
+            "Create a new file named hello_world.ps1 in the root directory.",
+            "Write the defined content into the hello_world.ps1 file.",
+            "Verify the file was created and contains the correct script content."
+          ],
+          "risks": [
+            "Permission denied error when writing to the root directory.",
+            "Execution policy restrictions might prevent the script from running (though not required for just building the file)."
+          ],
+          "first_action": "Create the file 'hello_world.ps1' in the root directory with the content: Write-Host 'Hello World'; Read-Host 'Press Enter to close...'"
+        },
+        "implementation_plan": {
+          "project_name": "PowerShell Hello World Script",
+          "architecture": "Single-file PowerShell script deployment",
+          "steps": [
+            "Define the script content to output 'Hello World' and wait for user input.",
+            "Write the script content to 'hello_world.ps1' in the root directory.",
+            "Confirm the script file was successfully created."
+          ],
+          "risks": [
+            "Permission denied error when attempting to write to the root directory.",
+            "PowerShell execution policy might prevent running the script, although creation should succeed."
+          ],
+          "tool_calls": [
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "hello_world.ps1",
+                "content": "Write-Host 'Hello World'\nRead-Host 'Press Enter to close...'"
+              }
+            }
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "The 'risk_score' is currently 0.0, supported by a 'risk_trend' that is DECREASING (averaging 0.14 over the last five iterations), which provides high confidence in proceeding. I have reviewed Sentinel's 'critique' regarding 'Path Ambiguity' and potential 'Privilege Escalation' requirements for root directory access; however, given Owen's vote that the current working directory typically acts as the project root in this environment, the technical risk is negligible. The missing verification call noted by Sentinel will be addressed as a condition of approval.",
+          "conditions": [
+            "Verify administrative permissions for the target directory prior to execution.",
+            "Perform a follow-up directory listing or file read to confirm script integrity."
+          ],
+          "impact": {
+            "cost": 0.0,
+            "days": 0,
+            "risk_delta": 0.01
+          }
+        },
+        "email_draft": {
+          "to": "Project Stakeholders",
+          "subject": "Approval Decision: Project Execution and Script Deployment",
+          "body": "Hello,\n\nI am writing to inform you that the decision has been made to APPROVE the proposed action. \n\nJustification:\nThe current risk score is 0.0, and we have observed a decreasing risk trend averaging 0.14 over the past five iterations, which provides high confidence in this deployment. While concerns were raised regarding 'Path Ambiguity' and 'Privilege Escalation' for root directory access, further review has confirmed that the technical risk is negligible as the current working directory functions as the project root in this environment.\n\nConditions for Approval:\n1. Verify administrative permissions for the target directory prior to execution.\n2. Perform a follow-up directory listing or file read to confirm script integrity.\n\nImpact Assessment:\n- Cost: 0.0\n- Schedule Impact: 0 days\n- Risk Delta: 0.01\n\nPlease proceed while ensuring that both conditions mentioned above are fully addressed.\n\nBest regards,"
+        },
+        "risk_score": 0.0,
+        "trace_id": "cc4fcfe9-8e5a-4ca6-b8c4-ee99a47178aa"
+      },
+      "payload_hash": "03899bab4b68bc304ee6ca2f9431b7265686f0655ccfb6b448f991dd7940f7b4",
+      "fingerprint": "81609774c9a62caad8fc8b9edad47a5c146ea4e358be96ea04725a6554dc3cef",
+      "created_at": "2026-04-16T21:16:44.050858",
+      "decided_at": "2026-04-16T21:16:51.396893",
+      "decided_by": "gatekeeper",
+      "decision_reason": "Proof of work verification.",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: Build a hello_world.ps1 file in the root that says 'Hello World' and waits for Enter to close.",
+          "plan": {
+            "goal": "Create a hello_world.ps1 script in the root directory that displays 'Hello World' and waits for user input before closing.",
+            "assumptions": [
+              "The root directory is writable by the current process.",
+              "PowerShell is installed and accessible in the environment.",
+              "The user has permissions to create files in the root folder."
+            ],
+            "steps": [
+              "Define the content of the PowerShell script: Write-Host 'Hello World'; Read-Host 'Press Enter to close...'",
+              "Create a new file named hello_world.ps1 in the root directory.",
+              "Write the defined content into the hello_world.ps1 file.",
+              "Verify the file was created and contains the correct script content."
+            ],
+            "risks": [
+              "Permission denied error when writing to the root directory.",
+              "Execution policy restrictions might prevent the script from running (though not required for just building the file)."
+            ],
+            "first_action": "Create the file 'hello_world.ps1' in the root directory with the content: Write-Host 'Hello World'; Read-Host 'Press Enter to close...'"
+          },
+          "implementation_plan": {
+            "project_name": "PowerShell Hello World Script",
+            "architecture": "Single-file PowerShell script deployment",
+            "steps": [
+              "Define the script content to output 'Hello World' and wait for user input.",
+              "Write the script content to 'hello_world.ps1' in the root directory.",
+              "Confirm the script file was successfully created."
+            ],
+            "risks": [
+              "Permission denied error when attempting to write to the root directory.",
+              "PowerShell execution policy might prevent running the script, although creation should succeed."
+            ],
+            "tool_calls": [
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "hello_world.ps1",
+                  "content": "Write-Host 'Hello World'\nRead-Host 'Press Enter to close...'"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "The 'risk_score' is currently 0.0, supported by a 'risk_trend' that is DECREASING (averaging 0.14 over the last five iterations), which provides high confidence in proceeding. I have reviewed Sentinel's 'critique' regarding 'Path Ambiguity' and potential 'Privilege Escalation' requirements for root directory access; however, given Owen's vote that the current working directory typically acts as the project root in this environment, the technical risk is negligible. The missing verification call noted by Sentinel will be addressed as a condition of approval.",
+            "conditions": [
+              "Verify administrative permissions for the target directory prior to execution.",
+              "Perform a follow-up directory listing or file read to confirm script integrity."
+            ],
+            "impact": {
+              "cost": 0.0,
+              "days": 0,
+              "risk_delta": 0.01
+            }
+          },
+          "email_draft": {
+            "to": "Project Stakeholders",
+            "subject": "Approval Decision: Project Execution and Script Deployment",
+            "body": "Hello,\n\nI am writing to inform you that the decision has been made to APPROVE the proposed action. \n\nJustification:\nThe current risk score is 0.0, and we have observed a decreasing risk trend averaging 0.14 over the past five iterations, which provides high confidence in this deployment. While concerns were raised regarding 'Path Ambiguity' and 'Privilege Escalation' for root directory access, further review has confirmed that the technical risk is negligible as the current working directory functions as the project root in this environment.\n\nConditions for Approval:\n1. Verify administrative permissions for the target directory prior to execution.\n2. Perform a follow-up directory listing or file read to confirm script integrity.\n\nImpact Assessment:\n- Cost: 0.0\n- Schedule Impact: 0 days\n- Risk Delta: 0.01\n\nPlease proceed while ensuring that both conditions mentioned above are fully addressed.\n\nBest regards,"
+          },
+          "risk_score": 0.0,
+          "trace_id": "cc4fcfe9-8e5a-4ca6-b8c4-ee99a47178aa"
+        },
+        "trace_id": "cc4fcfe9-8e5a-4ca6-b8c4-ee99a47178aa",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - The 'risk_score' is currently 0.0, supported by a 'risk_trend' that is DECREASING (averaging 0.14 ov...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.0,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T21:16:51.415892"
+    },
+    {
+      "request_id": "APR-1444AD5ADEBB",
+      "status": "executed",
+      "action": "construction_variation",
+      "agent_id": "aria",
+      "trace_id": "84ceb2dd-af97-4cdd-ad2e-4aca455d6468",
+      "summary": "Proposed variation action: APPROVE - While the risk_score is high at 0.8, the risk_trend is significantly decreasing (0.09), indicating i...",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.8,
+        "conflict": "false"
+      },
+      "payload": {
+        "scenario_type": "variation",
+        "user_input": "Variation: +$15k, +3 days due to drainage issue",
+        "plan": {
+          "goal": "Process and implement a variation for a drainage issue costing $15,000 and requiring a 3-day schedule extension.",
+          "assumptions": [
+            "The $15,000 cost is inclusive of all materials and labor.",
+            "The 3-day extension will not trigger critical path failure or external penalties.",
+            "Project contingency or budget can accommodate the $15,000 increase."
+          ],
+          "steps": [
+            "Verify the technical scope of the drainage issue and the provided cost estimate.",
+            "Update the project budget and financial forecast to reflect the $15,000 increase.",
+            "Adjust the project schedule to include the 3-day extension.",
+            "Obtain formal sign-off for the variation from stakeholders.",
+            "Execute drainage remediation work according to revised specifications."
+          ],
+          "risks": [
+            "Discovery of further subsurface issues during excavation.",
+            "Adverse weather conditions delaying the 3-day remediation window.",
+            "Potential for cost overruns if the drainage issue is more complex than estimated."
+          ],
+          "first_action": "Review the detailed cost breakdown and technical report for the drainage issue."
+        },
+        "implementation_plan": {
+          "project_name": "Drainage Remediation Variation #001",
+          "architecture": "Integrated Project Management System (IPMS) featuring financial reconciliation, schedule sequencing (CPM), and field execution modules.",
+          "steps": [
+            "Perform a technical review of the subsurface drainage report and civil engineering specifications.",
+            "Execute a cost-impact analysis to allocate the $15,000 across labor, materials (HDPE piping, aggregate), and equipment.",
+            "Update the project Work Breakdown Structure (WBS) and Cost Baseline in the ERP system.",
+            "Modify the Master Project Schedule using Critical Path Method (CPM) to incorporate the 3-day extension.",
+            "Draft and distribute a formal Variation Order (VO) for digital stakeholder sign-off.",
+            "Procure additional drainage materials and mobilize the specialized civil works team.",
+            "Excavate and install remedial drainage layers according to the revised technical specification.",
+            "Conduct flow rate verification and backfill compaction testing.",
+            "Perform final inspection and update the 'As-Built' documentation."
+          ],
+          "risks": [
+            "Encountering undocumented underground utilities during remedial excavation.",
+            "Soil instability or liquefaction if heavy rainfall occurs during the 3-day window.",
+            "Potential for scope creep if adjacent drainage sections show similar degradation."
+          ],
+          "tool_calls": [
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "financials/variation_ledger.json",
+                "content": "{\n  \"variation_id\": \"VO-DRAIN-001\",\n  \"description\": \"Subsurface drainage remediation\",\n  \"budget_adjustment\": 15000.00,\n  \"currency\": \"USD\",\n  \"status\": \"PENDING_APPROVAL\",\n  \"allocation\": {\n    \"materials\": 6500,\n    \"labor\": 5500,\n    \"equipment_rental\": 3000\n  }\n}"
+              }
+            },
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "schedule/delta_impact.json",
+                "content": "{\n  \"activity_id\": \"CIV-DRAIN-REM\",\n  \"duration_increase_days\": 3,\n  \"new_finish_date\": \"TBD_BASED_ON_APPROVAL\",\n  \"critical_path_impact\": false,\n  \"dependencies\": [\"Site_Grading\", \"Foundation_Pour\"]\n}"
+              }
+            },
+            {
+              "tool": "file_write",
+              "arguments": {
+                "path": "docs/variation_order_001.md",
+                "content": "# Variation Order 001: Drainage Remediation\n\n**Total Cost:** $15,000.00  \n**Schedule Extension:** 3 Days  \n\n## Technical Scope\nDue to unforeseen subsurface conditions, additional drainage infrastructure is required to prevent hydrostatic pressure buildup. Work includes excavation, installation of perforated HDPE piping, and French drain aggregate.\n\n## Approval Signatories\n- Project Manager\n- Lead Civil Engineer\n- Client Representative"
+              }
+            }
+          ]
+        },
+        "decision": {
+          "decision": "APPROVE",
+          "justification": "While the risk_score is high at 0.8, the risk_trend is significantly decreasing (0.09), indicating improved project stability. Sentinel's critique correctly identifies a critical path vulnerability regarding the Foundation Pour dependency; however, the technical granularity of the proposed implementation plan—specifically the $15,000 detailed ledger allocation and the addition of flow rate and compaction testing—provides sufficient risk mitigation to proceed without escalation.",
+          "conditions": [
+            "Verification of the 3-day float against the Foundation Pour schedule prior to excavation.",
+            "Mandatory submission of compaction testing results before backfilling starts.",
+            "Real-time monitoring of subsurface stability during the open-trench window."
+          ],
+          "impact": {
+            "cost": 15000.0,
+            "days": 3,
+            "risk_delta": 0.04
+          }
+        },
+        "email_draft": {
+          "to": "Project Management Team",
+          "subject": "Approval Notice: Project Implementation Plan & Risk Mitigation Strategy",
+          "body": "Dear Team,\n\nPlease be advised that the decision has been made to APPROVE the current project proposal, effective immediately.\n\nJustification:\nWhile the risk score is currently high at 0.8, the risk trend shows a significant decrease (0.09), indicating a move toward project stability. Although Sentinel’s critique highlighted a critical path vulnerability regarding the Foundation Pour dependency, the technical granularity of the proposed implementation plan—specifically the $15,000 detailed ledger allocation and the inclusion of flow rate and compaction testing—provides sufficient risk mitigation to proceed without further escalation.\n\nConditions of Approval:\nThis approval is contingent upon the following mandatory actions:\n1. Verification of the 3-day float against the Foundation Pour schedule prior to excavation.\n2. Submission of compaction testing results before backfilling operations commence.\n3. Real-time monitoring of subsurface stability during the open-trench window.\n\nProject Impact:\n- Cost: $15,000.00\n- Schedule: +3 days\n- Risk Delta: 0.04\n\nPlease ensure these conditions are integrated into the immediate work plan.\n\nBest regards,\n\nProject Oversight Committee"
+        },
+        "risk_score": 0.8,
+        "trace_id": "84ceb2dd-af97-4cdd-ad2e-4aca455d6468"
+      },
+      "payload_hash": "bb400fc28fbb64b9f8f23199cddff28531972be8c31074d471a1e873e91f9a04",
+      "fingerprint": "7cf6169f143f5133472602316e0cf366d13204b951fc160381956c8b65c5fb4e",
+      "created_at": "2026-04-16T22:35:43.157723",
+      "decided_at": "2026-04-16T22:38:06.431619",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "construction_variation",
+        "agent_id": "aria",
+        "parameters": {
+          "scenario_type": "variation",
+          "user_input": "Variation: +$15k, +3 days due to drainage issue",
+          "plan": {
+            "goal": "Process and implement a variation for a drainage issue costing $15,000 and requiring a 3-day schedule extension.",
+            "assumptions": [
+              "The $15,000 cost is inclusive of all materials and labor.",
+              "The 3-day extension will not trigger critical path failure or external penalties.",
+              "Project contingency or budget can accommodate the $15,000 increase."
+            ],
+            "steps": [
+              "Verify the technical scope of the drainage issue and the provided cost estimate.",
+              "Update the project budget and financial forecast to reflect the $15,000 increase.",
+              "Adjust the project schedule to include the 3-day extension.",
+              "Obtain formal sign-off for the variation from stakeholders.",
+              "Execute drainage remediation work according to revised specifications."
+            ],
+            "risks": [
+              "Discovery of further subsurface issues during excavation.",
+              "Adverse weather conditions delaying the 3-day remediation window.",
+              "Potential for cost overruns if the drainage issue is more complex than estimated."
+            ],
+            "first_action": "Review the detailed cost breakdown and technical report for the drainage issue."
+          },
+          "implementation_plan": {
+            "project_name": "Drainage Remediation Variation #001",
+            "architecture": "Integrated Project Management System (IPMS) featuring financial reconciliation, schedule sequencing (CPM), and field execution modules.",
+            "steps": [
+              "Perform a technical review of the subsurface drainage report and civil engineering specifications.",
+              "Execute a cost-impact analysis to allocate the $15,000 across labor, materials (HDPE piping, aggregate), and equipment.",
+              "Update the project Work Breakdown Structure (WBS) and Cost Baseline in the ERP system.",
+              "Modify the Master Project Schedule using Critical Path Method (CPM) to incorporate the 3-day extension.",
+              "Draft and distribute a formal Variation Order (VO) for digital stakeholder sign-off.",
+              "Procure additional drainage materials and mobilize the specialized civil works team.",
+              "Excavate and install remedial drainage layers according to the revised technical specification.",
+              "Conduct flow rate verification and backfill compaction testing.",
+              "Perform final inspection and update the 'As-Built' documentation."
+            ],
+            "risks": [
+              "Encountering undocumented underground utilities during remedial excavation.",
+              "Soil instability or liquefaction if heavy rainfall occurs during the 3-day window.",
+              "Potential for scope creep if adjacent drainage sections show similar degradation."
+            ],
+            "tool_calls": [
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "financials/variation_ledger.json",
+                  "content": "{\n  \"variation_id\": \"VO-DRAIN-001\",\n  \"description\": \"Subsurface drainage remediation\",\n  \"budget_adjustment\": 15000.00,\n  \"currency\": \"USD\",\n  \"status\": \"PENDING_APPROVAL\",\n  \"allocation\": {\n    \"materials\": 6500,\n    \"labor\": 5500,\n    \"equipment_rental\": 3000\n  }\n}"
+                }
+              },
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "schedule/delta_impact.json",
+                  "content": "{\n  \"activity_id\": \"CIV-DRAIN-REM\",\n  \"duration_increase_days\": 3,\n  \"new_finish_date\": \"TBD_BASED_ON_APPROVAL\",\n  \"critical_path_impact\": false,\n  \"dependencies\": [\"Site_Grading\", \"Foundation_Pour\"]\n}"
+                }
+              },
+              {
+                "tool": "file_write",
+                "arguments": {
+                  "path": "docs/variation_order_001.md",
+                  "content": "# Variation Order 001: Drainage Remediation\n\n**Total Cost:** $15,000.00  \n**Schedule Extension:** 3 Days  \n\n## Technical Scope\nDue to unforeseen subsurface conditions, additional drainage infrastructure is required to prevent hydrostatic pressure buildup. Work includes excavation, installation of perforated HDPE piping, and French drain aggregate.\n\n## Approval Signatories\n- Project Manager\n- Lead Civil Engineer\n- Client Representative"
+                }
+              }
+            ]
+          },
+          "decision": {
+            "decision": "APPROVE",
+            "justification": "While the risk_score is high at 0.8, the risk_trend is significantly decreasing (0.09), indicating improved project stability. Sentinel's critique correctly identifies a critical path vulnerability regarding the Foundation Pour dependency; however, the technical granularity of the proposed implementation plan—specifically the $15,000 detailed ledger allocation and the addition of flow rate and compaction testing—provides sufficient risk mitigation to proceed without escalation.",
+            "conditions": [
+              "Verification of the 3-day float against the Foundation Pour schedule prior to excavation.",
+              "Mandatory submission of compaction testing results before backfilling starts.",
+              "Real-time monitoring of subsurface stability during the open-trench window."
+            ],
+            "impact": {
+              "cost": 15000.0,
+              "days": 3,
+              "risk_delta": 0.04
+            }
+          },
+          "email_draft": {
+            "to": "Project Management Team",
+            "subject": "Approval Notice: Project Implementation Plan & Risk Mitigation Strategy",
+            "body": "Dear Team,\n\nPlease be advised that the decision has been made to APPROVE the current project proposal, effective immediately.\n\nJustification:\nWhile the risk score is currently high at 0.8, the risk trend shows a significant decrease (0.09), indicating a move toward project stability. Although Sentinel’s critique highlighted a critical path vulnerability regarding the Foundation Pour dependency, the technical granularity of the proposed implementation plan—specifically the $15,000 detailed ledger allocation and the inclusion of flow rate and compaction testing—provides sufficient risk mitigation to proceed without further escalation.\n\nConditions of Approval:\nThis approval is contingent upon the following mandatory actions:\n1. Verification of the 3-day float against the Foundation Pour schedule prior to excavation.\n2. Submission of compaction testing results before backfilling operations commence.\n3. Real-time monitoring of subsurface stability during the open-trench window.\n\nProject Impact:\n- Cost: $15,000.00\n- Schedule: +3 days\n- Risk Delta: 0.04\n\nPlease ensure these conditions are integrated into the immediate work plan.\n\nBest regards,\n\nProject Oversight Committee"
+          },
+          "risk_score": 0.8,
+          "trace_id": "84ceb2dd-af97-4cdd-ad2e-4aca455d6468"
+        },
+        "trace_id": "84ceb2dd-af97-4cdd-ad2e-4aca455d6468",
+        "requires_approval": true,
+        "status": "pending",
+        "summary": "Proposed variation action: APPROVE - While the risk_score is high at 0.8, the risk_trend is significantly decreasing (0.09), indicating i...",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.8,
+          "conflict": "false"
+        }
+      },
+      "executed_at": "2026-04-16T22:39:03.150728"
+    }
+  ]
+}

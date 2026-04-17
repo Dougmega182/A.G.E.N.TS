@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vote V1",
+  "description": "Schema for internal agent voting on decisions.",
+  "type": "object",
+  "required": ["request_id", "voter_id", "vote", "justification"],
+  "properties": {
+    "request_id": { "type": "string" },
+    "voter_id": { "type": "string" },
+    "vote": { "type": "string", "enum": ["approve", "reject"] },
+    "justification": { "type": "string", "minLength": 10 }
+  }
+}

@@ -15,17 +15,24 @@ from .execution_mode import (
     build_email_draft_v1_system_prompt,
     build_morning_brief_v1_system_prompt,
     build_plan_v1_system_prompt,
+    build_implementation_plan_v1_system_prompt,
+    build_proposal_v1_system_prompt,
     build_tool_call_v1_system_prompt,
     build_decision_v1_system_prompt,
+    build_vote_v1_system_prompt,
     build_audit_log_v1_system_prompt,
     build_critique_v1_system_prompt,
 )
 from .telemetry import TELEMETRY
-from .logic.event_bus import emit_event, generate_trace_id
-from .logic.event_analytics import get_recent_decisions_from_events, get_risk_trend_from_events
+from .logic import event_bus
+from .logic.event_bus import generate_trace_id
+from .logic.event_analytics import get_recent_decisions_from_events, get_risk_trend_from_events, get_structured_memory, format_memory_for_agents
+from .logic.governance_engine import evaluate_governance, has_critical_flag, format_flags_for_agents
+from .logic.history_engine import get_relevant_memory
 from .operators.construction_op import ConstructionOperator
 from .logic.risk_engine import calculate_risk_score
 from .tools import safe_file_write, safe_file_read, safe_list_files, safe_shell_command
+from .google_operator import GmailOperator, CalendarOperator # New import
 from datetime import datetime
 import json
 import os
@@ -35,7 +42,7 @@ from typing import Any, List, Dict, Generator, Optional, Tuple
 
 # Orchestrator uses Gemini for high-speed routing to avoid local hardware lag
 router_llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+    model="gemini-3-flash-preview",
     google_api_key=os.getenv("GOOGLE_API_KEY", "missing"),
     temperature=0
 )
@@ -73,7 +80,7 @@ class Orchestrator:
         self.conversation_history = []
         self.session_id = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         self.data_dir = Path("data")
-        self.log_dir = self.data_dir / "audit_logs"
+        self.log_dir = Path("Agent logs")
         self.log_dir.mkdir(parents=True, exist_ok=True)
         
     def _build_agent_list(self) -> str:
@@ -112,6 +119,10 @@ class Orchestrator:
                 ),
                 HumanMessage(content=message)
             ])
+
+            # Record telemetry
+            if hasattr(response, "usage_metadata"):
+                TELEMETRY.record(response.usage_metadata, router_llm.model)
             
             # Extract list from string (handles potential LLM markdown/formatting)
             content = response.content.strip()
@@ -199,7 +210,34 @@ class Orchestrator:
         log_file = self.log_dir / f"{datetime.utcnow().date()}.jsonl"
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")
-    
+
+    async def _gather_morning_brief_data(self) -> Dict[str, Any]:
+        """Gathers data from various operators for the morning brief."""
+        gmail_operator = GmailOperator(agent_id="jenny")
+        calendar_operator = CalendarOperator(agent_id="jenny")
+
+        emails = []
+        try:
+            emails = gmail_operator.list_messages(max_results=5)
+            if isinstance(emails, str): # Handle error messages from operator
+                emails = [{"error": emails}]
+        except Exception as e:
+            emails = [{"error": f"Failed to fetch emails: {str(e)}"}]
+            
+        events = []
+        try:
+            events = calendar_operator.list_events(max_results=5)
+            if isinstance(events, str): # Handle error messages from operator
+                events = [{"error": events}]
+        except Exception as e:
+            events = [{"error": f"Failed to fetch calendar events: {str(e)}"}]
+
+        return {
+            "timestamp": datetime.utcnow().isoformat(),
+            "emails": emails,
+            "calendar_events": events
+        }
+
     async def astream_chat(self, message: str) -> Generator[str, None, None]:
         """
         Main multi-agent routing entry point for streaming.
@@ -223,6 +261,122 @@ class Orchestrator:
         elif msg_lower.startswith("delay:"):
             async for chunk in self._run_generic_construction_loop("delay", message, trace_id):
                 yield chunk
+            return
+        elif msg_lower.startswith("morning brief"):
+            yield f"data: [SYSTEM] Gathering data for Morning Brief...\n\n"
+            brief_data = await self._gather_morning_brief_data()
+            
+            # Now route to Jenny specifically for the morning brief
+            agent_keys = ["jenny"]
+            
+            # Update thread history with user input
+            self.conversation_history.append(HumanMessage(content=message))
+            
+            full_responses = {}
+            
+            for key in agent_keys:
+                agent = AGENTS.get(key)
+                if not agent:
+                    continue
+                
+                agent_name = agent['name'].upper()
+                full_responses[key] = ""
+                
+                yield f"data: [{agent_name}] START\n\n"
+                
+                # Build prompt for Jenny with morning brief data
+                required_format_id = "morning_brief_v1"
+                final_prompt = build_morning_brief_v1_system_prompt()
+                
+                # Inject brief data as execution context
+                messages = [
+                    SystemMessage(content=final_prompt),
+                    HumanMessage(content=f"MORNING BRIEF DATA:\n{json.dumps(brief_data, indent=2, ensure_ascii=False)}\n\nUSER REQUEST: {message}"),
+                ]
+                
+                active_llm = CONTRACT_MODEL_MAP.get(required_format_id, gemini)
+                
+                max_attempts = 2
+                attempt = 0
+                while attempt < max_attempts:
+                    attempt += 1
+                    try:
+                        print(f"[ORCHESTRATOR] Executing buffered mode for {agent_name} (Contract Mode: {required_format_id}) on Model: {getattr(active_llm, 'model', 'local')} (Attempt {attempt})...")
+                        resp = active_llm.invoke(messages)
+
+                        # Record telemetry
+                        if hasattr(resp, "usage_metadata"):
+                            TELEMETRY.record(resp.usage_metadata, getattr(active_llm, "model", "local"))
+
+                        response_text = resp.content if hasattr(resp, "content") else str(resp)
+                        full_responses[key] = response_text
+
+                        contract = OutputContract()
+                        validation = contract.validate(
+                            response_text,
+                            execution_mode=True,
+                            required_format=required_format_id,
+                        )
+                        
+                        if not validation.ok:
+                            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=key, metadata={"contract": required_format_id, "reason": validation.reason})
+                            
+                            if attempt < max_attempts:
+                                print(f"[OUTPUT CONTRACT] {agent_name} format violation. Retrying...")
+                                event_bus.emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "format_violation"})
+                                continue
+                            
+                            print(f"[OUTPUT CONTRACT] {agent_name} final format violation: {validation.reason}")
+                            response_text = json.dumps(
+                                {
+                                    "error": "output_contract_violation",
+                                    "reason": validation.reason,
+                                    "expected": required_format_id,
+                                },
+                                ensure_ascii=False,
+                            )
+                            full_responses[key] = response_text
+                        else:
+                            quality = ContentQuality()
+                            quality_res = quality.check(contract._parse_json_object(response_text), required_format_id)
+                            
+                            if not quality_res.ok and attempt < max_attempts:
+                                print(f"[QUALITY PASS] {agent_name} output weak: {quality_res.hint}. Retrying with hint...")
+                                event_bus.emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "quality_weak", "hint": quality_res.hint})
+                                hint_msg = HumanMessage(content=f"IMPROVE QUALITY: {quality_res.hint}")
+                                messages.append(hint_msg)
+                                continue
+                            elif not quality_res.ok:
+                                print(f"[QUALITY PASS] {agent_name} final quality failure: {quality_res.hint}. Using as-is.")
+
+                        # Emit intent creation event for Phase 4 visibility
+                        event_bus.emit_event("ACTION_INTENT_CREATED", trace_id, agent_id=key, scenario="preflight", metadata={
+                            "action": required_format_id,
+                            "intent_payload": contract._parse_json_object(response_text)
+                        })
+
+                        yield f"data: [{agent_name}]: {response_text}\n\n"
+                        break 
+                    except Exception as e:
+                        print(f"[ORCHESTRATOR ERROR] {agent_name} failed: {e}")
+                        if attempt < max_attempts:
+                            print("Retrying...")
+                            continue
+                        error_msg = f"\n[CONNECTION ERROR] {agent_name} failed. Ensure your API keys are in .env and Ollama is running."
+                        yield f"data: [{agent_name}]: {error_msg}\n\n"
+                        full_responses[key] = error_msg
+                        break
+                    
+                yield f"data: [{agent_name}] END\n\n"
+                self._save_to_agent_memory(key, message, full_responses[key])
+            
+            # Finalize Global Audit & History
+            combined_response_str = "\n\n".join([
+                f"[{AGENTS[k]['name']}]: {v}"
+                for k, v in full_responses.items()
+            ])
+            self.conversation_history.append(AIMessage(content=combined_response_str))
+            self._log_interaction(message, full_responses)
             return
 
         # Approximate input tokens for routing (initial estimate)
@@ -310,6 +464,11 @@ class Orchestrator:
                     if contract_mode:
                         print(f"[ORCHESTRATOR] Executing buffered mode for {agent_name} (Contract Mode: {required_format_id}) on Model: {getattr(active_llm, 'model', 'local')} (Attempt {attempt})...")
                         resp = active_llm.invoke(messages)
+
+                        # Record telemetry
+                        if hasattr(resp, "usage_metadata"):
+                            TELEMETRY.record(resp.usage_metadata, getattr(active_llm, "model", "local"))
+
                         response_text = resp.content if hasattr(resp, "content") else str(resp)
                         full_responses[key] = response_text
 
@@ -322,11 +481,11 @@ class Orchestrator:
                         
                         if not validation.ok:
                             # Format failure: 
-                            emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=key, metadata={"contract": required_format_id, "reason": validation.reason})
+                            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=key, metadata={"contract": required_format_id, "reason": validation.reason})
                             
                             if attempt < max_attempts:
                                 print(f"[OUTPUT CONTRACT] {agent_name} format violation. Retrying...")
-                                emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "format_violation"})
+                                event_bus.emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "format_violation"})
                                 continue # Short circuit to next attempt
                             
                             # Final fail: emit a deterministic JSON error object (no prose).
@@ -348,7 +507,7 @@ class Orchestrator:
                             
                             if not quality_res.ok and attempt < max_attempts:
                                 print(f"[QUALITY PASS] {agent_name} output weak: {quality_res.hint}. Retrying with hint...")
-                                emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "quality_weak", "hint": quality_res.hint})
+                                event_bus.emit_event("RETRY_TRIGGERED", trace_id, agent_id=key, metadata={"reason": "quality_weak", "hint": quality_res.hint})
                                 # Inject small hint and continue to retry
                                 hint_msg = HumanMessage(content=f"IMPROVE QUALITY: {quality_res.hint}")
                                 messages.append(hint_msg)
@@ -368,6 +527,16 @@ class Orchestrator:
                             if token_text:
                                 full_responses[key] += token_text
                                 yield f"data: [{agent_name}]: {token_text}\n\n"
+                        
+                        # Record telemetry for streaming (estimated)
+                        input_tokens = len(message) // 4 + 10
+                        output_tokens = len(full_responses[key]) // 4 + 1
+                        TELEMETRY.record({
+                            "input_tokens": input_tokens,
+                            "output_tokens": output_tokens,
+                            "total_tokens": input_tokens + output_tokens
+                        }, getattr(active_llm, "model", "local"))
+
                         break # Normal stream doesn't retry currently
                 except Exception as e:
                     print(f"[ORCHESTRATOR ERROR] {agent_name} failed: {e}")
@@ -424,6 +593,11 @@ class Orchestrator:
         
         print(f"[LOOP] Executing {agent_name} ({contract_id})...")
         resp = active_llm.invoke(messages)
+
+        # Record telemetry
+        if hasattr(resp, "usage_metadata"):
+            TELEMETRY.record(resp.usage_metadata, getattr(active_llm, "model", "local"))
+
         response_text = resp.content if hasattr(resp, "content") else str(resp)
 
         # Basic contract validation
@@ -436,7 +610,7 @@ class Orchestrator:
         
         if not validation.ok:
             print(f"[LOOP] {agent_key.upper()} format violation: {validation.reason}")
-            emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": validation.reason})
+            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": validation.reason})
             return response_text, False, validation.reason or "validation_failed"
         
         return response_text, True, ""
@@ -505,7 +679,7 @@ class Orchestrator:
         contract_res = contract.conforms_to_contract(task_payload, "tool_call_v1")
         if not contract_res.ok:
             reason = contract_res.reason or "tool_call_schema_invalid"
-            emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
+            event_bus.emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
                 "reason": reason,
                 "completion_status": "FAILED"
             })
@@ -515,7 +689,7 @@ class Orchestrator:
         unsupported = [c.get("tool") for c in calls if c.get("tool") != "update_entity"]
         if unsupported:
             reason = f"unsupported_executor_tools:{','.join([str(t) for t in unsupported])}"
-            emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
+            event_bus.emit_event("ACTION_BLOCKED", trace_id, scenario=scenario_type, metadata={
                 "reason": reason,
                 "completion_status": "FAILED"
             })
@@ -547,7 +721,7 @@ class Orchestrator:
             return last_result
 
         for attempt in range(1, max_attempts + 1):
-            emit_event("ACTION_INTENT", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
+            event_bus.emit_event("ACTION_INTENT", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
                 "tool": "update_entity",
                 "status": status,
                 "forced_by_system": "true" if system_forced_escalation else "false",
@@ -581,7 +755,7 @@ class Orchestrator:
                 executed_count = 0
 
             if attempt < max_attempts and executed_count == 0:
-                emit_event("RETRY_TRIGGERED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
+                event_bus.emit_event("RETRY_TRIGGERED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={
                     "reason": "no_action_executed",
                     "attempt": attempt,
                     "next_attempt": attempt + 1
@@ -598,7 +772,7 @@ class Orchestrator:
         Risk Engine -> Event Analytics (Trend/History) -> Nadia -> Sentinel -> Aria -> Jenny -> Unified Mutation
         """
         scenario_label = scenario_type.upper()
-        emit_event("LOOP_STARTED", trace_id, scenario=scenario_type, metadata={"input": user_input})
+        event_bus.emit_event("LOOP_STARTED", trace_id, scenario=scenario_type, metadata={"input": user_input})
         yield f"data: [SYSTEM] Initiating {scenario_label} Loop... [Trace: {trace_id[:8]}]\n\n"
         contract_engine = OutputContract()
         
@@ -615,84 +789,153 @@ class Orchestrator:
         
         risk_score = calculate_risk_score(scenario_type, cost, days, user_input)
         yield f"data: [SYSTEM] Calculated Risk Score: {risk_score}\n\n"
-        emit_event("RISK_SCORE_CALCULATED", trace_id, scenario=scenario_type, metadata={"risk_score": risk_score})
+        event_bus.emit_event("RISK_SCORE_CALCULATED", trace_id, scenario=scenario_type, metadata={"risk_score": risk_score})
 
-        # 2. MEMORY LOAD FROM EVENTS
-        history = get_recent_decisions_from_events(n=5)
-        history_str = "No recent history."
-        if history:
-            history_str = "\n".join([f"- {h['timestamp']}: {h['decision']} (Type: {h.get('type','N/A')}, Cost: {h['cost']}, Risk: {h['risk_score']})" for h in history])
+        # 2. PHASE 2: REASONING CONTEXT ASSEMBLY
+        # Build the unified reasoning_context object — single source of truth for all agents
+        memory = get_relevant_memory(scenario_type, limit=5)
+        governance_flags = evaluate_governance(scenario_type, cost, days, risk_score)
+        governance_str = format_flags_for_agents(governance_flags)
+        memory_str = memory["formatted"]
         
-        # 3. NADIA: Generate Plan
+        reasoning_context = {
+            "risk_score": risk_score,
+            "governance_flags": [f.to_dict() for f in governance_flags],
+            "institutional_memory": memory["structured"],
+            "trend": risk_trend["direction"],
+        }
+        
+        yield f"data: [SYSTEM] Governance Flags: {len(governance_flags)} raised | Memory: {memory['count']} prior decisions loaded\n\n"
+        event_bus.emit_event("REASONING_CONTEXT_ASSEMBLED", trace_id, scenario=scenario_type, metadata={
+            "governance_flag_count": len(governance_flags),
+            "critical_flags": has_critical_flag(governance_flags),
+            "memory_count": memory["count"],
+            "trend": risk_trend["direction"],
+        })
+
+        # 2b. CRITICAL GOVERNANCE ENFORCEMENT
+        # If any governance flag has CRITICAL severity, force ESCALATE before any agent runs
+        if has_critical_flag(governance_flags):
+            critical_flags_str = ", ".join([f.flag_type for f in governance_flags if f.severity == "CRITICAL"])
+            yield f"data: [SYSTEM] ⚠️ CRITICAL GOVERNANCE FLAG(S) DETECTED: {critical_flags_str}. Decision will be forced to ESCALATE.\n\n"
+            event_bus.emit_event("GOVERNANCE_CRITICAL_OVERRIDE", trace_id, scenario=scenario_type, metadata={
+                "critical_flags": critical_flags_str,
+                "action": "forced_escalate"
+            })
+
+        # 3. NADIA: Generate Plan (with reasoning context)
         yield f"data: [NADIA] START\n\n"
-        nadia_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\nRECENT HISTORY:\n{history_str}"
+        nadia_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}\n{memory_str}"
         plan_raw, _, _ = await self._execute_contract_turn("nadia", build_plan_v1_system_prompt, user_input, "plan_v1", execution_context=nadia_context, trace_id=trace_id)
         yield f"data: [NADIA]: {plan_raw}\n\n"
         yield f"data: [NADIA] END\n\n"
-        emit_event("PLAN_GENERATED", trace_id, agent_id="nadia", scenario=scenario_type, metadata={"plan": plan_raw})
+        event_bus.emit_event("PLAN_GENERATED", trace_id, agent_id="nadia", scenario=scenario_type, metadata={"plan": plan_raw})
 
-        # 4. SENTINEL: Advisory Critique (Trend-Aware)
-        yield f"data: [SENTINEL] START\n\n"
-        critique_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}"
-        critique_input = f"Proposed Plan: {plan_raw}\n\nInput Details: {user_input}"
-        critique_raw, _, _ = await self._execute_contract_turn("sentinel", build_critique_v1_system_prompt, critique_input, "critique_v1", execution_context=critique_context, trace_id=trace_id)
-        yield f"data: [SENTINEL]: {critique_raw}\n\n"
-        yield f"data: [SENTINEL] END\n\n"
-        emit_event("CRITIQUE_GENERATED", trace_id, agent_id="sentinel", scenario=scenario_type, metadata={"critique": critique_raw})
+        # 3b. TUCKER: Generate Implementation Plan
+        yield f"data: [TUCKER] START\n\n"
+        tucker_context = f"SCENARIO TYPE: {scenario_label}\nNADIA'S PLAN: {plan_raw}"
+        impl_plan_raw, _, _ = await self._execute_contract_turn("tucker", build_implementation_plan_v1_system_prompt, user_input, "implementation_plan_v1", execution_context=tucker_context, trace_id=trace_id)
+        yield f"data: [TUCKER]: {impl_plan_raw}\n\n"
+        yield f"data: [TUCKER] END\n\n"
+        event_bus.emit_event("IMPLEMENTATION_PLAN_GENERATED", trace_id, agent_id="tucker", scenario=scenario_type, metadata={"implementation_plan": impl_plan_raw})
 
-        # 5. ARIA: Justified Final Decision + Impact
+        # 4. WALL-E: Advisory Critique (Trend-Aware + Governance-Aware)
+        yield f"data: [WALL-E] START\n\n"
+        critique_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}"
+        critique_input = f"Proposed Plan: {plan_raw}\nImplementation Plan: {impl_plan_raw}\n\nInput Details: {user_input}"
+        critique_raw, _, _ = await self._execute_contract_turn("wall-e", build_critique_v1_system_prompt, critique_input, "critique_v1", execution_context=critique_context, trace_id=trace_id)
+        yield f"data: [WALL-E]: {critique_raw}\n\n"
+        yield f"data: [WALL-E] END\n\n"
+        event_bus.emit_event("CRITIQUE_GENERATED", trace_id, agent_id="wall-e", scenario=scenario_type, metadata={"critique": critique_raw})
+
+        # 4b. OWEN: Silent Vote (Background Intelligence)
+        # Note: Owen is a silent observer, we do NOT yield his tokens to the user.
+        print(f"[LOOP] Owen is analyzing context for voting...")
+        vote_context = f"SCENARIO TYPE: {scenario_label}\nNADIA'S PLAN: {plan_raw}\nTUCKER'S PLAN: {impl_plan_raw}\nWALL-E'S CRITIQUE: {critique_raw}"
+        vote_raw, _, _ = await self._execute_contract_turn("owen", build_vote_v1_system_prompt, user_input, "vote_v1", execution_context=vote_context, trace_id=trace_id)
+        event_bus.emit_event("VOTE_CAST", trace_id, agent_id="owen", scenario=scenario_type, metadata={"vote": vote_raw})
+
+        # 5. ARIA: Justified Final Decision + Impact (with full reasoning context)
         yield f"data: [ARIA] START\n\n"
         safety_alert = ""
         if risk_score >= 0.85:
             safety_alert = "--- SAFETY GATE ACTIVE ---\nACTION RESTRICTED: Risk Score is >= 0.85. You ARE NOT AUTHORISED to 'APPROVE'. You must either 'REJECT' or 'ESCALATE' to human review.\n--------------------------\n"
         
-        aria_context = f"{safety_alert}SCENARIO TYPE: {scenario_label}\nRISK SCORE: {risk_score}\nPROJECT HEALTH: {trend_str}\nSENTINEL CRITIQUE: {critique_raw}\nRECENT HISTORY:\n{history_str}"
-        decision_input = f"Request: {user_input}\n\nPlan: {plan_raw}"
+        aria_context = (
+            f"{safety_alert}"
+            f"SCENARIO TYPE: {scenario_label}\n"
+            f"RISK SCORE: {risk_score}\n"
+            f"PROJECT HEALTH: {trend_str}\n"
+            f"{governance_str}\n"
+            f"{memory_str}\n"
+            f"WALL-E CRITIQUE: {critique_raw}\n"
+            f"OWEN'S VOTE: {vote_raw}"
+        )
+        decision_input = f"Request: {user_input}\n\nNadia's Plan: {plan_raw}\nTucker's Implementation Plan: {impl_plan_raw}"
         decision_raw, decision_valid, decision_error_reason = await self._execute_contract_turn("aria", build_decision_v1_system_prompt, decision_input, "decision_v1", execution_context=aria_context, trace_id=trace_id)
         yield f"data: [ARIA]: {decision_raw}\n\n"
         yield f"data: [ARIA] END\n\n"
 
-        # Conflict Detection + Technical Escalation Enforcement
-        decision_data = contract_engine._parse_json_object(decision_raw)
-        conflict_flag = ""
-        system_forced_escalation = (not decision_valid) or (decision_data is None)
+        # --- DECISION FINALIZATION ---
+        # All post-decision logic lives in the Decision Finalizer.
+        # The orchestrator is the ONLY caller. Everything else is advisory.
+        from .logic.decision_finalizer import finalize_decision
 
-        if system_forced_escalation:
-            failure_reason = decision_error_reason or "decision_payload_unparseable"
-            if not decision_valid:
-                emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id="aria", scenario=scenario_type, metadata={"contract": "decision_v1", "reason": failure_reason, "forced_escalation": "true"})
-            decision_data = {
-                "decision": "ESCALATE",
-                "justification": f"Technical Logic Failure: decision_v1 validation failed ({failure_reason}). System-forced escalation to protect project integrity.",
-                "conditions": [
-                    "Manual human review required",
-                    "Re-run decision turn with valid contract payload"
-                ],
-                "impact": {"cost": 0, "days": 0, "risk_delta": 0}
-            }
-            decision_raw = json.dumps(decision_data, ensure_ascii=False)
-            yield f"data: [SYSTEM] Technical Logic Failure detected. Decision overridden to ESCALATE.\n\n"
-        else:
-            try:
-                critique_data = contract_engine._parse_json_object(critique_raw)
-                if critique_data and decision_data:
-                    sentinel_rec = str(critique_data.get("recommendation", "")).upper()
-                    aria_dec = str(decision_data.get("decision", "")).upper()
-                    if sentinel_rec == "REJECT" and aria_dec == "APPROVE":
-                        conflict_flag = " [PLANNING CONFLICT DETECTED: Sentinel recommended REJECT but Aria APPROVED]"
-            except:
-                pass
+        decision_data = contract_engine._parse_json_object(decision_raw)
+        critique_data = contract_engine._parse_json_object(critique_raw)
         
-        emit_event("DECISION_MADE", trace_id, agent_id="aria", scenario=scenario_type, metadata={
-            "decision": decision_data.get("decision"),
+        finalized = finalize_decision(
+            decision_data=decision_data if decision_data else {},
+            decision_valid=decision_valid,
+            decision_error_reason=decision_error_reason,
+            risk_score=risk_score,
+            governance_flags=governance_flags,
+            critique_data=critique_data,
+            memory_count=memory["count"],
+            trace_id=trace_id,
+            scenario_type=scenario_type,
+        )
+
+        # Update decision_raw to reflect final canonical decision
+        if decision_data:
+            decision_raw = json.dumps(decision_data, ensure_ascii=False)
+
+        # --- Yield system messages for any overrides or warnings ---
+        if finalized.was_system_forced:
+            yield f"data: [SYSTEM] Technical Logic Failure detected. Decision overridden to ESCALATE.\n\n"
+
+        if finalized.was_overridden and not finalized.was_system_forced:
+            for override in finalized.override_chain:
+                if override == "GOVERNANCE_CRITICAL_OVERRIDE":
+                    critical_types = [f["flag_type"] for f in finalized.governance_flags if f.get("severity") == "CRITICAL"]
+                    yield f"data: [SYSTEM] GOVERNANCE OVERRIDE: Aria's {finalized.original_decision} was overridden to ESCALATE due to CRITICAL flag(s): {', '.join(critical_types)}\n\n"
+                elif override == "SAFETY_GATE_OVERRIDE":
+                    yield f"data: [SYSTEM] SAFETY GATE OVERRIDE: Aria's {finalized.original_decision} was overridden to ESCALATE (risk_score={risk_score}).\n\n"
+
+        if finalized.conflict_detected:
+            yield f"data: [SYSTEM] PLANNING CONFLICT: {finalized.conflict_detail}\n\n"
+
+        if finalized.reasoning_quality_warnings:
+            yield f"data: [SYSTEM] Reasoning Quality Warning: {', '.join(finalized.reasoning_quality_warnings)}\n\n"
+
+        # --- Emit the ONE canonical event ---
+        # DECISION_MADE is kept for backward compatibility with existing analytics
+        event_bus.emit_event("DECISION_MADE", trace_id, agent_id="aria", scenario=scenario_type, metadata={
+            "decision": finalized.final_decision,
             "risk_score": risk_score,
-            "impact": decision_data.get("impact", {}),
-            "justification": decision_data.get("justification", ""),
-            "conflict": "true" if conflict_flag else "false",
-            "forced_by_system": "true" if system_forced_escalation else "false",
+            "impact": decision_data.get("impact", {}) if decision_data else {},
+            "justification": finalized.final_justification,
+            "conflict": "true" if finalized.conflict_detected else "false",
+            "forced_by_system": "true" if finalized.was_system_forced else "false",
+            "governance_overridden": "true" if finalized.was_overridden else "false",
+            "reasoning_quality_warnings": finalized.reasoning_quality_warnings,
             "validation_ok": "true" if decision_valid else "false",
             "validation_reason": decision_error_reason or ""
         })
+
+        # This is the DEBUG ANCHOR EVENT — the single source of truth for dashboards
+        event_bus.emit_event("DECISION_FINALIZED_V1", trace_id, agent_id="system", scenario=scenario_type, metadata=finalized.to_event_payload())
+
 
         # 6. JENNY: Comms
         yield f"data: [JENNY] START\n\n"
@@ -700,63 +943,54 @@ class Orchestrator:
         yield f"data: [JENNY]: {email_raw}\n\n"
         yield f"data: [JENNY] END\n\n"
 
-        # 7. EXECUTOR: Tool-bound state mutation
-        yield f"data: [SYSTEM] Updating project record...\n\n"
-        decision_text = str(decision_data.get("decision")).upper()
-        status = "approved" if decision_text == "APPROVE" else "rejected"
-        if decision_text == "ESCALATE":
-            status = "escalated"
-
-        impact = decision_data.get("impact", {"cost": 0, "days": 0, "risk_delta": 0})
-        executor_task = self._build_construction_executor_task(
-            scenario_type=scenario_type,
-            trace_id=trace_id,
-            risk_score=risk_score,
-            justification=decision_data.get("justification", "") + conflict_flag,
-            impact=impact,
-            status=status,
-            user_input=user_input,
-        )
-
-        executor_result = self._run_construction_executor_phase(
-            scenario_type=scenario_type,
-            trace_id=trace_id,
-            task_payload=executor_task,
-            status=status,
-            system_forced_escalation=system_forced_escalation,
-            max_attempts=2,
-        )
-
-        completion_status = self._normalize_completion_status(executor_result)
-        executor_result["completion_status"] = completion_status
-
-        execution_summary = {
-            "completion_status": completion_status,
-            "executed_count": executor_result.get("executed_count", 0),
-            "failed_count": executor_result.get("failed_count", 0),
-            "total_calls": executor_result.get("total_calls", 0),
-            "attempt": executor_result.get("attempt", 1),
-            "error": executor_result.get("error", "")
+        # 7. PROPOSAL BUNDLING (for Human Approval)
+        yield f"data: [SYSTEM] Bundling proposal for review...\n\n"
+        
+        # Parse all artifacts for the bundle
+        plan_data = contract_engine._parse_json_object(plan_raw) or {}
+        impl_data = contract_engine._parse_json_object(impl_plan_raw) or {}
+        decision_bundle_data = contract_engine._parse_json_object(decision_raw) or {}
+        email_data = contract_engine._parse_json_object(email_raw) or {}
+        
+        proposal_intent = {
+            "action": f"construction_{scenario_type}",
+            "agent_id": "aria",
+            "parameters": {
+                "scenario_type": scenario_type,
+                "user_input": user_input,
+                "plan": plan_data,
+                "implementation_plan": impl_data,
+                "decision": decision_bundle_data,
+                "email_draft": email_data,
+                "risk_score": risk_score,
+                "trace_id": trace_id
+            },
+            "trace_id": trace_id,
+            "requires_approval": True,
+            "status": "pending",
+            "summary": f"Proposed {scenario_type} action: {decision_bundle_data.get('decision', 'UNKNOWN')} - {decision_bundle_data.get('justification', '')[:100]}...",
+            "metadata": {
+                "scenario": scenario_type,
+                "risk_score": risk_score,
+                "conflict": "true" if conflict_flag else "false"
+            }
         }
 
-        if completion_status == "EXECUTED":
-            yield f"data: [SYSTEM] EXECUTION STATUS: EXECUTED\n\n"
-            yield f"data: [SYSTEM] Record updated. {conflict_flag}\n\n"
-        elif completion_status == "PARTIALLY_EXECUTED":
-            yield f"data: [SYSTEM] EXECUTION STATUS: PARTIALLY_EXECUTED\n\n"
-            yield f"data: [SYSTEM] Record updated with partial failures.\n\n"
-        else:
-            yield f"data: [SYSTEM] EXECUTION STATUS: FAILED\n\n"
-            yield f"data: [SYSTEM] Record update failed.\n\n"
-
-        # 8. SENTINEL: Audit
-        yield f"data: [SENTINEL] START\n\n"
-        audit_input = f"Type: {scenario_label}\nRisk: {risk_score}\nTrend: {risk_trend['direction']}\nDecision: {decision_raw}"
-        audit_raw, _, _ = await self._execute_contract_turn("sentinel", build_audit_log_v1_system_prompt, audit_input, "audit_log_v1", trace_id=trace_id)
-        ConstructionOperator.log_to_sentinel(f"{scenario_label}_LOOP", "SENTINEL", audit_input, audit_raw)
-        yield f"data: [SENTINEL]: {audit_raw}\n\n"
-        yield f"data: [SENTINEL] END\n\n"
+        # Register the proposal in the Preflight Approval Engine
+        from . import firewall
+        request = firewall.create_or_get_request(action_intent=proposal_intent)
         
-        emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata=execution_summary)
-        yield f"data: [SYSTEM] {scenario_label} Loop Complete. FINAL STATUS: {completion_status}\n\n"
+        yield f"data: [SYSTEM] PROPOSAL CREATED. Request ID: {request['request_id']}\n\n"
+        yield f"data: [SYSTEM] Awaiting human approval in the Command Center. Once approved, this will appear in your Task Queue for execution.\n\n"
+
+        # 8. WALL-E: Audit
+        yield f"data: [WALL-E] START\n\n"
+        audit_input = f"Type: {scenario_label}\nRisk: {risk_score}\nTrend: {risk_trend['direction']}\nDecision: {decision_raw}"
+        audit_raw, _, _ = await self._execute_contract_turn("wall-e", build_audit_log_v1_system_prompt, audit_input, "audit_log_v1", trace_id=trace_id)
+        ConstructionOperator.log_to_sentinel(f"{scenario_label}_LOOP", "WALL-E", audit_input, audit_raw)
+        yield f"data: [WALL-E]: {audit_raw}\n\n"
+        yield f"data: [WALL-E] END\n\n"
+        
+        event_bus.emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata={"status": "awaiting_approval", "request_id": request['request_id']})
+        yield f"data: [SYSTEM] {scenario_label} Loop Paused for Approval. [Trace: {trace_id[:8]}]\n\n"
 

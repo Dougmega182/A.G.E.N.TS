@@ -4,19 +4,30 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-EVENTS_LOG_PATH = Path("data/events.log.jsonl")
+LOG_ROOT = Path("Agent logs")
+EVENTS_LOG_PATH = LOG_ROOT / "events.log.jsonl"
 STANDARD_EVENT_TYPES = {
     "LOOP_STARTED",
     "RISK_SCORE_CALCULATED",
+    "REASONING_CONTEXT_ASSEMBLED",
     "PLAN_GENERATED",
+    "IMPLEMENTATION_PLAN_GENERATED",
     "CRITIQUE_GENERATED",
+    "VOTE_CAST",
     "DECISION_MADE",
+    "DECISION_FINALIZED_V1",
     "ACTION_INTENT",
     "STATE_MUTATED",
     "ACTION_EXECUTED",
     "CONTRACT_VALIDATION_FAILED",
     "RETRY_TRIGGERED",
-    "LOOP_COMPLETE"
+    "LOOP_COMPLETE",
+    "APPROVAL_REQUESTED",
+    "APPROVAL_DECIDED",
+    "ACTION_BLOCKED",
+    "ACTION_APPROVED",
+    "EXTERNAL_ACTION_INTENT",
+    "EXTERNAL_ACTION_EXECUTED"
 }
 
 def emit_event(
