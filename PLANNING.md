@@ -692,7 +692,29 @@ Consistency over brilliance.
 
 ---
 
-# Your next move
+# Phase 5 — Self-Correcting Decision Intelligence (CURRENT CEILING)
 
-Create your **Variation Approval state JSON + wire the full loop (Nadia → Aria → Jenny → tool_call → audit)** and run it once end-to-end — no new features until that works.
+### Goal:
+The system no longer trusts "successful" tool results. It closes the loop between execution drift and future plans.
+
+---
+
+## Step 5.1 — The Verification Daemon
+Implemented `verify_execution.py` to check `api_ack` vs `read_back`. 
+This is the **Execution Truth Model**.
+
+## Step 5.2 — Owen Loop Closure
+Owen now ingests verification failures as `owen_negative_patterns`. These patterns are injected into Aria's briefings as **RELIABILITY ALERTS**.
+
+## Step 5.3 — Adaptive Confidence Gate
+Implemented the **Drift Pressure Index (DPI)** in `decision_finalizer.py`.
+- Penalties raise the required confidence threshold.
+- System automatically "pulls the plug" (Escalates) when a tool becomes untrustworthy.
+
+---
+
+## Milestone ✅
+System successfully passed a **5-turn Drift Escalation Simulation**. It auto-escalated a valid plan because the Gmail operator's reliability history had degraded.
+
+---
 

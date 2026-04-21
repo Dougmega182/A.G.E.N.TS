@@ -8,6 +8,21 @@
 - **Owen Integration:** Owen (ILO) integrated as background intelligence with silent voting.
 - **Execution Mode:** Enforced "ARTIFACT ONLY" globally.
 
+```mermaid
+graph TD
+    P0[Phase 0: Team Build] -->|COMPLETED| P1[Phase 1: Construction Workflow] ✅ COMPLETE
+    P1 -->|COMPLETED| P2[Phase 2: Planning & Reasoning] ✅ COMPLETE
+    P2 -->|COMPLETED| P3[Phase 3: System Integration] ✅ COMPLETE
+    P35 -->|COMPLETED| P36[Phase 3.6: Active Governance] ✅ COMPLETE
+    P36 -->|COMPLETED| P4[Phase 4: External Orchestration] ✅ COMPLETE
+    P4 -->|ACTIVE| P5[Phase 5: Self-Correcting Intelligence] ⚡ ACTIVE
+```
+
+**Current Status:** [PHASE 5.0: SELF-CORRECTING INTELLIGENCE (ACTIVE)]  
+**System Intelligence Level:** Level 4 (Closed-Loop Autonomous Skepticism)  
+**Safety Status:** LEVEL 5 (Dynamic Adaptive Thresholding, VERIFIED)  
+**Last Verified:** 2026-04-21 (UTC)
+
 ---
 
 ## Phase 4: External System Orchestration (COMPLETED)
@@ -80,19 +95,51 @@
    - Upgraded Event Feed SSE handler with visual anchor treatment for finalized decisions.
    - Replaced mock Project Health panel with real event-derived analytics.
 
+5. **Phase 2.5: Owen Intelligence Layer & Memory Infrastructure**
+   - Established **Cognitive Boundary Contract** (Strict read/write rules & roles).
+   - Three-Tier Memory: Redis (Hot) → SQLite (Warm) → Events (Cold/Forensic).
+   - Created **Owen Intelligence Engine** (Synthesizes lessons/patterns deterministically).
+   - Redefined Owen: Context generator (Synthesizer) only, removed from voting.
+   - Backfilled SQLite from events.log.jsonl (26 historical decisions migrated).
+   - Strictly enforced "3 Writers" discipline: event_bus, orchestrator, and owen_engine.
+
 ### Verification Results:
 - **Phase 2 Tests** (`tests/test_phase2_reasoning.py`): 6 suites, ALL PASS.
 - **Decision Finalizer Tests** (`tests/test_decision_finalizer.py`): 7 suites, ALL PASS.
+- **Phase 2.5 Verification** (`tests/verify_phase2_5.py`): 3 suites (Boundary, DB, Owen), ALL PASS.
 
 ### Key Files:
-- `agents/logic/governance_engine.py` — Severity classification
-- `agents/logic/event_analytics.py` — Structured memory + outcome scoring
-- `agents/logic/history_engine.py` — Memory proxy + conflicts
-- `agents/logic/decision_finalizer.py` — Canonical decision layer
-- `agents/orchestrator.py` — Integration point
-- `agents/execution_mode.py` — Agent prompt enforcement
-- `agents/api.py` — New health + decisions endpoints
+- `agents/logic/memory_contract.py` — Cognitive boundaries
+- `agents/logic/memory_db.py` — SQLite structured storage
+- `agents/logic/memory_cache.py` — Redis/Memory hybrid cache
+- `agents/logic/owen_engine.py` — Intelligence synthesis
+- `agents/orchestrator.py` — Briefing injection & post-decision learning
+- `agents/execution_mode.py` — Prompt updates for context consumption
+- `scripts/migrate_events_to_db.py` — History backfill
+
+## Phase 5: Self-Correcting Decision Intelligence (ACTIVE)
+### Status: 50% COMPLETE (v1 Operational)
+**Date:** 2026-04-21
+
+### Completed Steps:
+
+1. **Truth-Model Verification Daemon**
+   - Created `verify_execution.py`.
+   - Implemented 3-phase validation logic (api_ack, read_back, semantic_match).
+   - Unified `DB_PATH` across core logic and tests.
+
+2. **Owen Loop Closure**
+   - Integrated failure pattern ingestion into `owen_engine.py`.
+   - Added "RELIABILITY ALERTS" to Aria's briefings via Owen's synthesized memory.
+
+3. **Adaptive Confidence Gate**
+   - Implemented **DPI (Drift Pressure Index)** in `decision_finalizer.py`.
+   - Added tiered thresholding (Scaling from 0.60 to 0.85).
+
+### Verification Results:
+- **Drift Simulation** (`tests/simulate_drift_escalation.py`): PASS. 
+- System correctly identified injection-drifts and auto-escalated valid plans when reliability dropped.
 
 ---
 
-**Final Status:** Phase 0, Phase 1, Phase 2, and Phase 4 are fully operational. The agency has strict governance, controlled hands, intelligent reasoning, and canonical decision accountability.
+**Final Status:** Build Rev 3.0.0. The platform is now a "Self-Correcting Human-AI Hybrid" engine. It no longer waits for technical failures to surface; it actively distrusts failing subsystems and pulls them from autonomy until verified.

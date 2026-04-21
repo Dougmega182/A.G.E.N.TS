@@ -33,6 +33,10 @@ from .operators.construction_op import ConstructionOperator
 from .logic.risk_engine import calculate_risk_score
 from .tools import safe_file_write, safe_file_read, safe_list_files, safe_shell_command
 from .google_operator import GmailOperator, CalendarOperator # New import
+from .logic.owen_engine import OwenEngine
+from .logic import memory_db
+from .logic import memory_cache
+from .logic.memory_contract import MemoryDomain
 from datetime import datetime
 import json
 import os
@@ -82,6 +86,7 @@ class Orchestrator:
         self.data_dir = Path("data")
         self.log_dir = Path("Agent logs")
         self.log_dir.mkdir(parents=True, exist_ok=True)
+        self.owen_engine = OwenEngine()
         
     def _build_agent_list(self) -> str:
         lines = []
@@ -782,9 +787,13 @@ class Orchestrator:
         yield f"data: [SYSTEM] Current Project Health: {trend_str}\n\n"
 
         # 1. RISK SCORING (Scenario-Aware)
-        cost_match = re.search(r"(\d+)\s*k", user_input.lower())
+        # Matches "$12k", "12000", "12,000"
+        cost_match = re.search(r"\$?(\d+[\d,]*)\s*k?", user_input.lower())
         days_match = re.search(r"(\d+)\s*day", user_input.lower())
-        cost = float(cost_match.group(1)) * 1000 if cost_match else 0
+        
+        cost_str = cost_match.group(1).replace(",", "") if cost_match else "0"
+        is_k = "k" in cost_match.group(0).lower() if cost_match else False
+        cost = float(cost_str) * (1000 if is_k else 1)
         days = int(days_match.group(1)) if days_match else 0
         
         risk_score = calculate_risk_score(scenario_type, cost, days, user_input)
@@ -797,13 +806,22 @@ class Orchestrator:
         governance_flags = evaluate_governance(scenario_type, cost, days, risk_score)
         governance_str = format_flags_for_agents(governance_flags)
         memory_str = memory["formatted"]
+
+        # 2a. OWEN INTELLIGENCE BRIEFING (NEW Phase 2.5 Intelligence Layer)
+        owen_briefing = self.owen_engine.generate_intelligence_briefing(scenario_type, query_text=user_input)
+        owen_str = self.owen_engine.format_briefing_for_prompt(owen_briefing)
+        yield f"data: [SYSTEM] Owen's Intelligence Briefing loaded for {scenario_label}.\n\n"
         
         reasoning_context = {
             "risk_score": risk_score,
             "governance_flags": [f.to_dict() for f in governance_flags],
             "institutional_memory": memory["structured"],
             "trend": risk_trend["direction"],
+            "owen_intelligence": owen_briefing
         }
+        
+        # Cache context in Redis/memory
+        memory_cache.cache_reasoning_context("orchestrator", trace_id, reasoning_context)
         
         yield f"data: [SYSTEM] Governance Flags: {len(governance_flags)} raised | Memory: {memory['count']} prior decisions loaded\n\n"
         event_bus.emit_event("REASONING_CONTEXT_ASSEMBLED", trace_id, scenario=scenario_type, metadata={
@@ -825,7 +843,7 @@ class Orchestrator:
 
         # 3. NADIA: Generate Plan (with reasoning context)
         yield f"data: [NADIA] START\n\n"
-        nadia_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}\n{memory_str}"
+        nadia_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}\n{memory_str}\n\n{owen_str}"
         plan_raw, _, _ = await self._execute_contract_turn("nadia", build_plan_v1_system_prompt, user_input, "plan_v1", execution_context=nadia_context, trace_id=trace_id)
         yield f"data: [NADIA]: {plan_raw}\n\n"
         yield f"data: [NADIA] END\n\n"
@@ -833,7 +851,7 @@ class Orchestrator:
 
         # 3b. TUCKER: Generate Implementation Plan
         yield f"data: [TUCKER] START\n\n"
-        tucker_context = f"SCENARIO TYPE: {scenario_label}\nNADIA'S PLAN: {plan_raw}"
+        tucker_context = f"SCENARIO TYPE: {scenario_label}\nNADIA'S PLAN: {plan_raw}\n\n{owen_str}"
         impl_plan_raw, _, _ = await self._execute_contract_turn("tucker", build_implementation_plan_v1_system_prompt, user_input, "implementation_plan_v1", execution_context=tucker_context, trace_id=trace_id)
         yield f"data: [TUCKER]: {impl_plan_raw}\n\n"
         yield f"data: [TUCKER] END\n\n"
@@ -841,19 +859,16 @@ class Orchestrator:
 
         # 4. WALL-E: Advisory Critique (Trend-Aware + Governance-Aware)
         yield f"data: [WALL-E] START\n\n"
-        critique_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}"
+        critique_context = f"SCENARIO TYPE: {scenario_label}\nPROJECT HEALTH: {trend_str}\n{governance_str}\n\n{owen_str}"
         critique_input = f"Proposed Plan: {plan_raw}\nImplementation Plan: {impl_plan_raw}\n\nInput Details: {user_input}"
         critique_raw, _, _ = await self._execute_contract_turn("wall-e", build_critique_v1_system_prompt, critique_input, "critique_v1", execution_context=critique_context, trace_id=trace_id)
         yield f"data: [WALL-E]: {critique_raw}\n\n"
         yield f"data: [WALL-E] END\n\n"
         event_bus.emit_event("CRITIQUE_GENERATED", trace_id, agent_id="wall-e", scenario=scenario_type, metadata={"critique": critique_raw})
 
-        # 4b. OWEN: Silent Vote (Background Intelligence)
-        # Note: Owen is a silent observer, we do NOT yield his tokens to the user.
-        print(f"[LOOP] Owen is analyzing context for voting...")
-        vote_context = f"SCENARIO TYPE: {scenario_label}\nNADIA'S PLAN: {plan_raw}\nTUCKER'S PLAN: {impl_plan_raw}\nWALL-E'S CRITIQUE: {critique_raw}"
-        vote_raw, _, _ = await self._execute_contract_turn("owen", build_vote_v1_system_prompt, user_input, "vote_v1", execution_context=vote_context, trace_id=trace_id)
-        event_bus.emit_event("VOTE_CAST", trace_id, agent_id="owen", scenario=scenario_type, metadata={"vote": vote_raw})
+        # 4b. OWEN: Intelligence Synthesis (Internal only)
+        # Owen's intelligence is now injected into other agents as context.
+        # No formal vote is cast in the loop.
 
         # 5. ARIA: Justified Final Decision + Impact (with full reasoning context)
         yield f"data: [ARIA] START\n\n"
@@ -867,9 +882,9 @@ class Orchestrator:
             f"RISK SCORE: {risk_score}\n"
             f"PROJECT HEALTH: {trend_str}\n"
             f"{governance_str}\n"
-            f"{memory_str}\n"
-            f"WALL-E CRITIQUE: {critique_raw}\n"
-            f"OWEN'S VOTE: {vote_raw}"
+            f"{memory_str}\n\n"
+            f"{owen_str}\n"
+            f"WALL-E CRITIQUE: {critique_raw}"
         )
         decision_input = f"Request: {user_input}\n\nNadia's Plan: {plan_raw}\nTucker's Implementation Plan: {impl_plan_raw}"
         decision_raw, decision_valid, decision_error_reason = await self._execute_contract_turn("aria", build_decision_v1_system_prompt, decision_input, "decision_v1", execution_context=aria_context, trace_id=trace_id)
@@ -894,6 +909,7 @@ class Orchestrator:
             memory_count=memory["count"],
             trace_id=trace_id,
             scenario_type=scenario_type,
+            outcome_score=decision_data.get("outcome_score") if decision_data else None,
         )
 
         # Update decision_raw to reflect final canonical decision
@@ -911,6 +927,8 @@ class Orchestrator:
                     yield f"data: [SYSTEM] GOVERNANCE OVERRIDE: Aria's {finalized.original_decision} was overridden to ESCALATE due to CRITICAL flag(s): {', '.join(critical_types)}\n\n"
                 elif override == "SAFETY_GATE_OVERRIDE":
                     yield f"data: [SYSTEM] SAFETY GATE OVERRIDE: Aria's {finalized.original_decision} was overridden to ESCALATE (risk_score={risk_score}).\n\n"
+                elif override == "CONFIDENCE_GATE_OVERRIDE":
+                    yield f"data: [SYSTEM] CONFIDENCE GATE OVERRIDE: Aria's {finalized.original_decision} was overridden to ESCALATE (confidence_score={finalized.confidence_score} < 0.6).\n\n"
 
         if finalized.conflict_detected:
             yield f"data: [SYSTEM] PLANNING CONFLICT: {finalized.conflict_detail}\n\n"
@@ -936,6 +954,21 @@ class Orchestrator:
         # This is the DEBUG ANCHOR EVENT — the single source of truth for dashboards
         event_bus.emit_event("DECISION_FINALIZED_V1", trace_id, agent_id="system", scenario=scenario_type, metadata=finalized.to_event_payload())
 
+        # --- TIER 2 MEMORY PERSISTENCE (SQLite) ---
+        # Write to structured database for warm lookup and Owen synthesis
+        decision_event = {
+            "event_id": generate_trace_id(),
+            "trace_id": trace_id,
+            "scenario": scenario_type,
+            "timestamp": datetime.utcnow().isoformat(),
+            "metadata": finalized.to_event_payload()
+        }
+        memory_db.write_decision("orchestrator", decision_event)
+
+        # --- OWEN POST-DECISION LEARNING ---
+        # Owen extracts lessons and patterns from the canonical decision record
+        self.owen_engine.extract_lesson_from_decision(decision_event)
+
 
         # 6. JENNY: Comms
         yield f"data: [JENNY] START\n\n"
@@ -943,45 +976,75 @@ class Orchestrator:
         yield f"data: [JENNY]: {email_raw}\n\n"
         yield f"data: [JENNY] END\n\n"
 
-        # 7. PROPOSAL BUNDLING (for Human Approval)
-        yield f"data: [SYSTEM] Bundling proposal for review...\n\n"
+        # 7. INTENT GENERATION (for Human Approval)
+        # Create the formal ACTION_INTENT_V1 object that will be executed.
+        # This object is immutable from this point forward.
+        yield f"data: [SYSTEM] Generating formal execution intent...\n\n"
         
-        # Parse all artifacts for the bundle
-        plan_data = contract_engine._parse_json_object(plan_raw) or {}
-        impl_data = contract_engine._parse_json_object(impl_plan_raw) or {}
-        decision_bundle_data = contract_engine._parse_json_object(decision_raw) or {}
         email_data = contract_engine._parse_json_object(email_raw) or {}
         
-        proposal_intent = {
-            "action": f"construction_{scenario_type}",
-            "agent_id": "aria",
-            "parameters": {
-                "scenario_type": scenario_type,
-                "user_input": user_input,
-                "plan": plan_data,
-                "implementation_plan": impl_data,
-                "decision": decision_bundle_data,
-                "email_draft": email_data,
-                "risk_score": risk_score,
-                "trace_id": trace_id
-            },
+        # Build the structured Operator Bundle
+        delay_days = decision_data.get("impact", {}).get("days", 0) if decision_data else 0
+        
+        actions_array = []
+        if finalized.final_decision == "APPROVE":
+            actions_array.append({
+                "type": "gmail_draft",
+                "priority": "high",
+                "reason": "stakeholder notification",
+                "payload": email_data
+            })
+            if delay_days > 0:
+                actions_array.append({
+                    "type": "calendar_event",
+                    "delay_days": delay_days,
+                    "title": f"Variation Impact ({delay_days}d delay)",
+                    "reason": "schedule impact adjustment"
+                })
+        else:
+            actions_array.append({
+                "type": "audit_log",
+                "reason": "record escalation"
+            })
+            
+        operator_bundle = {
+            "decision": finalized.final_decision,
+            "confidence": finalized.confidence_score,
+            "actions": actions_array,
+            "risks": [f.flag_type for f in governance_flags] if governance_flags else [],
+            "owen_refs": owen_briefing.get("patterns", {}).get("dos", []) + owen_briefing.get("patterns", {}).get("donts", [])
+        }
+        
+        # DISCLOSURE: Pack everything into metadata for the Human Gatekeeper
+        disclosure_metadata = {
+            "scenario": scenario_type,
+            "risk_score": risk_score,
+            "governance_flags": [f.to_dict() for f in governance_flags],
+            "owen_briefing": owen_briefing,
+            "final_decision": finalized.final_decision,
+            "final_justification": finalized.final_justification,
+            "original_decision": finalized.original_decision,
+            "conflict_detected": finalized.conflict_detected,
+            "plan_summary": (contract_engine._parse_json_object(plan_raw) or {}).get("summary", ""),
+        }
+
+        action_intent = {
+            "action": "operator_bundle",
+            "agent_id": "system",
+            "parameters": operator_bundle,
             "trace_id": trace_id,
             "requires_approval": True,
             "status": "pending",
-            "summary": f"Proposed {scenario_type} action: {decision_bundle_data.get('decision', 'UNKNOWN')} - {decision_bundle_data.get('justification', '')[:100]}...",
-            "metadata": {
-                "scenario": scenario_type,
-                "risk_score": risk_score,
-                "conflict": "true" if conflict_flag else "false"
-            }
+            "summary": f"[{finalized.final_decision}] Confidence: {finalized.confidence_score} | {len(actions_array)} action(s)",
+            "metadata": disclosure_metadata
         }
 
-        # Register the proposal in the Preflight Approval Engine
+        # Register the intent in the Preflight Approval Engine
         from . import firewall
-        request = firewall.create_or_get_request(action_intent=proposal_intent)
+        request = firewall.create_or_get_request(action_intent=action_intent)
         
         yield f"data: [SYSTEM] PROPOSAL CREATED. Request ID: {request['request_id']}\n\n"
-        yield f"data: [SYSTEM] Awaiting human approval in the Command Center. Once approved, this will appear in your Task Queue for execution.\n\n"
+        yield f"data: [SYSTEM] Awaiting human approval. [{len(actions_array)} Action(s) Bundled]\n\n"
 
         # 8. WALL-E: Audit
         yield f"data: [WALL-E] START\n\n"
@@ -991,6 +1054,6 @@ class Orchestrator:
         yield f"data: [WALL-E]: {audit_raw}\n\n"
         yield f"data: [WALL-E] END\n\n"
         
-        event_bus.emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata={"status": "awaiting_approval", "request_id": request['request_id']})
+        event_bus.emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata={"status": "awaiting_approval", "request_id": request['request_id'], "action": "operator_bundle"})
         yield f"data: [SYSTEM] {scenario_label} Loop Paused for Approval. [Trace: {trace_id[:8]}]\n\n"
 

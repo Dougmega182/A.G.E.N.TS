@@ -1,8 +1,12 @@
 # A.G.E.N.T.S. — Autonomous Governance & Execution Networked Task System
 
-> **BUILD REV:** 2.0.0 | **DOMAINS:** 9 | **STAGES:** 15
+> **BUILD REV:** 3.0.0 | **DOMAINS:** 9 | **STAGES:** 15
 
-A self-governing AI organisation that replaces the need for a human team — with debate, voting, auditing, self-improvement, and absolute Gatekeeper control.
+## 🦾 Autonomous Reliability
+**This system distrusts its own outputs when reality disagrees — and adapts future decisions automatically.**
+
+*   **[Adaptive Decision Intelligence](file:///e:/Ai/WORK-IN-PROGRESS/A.G.E.N.T.S/ADAPTIVE_INTELLIGENCE.md)**: Deep-dive into DPI and truth models.
+*   **[Demo Video](file:///e:/Ai/WORK-IN-PROGRESS/A.G.E.N.T.S/demo_video.mp4)**: Operator workflow in action (Phase 4).
 ## Quick Start
 
 ```bash
@@ -37,14 +41,13 @@ Scenario input prefixes for the live loop:
 - `RFI:`
 - `Delay:`
 
-## Phase 3.6 Governance Behavior
+## Phase 5.0: Self-Correcting Decision Intelligence
+Phase 5.0 is now active and operationalizes system skepticism:
 
-Phase 3.6 is now active and enforces blocking governance in the construction loop:
-
-- Invalid final decision contract output triggers a system-forced `ESCALATE`.
-- `ACTION_INTENT` is emitted before mutation.
-- `ACTION_EXECUTED` is emitted only after successful state persistence.
-- `CONTRACT_VALIDATION_FAILED` is emitted on validation failure paths.
+- **Drift Pressure Index (DPI)**: Throttles confidence thresholds based on historical execution failure.
+- **Truth Verification Daemon**: Closes the loop between "API Success" and actual reality.
+- **Immediate Failure Ingestion**: Operator crashes are now fed directly into Owen's briefing engine.
+- **Reliability Alerts**: Agents are briefed on system weaknesses before planning actions.
 
 ## Execution Gate (DO > TALK)
 

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Interface</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --accent-green: #238636;
+            --accent-green-hover: #2ea043;
+            --accent-blue: #1f6feb;
+            --danger-red: #da3633;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group textarea {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: var(--accent-blue);
+            color: white;
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #388bfd;
+        }
+
+        button.btn-primary {
+            background-color: var(--accent-green);
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--accent-green-hover);
+        }
+        
+        button.btn-danger {
+            background-color: var(--danger-red);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .terminal {
+            background-color: #010409;
+            color: #8b949e;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 13px;
+            padding: 16px;
+            border-radius: 6px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .approval-block {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .feedback-block {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Daily Operator Interface</h1>
+        <p style="color: #8b949e; font-size: 13px; margin-top: 5px;">A.G.E.N.T.S. Live Workflow</p>
+    </div>
+
+    <!-- Inputs -->
+    <div class="panel">
+        <div class="form-group">
+            <label>Issue Description</label>
+            <textarea id="issue" placeholder="e.g. Concrete pour delay due to heavy rain. Subcontractor backed up."></textarea>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Cost Impact ($)</label>
+                <input type="number" id="cost" placeholder="12000" />
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Delay Impact (Days)</label>
+                <input type="number" id="delay" placeholder="3" />
+            </div>
+        </div>
+        <div class="toggle-group">
+            <input type="checkbox" id="dryRun" checked>
+            <label for="dryRun" style="font-size: 14px;">Enable Dry Run Mode (No real emails/calendar side-effects)</label>
+        </div>
+        <button id="runBtn" class="btn-primary">Run Decision Loop</button>
+    </div>
+
+    <!-- Output Stream -->
+    <div class="panel">
+        <label style="font-weight: 600; font-size: 14px; margin-bottom: 10px; display: block;">Orchestrator Feed</label>
+        <div id="terminal" class="terminal">> Ready. Enter details and press "Run Decision Loop".</div>
+        
+        <div id="approvalBlock" class="approval-block">
+            <h3>Approval Required</h3>
+            <p id="intentSummary" style="font-size: 14px; color: #8b949e;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button id="approveBtn" class="btn-primary">Approve & Execute</button>
+                <button id="rejectBtn" class="btn-danger">Reject</button>
+            </div>
+        </div>
+        
+        <div id="feedbackBlock" class="feedback-block">
+            <h3>POST_EXECUTION_REVIEW_V1</h3>
+            <p style="font-size: 13px; color: #8b949e;">Did this action resolve the issue smoothly in the real world?</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <label><input type="radio" name="outcome" value="success" checked> Success</label>
+                <label><input type="radio" name="outcome" value="partial"> Partial</label>
+                <label><input type="radio" name="outcome" value="failure"> Failure</label>
+            </div>
+            <textarea id="feedbackNotes" placeholder="Notes for Owen to remember for next time..."></textarea>
+            <button id="submitFeedbackBtn">Submit Operational Intelligence</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRequestId = null;
+    let currentTraceId = null;
+
+    const term = document.getElementById('terminal');
+    
+    function logTerm(msg) {
+        term.innerHTML += `\n${msg}`;
+        term.scrollTop = term.scrollHeight;
+    }
+
+    document.getElementById('runBtn').addEventListener('click', async () => {
+        const issue = document.getElementById('issue').value;
+        const cost = document.getElementById('cost').value;
+        const delay = document.getElementById('delay').value;
+        const dryRun = document.getElementById('dryRun').checked;
+
+        if (!issue) {
+            alert("Issue description is required.");
+            return;
+        }
+
+        document.getElementById('runBtn').disabled = true;
+        document.getElementById('approvalBlock').style.display = 'none';
+        document.getElementById('feedbackBlock').style.display = 'none';
+        term.innerHTML = `> Starting Orchestrator for new scenario...\n`;
+
+        try {
+            const response = await fetch('/operator/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ issue, cost, delay, dry_run: dryRun })
+            });
+
+            if (!response.ok) throw new Error("Failed to start run");
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+                
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const dataMsg = line.slice(6);
+                        logTerm(dataMsg);
+                        
+                        // Look for the Request ID in the stream so we can approve it
+                        if (dataMsg.includes("PROPOSAL CREATED. Request ID: ")) {
+                            currentRequestId = dataMsg.split("Request ID: ")[1].trim();
+                        }
+                        // Stop the stream parsing visually if waiting for approval
+                        if (dataMsg.includes("Awaiting human approval")) {
+                            document.getElementById('approvalBlock').style.display = 'flex';
+                            document.getElementById('intentSummary').innerText = `Request ID: ${currentRequestId}. Review reasonings above.`;
+                        }
+                        if (dataMsg.includes("[Trace:")) {
+                            const match = dataMsg.match(/\[Trace:\s*([^\]]+)\]/);
+                            if (match) {
+                                currentTraceId = match[1].trim();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            logTerm(`[ERROR] ${e.message}`);
+        } finally {
+            document.getElementById('runBtn').disabled = false;
+        }
+    });
+
+    async function handleDecision(decision) {
+        document.getElementById('approveBtn').disabled = true;
+        document.getElementById('rejectBtn').disabled = true;
+        logTerm(`\n> Submitting decision: ${decision}...`);
+
+        try {
+            const res = await fetch('/preflight/approvals/decide', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    request_id: currentRequestId,
+                    decision: decision,
+                    decided_by: "OPERATOR",
+                    reason: "UI Approval"
+                })
+            });
+            
+            if (res.ok) {
+                logTerm(`> Approval Engine updated. Routing to execution gateway...`);
+                // If execution requires a separate endpoint or it happens synchronously during decision in this new UI loop, handle it.
+                // In demo_workflow, API decision doesn't automatically execute, it just flips bits. Gateway is called manually.
+                
+                if (decision === "approved") {
+                    const dryRun = document.getElementById('dryRun').checked;
+                    const execRes = await fetch('/preflight/tasks/execute', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ request_id: currentRequestId, dry_run: dryRun })
+                    });
+                    
+                    const execData = await execRes.json();
+                    
+                    if (execRes.ok) {
+                        logTerm(`[SUCCESS] Side-effects confirmed valid. Gateway response:`);
+                        logTerm(JSON.stringify(execData.result, null, 2));
+                        document.getElementById('feedbackBlock').style.display = 'flex';
+                    } else {
+                        logTerm(`[EXECUTION BLOCKED] ${JSON.stringify(execData)}`);
+                    }
+                }
+            } else {
+                logTerm(`> Error updating decision.`);
+            }
+        } catch (e) {
+            logTerm(`[ERROR] ${e.message}`);
+        }
+    }
+
+    document.getElementById('approveBtn').addEventListener('click', () => handleDecision('approved'));
+    document.getElementById('rejectBtn').addEventListener('click', () => handleDecision('rejected'));
+
+    document.getElementById('submitFeedbackBtn').addEventListener('click', async () => {
+        const outcome = document.querySelector('input[name="outcome"]:checked').value;
+        const notes = document.getElementById('feedbackNotes').value;
+        
+        document.getElementById('submitFeedbackBtn').disabled = true;
+        logTerm(`\n> Submitting POST_EXECUTION_REVIEW_V1...`);
+        
+        try {
+            await fetch('/operator/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    execution_trace_id: currentRequestId, // tying review to the req ID as proxy if trace unavailable
+                    trace_id: currentTraceId,
+                    outcome: outcome,
+                    notes: notes,
+                    delay_actual: parseInt(document.getElementById('delay').value),
+                    cost_actual: parseFloat(document.getElementById('cost').value)
+                })
+            });
+            logTerm(`[SUCCESS] Owen has ingested operational intelligence. Feedback Loop Closed.`);
+            document.getElementById('feedbackBlock').style.display = 'none';
+        } catch (e) {
+            logTerm(`[ERROR] Feeback submission failed: ${e.message}`);
+        } finally {
+            document.getElementById('submitFeedbackBtn').disabled = false;
+        }
+    });
+
+</script>
+</body>
+</html>

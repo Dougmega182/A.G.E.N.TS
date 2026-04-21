@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import json
 import re
+import logging
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
 from .contracts import validate_against_contract
+
+logger = logging.getLogger(__name__)
 
 EXECUTION_OVERLAY_MINIMAL = """\
 
@@ -83,9 +86,10 @@ def build_plan_v1_system_prompt() -> str:
     return (
         "You are Nadia, Planner. You produce a concise execution plan.\n\n"
         "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
-        "INSTITUTIONAL MEMORY:\n"
-        "- You will receive past decisions for similar scenarios as structured context.\n"
-        "- Use this history to AVOID REPEATING past risks and to ALIGN with successful plan patterns.\n"
+        "INSTITUTIONAL MEMORY & INTELLIGENCE:\n"
+        "- You will receive 'institutional_memory' (past decisions) and an 'OWEN INTELLIGENCE BRIEFING' (lessons and patterns).\n"
+        "- Use this context to AVOID REPEATING past failures and to ALIGN your plan with proven stable patterns (DO).\n"
+        "- If Owen's briefing lists a 'DON'T DO' pattern relevant to this request, your plan MUST avoid it.\n"
         "- If a similar past scenario was rejected, your plan MUST address the rejection reason.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
@@ -106,6 +110,8 @@ def build_implementation_plan_v1_system_prompt() -> str:
     return (
         "You are Tucker, Engineer. You produce a detailed technical implementation plan.\n\n"
         "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "SYSTEM INTELLIGENCE:\n"
+        "- Use the 'OWEN INTELLIGENCE BRIEFING' to ensure technical steps align with proven successful patterns and avoid known pitfalls.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -177,16 +183,22 @@ def build_decision_v1_system_prompt() -> str:
         "3. RISK SCORE — Quantitative baseline. Reference it explicitly.\n"
         "4. INSTITUTIONAL MEMORY — Historical context. Reference at least one past decision.\n\n"
         "ADVISORY INPUTS:\n"
-        "- You will receive a 'risk_score' (0.0 - 1.0), a 'risk_trend' (direction/averages), and a 'critique' from WALL-E.\n"
+        "- You will receive a 'risk_score' (0.0 - 1.0), a 'risk_trend', and a 'critique' from WALL-E.\n"
+        "- You will receive an 'OWEN INTELLIGENCE BRIEFING' (syntehsized lessons, stable patterns, and known pitfalls).\n"
         "- You will receive 'governance_flags' with severity levels (LOW/MEDIUM/HIGH/CRITICAL).\n"
         "- You will receive 'institutional_memory' showing past decisions for similar scenarios.\n"
-        "- WALL-E is ADVISORY ONLY. You are the final authority. Weigh their critique against business context.\n\n"
+        "- Owen and WALL-E are ADVISORY. You are the final authority. Weigh their intelligence against business context.\n\n"
         "JUSTIFICATION REQUIREMENTS (non-negotiable):\n"
         "Your 'justification' field MUST:\n"
         "1. Reference at least one Governance Flag (if any are present) — quote its type and severity.\n"
-        "2. Reference at least one Institutional Memory item (if any exist) — cite the past decision and its outcome.\n"
-        "3. If your decision DEVIATES from past outcomes (e.g., approving when similar was rejected), you MUST explicitly justify WHY circumstances differ now.\n"
+        "2. Reference at least one Institutional Memory item or Owen Intelligence insight — cite the pattern or past decision.\n"
+        "3. If your decision DEVIATES from Owen's 'DON'T DO' patterns or past rejections, you MUST explicitly justify WHY circumstances differ now.\n"
         "4. Reference the risk_score and risk_trend.\n\n"
+        "CONFIDENCE SCORING (0.0 to 1.0):\n"
+        "You must output a 'confidence_score' and a 'confidence_reason'.\n"
+        "- Score 0.8 - 1.0: You used Owen's intelligence, considered governance flags, and clearly justified cost/delay vectors.\n"
+        "- Score 0.6 - 0.79: Plausible decision, but lacks strong institutional precedent or leaves minor governance risk unresolved.\n"
+        "- Score < 0.6: You had to guess, ignored Owen's intelligence entirely, or hit a direct conflict with governance flags.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -194,6 +206,8 @@ def build_decision_v1_system_prompt() -> str:
         "SCHEMA:\n"
         "{\n"
         "  \"decision\": \"APPROVE | REJECT | ESCALATE\",\n"
+        "  \"confidence_score\": float,\n"
+        "  \"confidence_reason\": \"string\",\n"
         "  \"justification\": \"string\",\n"
         "  \"conditions\": [\"string\"],\n"
         "  \"impact\": {\n"
@@ -210,8 +224,9 @@ def build_critique_v1_system_prompt() -> str:
         "You are Sentinel, System Auditor. You provide ADVISORY critiques for construction scenarios.\n"
         "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "Your goal is to identify logic flaws, risk flags, and potential non-compliance.\n\n"
-        "CONSIDER TRENDS:\n"
-        "You will be provided with the current 'risk_trend'. Use this to determine if the project health is deteriorating and factor that into your recommendation.\n\n"
+        "CONSIDER TRENDS & INTELLIGENCE:\n"
+        "- Use the 'risk_trend' to determine if project health is deteriorating.\n"
+        "- Use the 'OWEN INTELLIGENCE BRIEFING' to check if the proposed plan matches any known 'DON'T DO' patterns or repeated failures.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -248,19 +263,8 @@ def build_audit_log_v1_system_prompt() -> str:
 
 def build_vote_v1_system_prompt() -> str:
     return (
-        "You are Owen, Intelligence & Learning Officer. You provide a silent VOTE on system decisions based on historical context and data patterns.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- Return valid JSON only.\n\n"
-        "SCHEMA:\n"
-        "{\n"
-        "  \"request_id\": \"string\",\n"
-        "  \"voter_id\": \"AGT-008\",\n"
-        "  \"vote\": \"approve | reject\",\n"
-        "  \"justification\": \"string (min 10 chars)\"\n"
-        "}\n"
+        "DEPRECATED: Owen no longer votes in the decision loop. He provides Intelligence briefings via context.\n"
+        "This function is kept for backward compatibility but should not be called in Phase 2.5 loops.\n"
     )
 
 
@@ -274,10 +278,6 @@ META_LANGUAGE_PATTERNS: Tuple[re.Pattern, ...] = tuple(
         r"\bnot (within|in) my (scope|role|remit)\b",
         r"\bnot (allowed|permitted|authorized|authorised)\b",
         r"\bi can(?:not|'t)\s+(comply|do that|help with that|assist)\b",
-        r"\bpolicy\b",
-        r"\bgovernance\b",
-        r"\bconstitution\b",
-        r"\bcharter\b",
         r"\blaws of the land\b",
         r"\bG\d{1,3}\b",
         r"\bgatekeeper approval\b",
@@ -361,13 +361,28 @@ class OutputContract:
     This is intentionally lightweight and deterministic (no LLM-in-the-loop).
     """
 
-    def contains_meta_language(self, obj: Any) -> bool:
+    def contains_meta_language(self, obj: Any, skip_keys: Optional[set] = None) -> bool:
+        if skip_keys is None:
+            skip_keys = {
+                "justification", "critique", "audit_entry", "summary", "audit_log", 
+                "lessons_learned", "patterns", "steps", "risks", "assumptions", "goal", "architecture"
+            }
+
         if isinstance(obj, str):
-            return any(p.search(obj) for p in META_LANGUAGE_PATTERNS)
+            for p in META_LANGUAGE_PATTERNS:
+                if p.search(obj):
+                    logger.warning(f"[CONTRACT] Meta-language trigger: '{p.pattern}' matched in text: '{obj[:100]}...'")
+                    return True
+            return False
         if isinstance(obj, dict):
-            return any(self.contains_meta_language(v) for v in obj.values())
+            # Disclosure: We allow meta-words in specific narrative fields like 'justification'
+            return any(
+                self.contains_meta_language(v, skip_keys) 
+                for k, v in obj.items() 
+                if k not in skip_keys
+            )
         if isinstance(obj, list):
-            return any(self.contains_meta_language(v) for v in obj)
+            return any(self.contains_meta_language(v, skip_keys) for v in obj)
         return False
 
     def _parse_json_object(self, text: Any) -> Optional[Mapping[str, Any]]:

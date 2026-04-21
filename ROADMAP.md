@@ -11,16 +11,16 @@
 
 ```mermaid
 graph TD
-    P1[Phase 1: Core Foundation] -->|COMPLETED| P2[Phase 2: Intelligent Reasoning]
-    P2 -->|COMPLETED| P3[Phase 3: Multi-Scenario Platform]
-    P3 -->|COMPLETED| P35[Phase 3.5: Nervous System Telemetry]
-    P35 -->|COMPLETED| P36[Phase 3.6: Active Governance]
-    P36 -->|PLANNED| P4[Phase 4: External Orchestration]
+    P1[Phase 1: Core Foundation] -->|COMPLETED| P2[Phase 2: Intelligent Reasoning] ✅ COMPLETE
+    P2 -->|COMPLETED| P3[Phase 3: Multi-Scenario Platform] ✅ COMPLETE
+    P3 -->|COMPLETED| P35[Phase 3.5: Nervous System Telemetry] ✅ COMPLETE
+    P35 -->|COMPLETED| P36[Phase 3.6: Active Governance] ✅ COMPLETE
+    P36 -->|COMPLETED| P4[Phase 4: External Orchestration] ✅ COMPLETE
 ```
 
 ---
 
-## ✅ Phase 1: Core Foundation (COMPLETED)
+## ✅ Phase 1: Core Foundation (COMPLETED) ✅ COMPLETE
 *Goal: Establish the deterministic execution engine and agent roster.*
 
 - [x] **Agent Roster Implementation**: Formalized Aria (CEO), Nadia (Planning), WALL-E (Audit), and Jenny (Comms).
@@ -30,7 +30,7 @@ graph TD
 
 ---
 
-## ✅ Phase 2: Intelligence & Reasoning (COMPLETED)
+## ✅ Phase 2: Intelligence & Reasoning (COMPLETED) ✅ COMPLETE 
 *Goal: Hardening the brain with risk engine and safety gates.*
 
 - [x] **Scenario-Aware Risk Engine**: Implemented scaled risk scoring (0.0 - 1.0).
@@ -40,7 +40,7 @@ graph TD
 
 ---
 
-## ✅ Phase 3: Multi-Scenario Multi-Project Platform (COMPLETED)
+## ✅ Phase 3: Multi-Scenario Multi-Project Platform (COMPLETED) ✅ COMPLETE
 *Goal: Scale the brain to handle complex construction logic.*
 
 - [x] **Universal Scenario Routing**: Added prefix-based routing for `Variation:`, `RFI:`, and `Delay:`.
@@ -50,7 +50,7 @@ graph TD
 
 ---
 
-## ✅ Phase 3.5: The Nervous System (COMPLETED)
+## ✅ Phase 3.5: The Nervous System (COMPLETED) ✅ COMPLETE
 *Goal: System-wide observability and replayability.*
 
 - [x] **Unified Event Bus**: Created `events.log.jsonl` as the forensic source of truth.
@@ -60,7 +60,7 @@ graph TD
 
 ---
 
-## ✅ Phase 3.6: Active Governance (COMPLETED)
+## ✅ Phase 3.6: Active Governance (COMPLETED) ✅ COMPLETE
 *Goal: Transition from passive observability to active enforcement.*
 
 - [x] **Blocking Validation Logic**: Final `decision_v1` validation failures now force system override instead of allowing silent progression.
@@ -71,7 +71,7 @@ graph TD
 - [x] **Contract Validator Hardening**: Added support for `number`, `integer`, `boolean`, `null`, and string `enum` checks to prevent schema blind spots.
 - [x] **Governance Enforcement Test Suite**: Added `run_governance_enforcement_test.py` covering both happy-path and forced-escalation failure-path behavior.
 
-### Phase 3.6 Verification Results (2026-04-16 UTC)
+### Phase 3.6 Verification Results (2026-04-16 UTC) ✅ COMPLETE
 
 - `python run_governance_enforcement_test.py` → **PASS**
   - Scenario A: `ACTION_INTENT -> STATE_MUTATED -> ACTION_EXECUTED` observed in-order.
@@ -79,7 +79,7 @@ graph TD
 - `pytest` → **PASS** (`12 passed, 3 skipped`)
 - Diagnostics (`orchestrator.py`, `construction_op.py`, `event_bus.py`, `contracts.py`, `run_governance_enforcement_test.py`, `launch.ps1`) → **No issues**
 
-### Phase 3.6.1 Execution Gate Upgrade (COMPLETED)
+### Phase 3.6.1 Execution Gate Upgrade (COMPLETED) ✅ COMPLETE
 
 - [x] **Hard Completion Contract**: Construction loop now finalizes as `EXECUTED`, `PARTIALLY_EXECUTED`, or `FAILED` only.
 - [x] **Planner/Executor Separation**: Planner artifacts are generated first; mutation is executed via dedicated executor phase.
@@ -89,14 +89,16 @@ graph TD
 
 ---
 
-## 🚀 Phase 4: External System Orchestration (COMPLETED)
-*Goal: Empowering agents to act in the physical world.*
+## 🚀 Phase 5: Operationalized Self-Correction (v1) [ACTIVE]
+*Goal: Closing the loop between execution reality and future planning.*
 
-- [x] **The controlled Gmail Operator**: Restricted draft-only communication with human-in-the-loop.
-- [x] **The Calendar WALL-E**: Auto-scheduling of RFI deadlines and Variation site visits.
-- [x] **Live Telemetry Dashboard**: Real-time visual view of events, traces, and project health.
-- [x] **LLM Upgrade**: Migrated default high-performance model to stable **Gemini 3 Flash (preview)**.
-- [ ] **External API Integration**: Connecting A.G.E.N.T.S. to construction management systems (e.g. Procore/Aconex).
+- [x] **Truth-Model Verification Daemon**: Implemented `api_ack` vs `read_back` reality checking.
+- [x] **Owen Loop Closure**: Automated ingestion of execution failure patterns into the briefing layer.
+- [x] **Adaptive Threshold Gate**: Implementation of the **Drift Pressure Index (DPI)** to throttle autonomy.
+- [x] **Simulation Test Suite**: Verified system resilience via targeted drift injection.
+- [ ] **Cross-Action Penalty Sharing**: Enabling failure in one operator (e.g. Gmail) to proactively increase skepticism in adjacent operators (e.g. Outlook).
+- [ ] **Penalty Decay/Forgiveness**: Implementing time-based recovery for reliability scores to prevent system "lock-up".
+- [ ] **Predictive Failure Modeling**: Anticipating drift before it occurs based on complex project state patterns.
 
 ---
 
@@ -122,7 +124,7 @@ Not “ideas” — working loops.
 
 ---
 
-# ⚙️ PHASE 0 — BUILD YOUR AI TEAM (WEEK 1–2)
+# ⚙️ PHASE 0 — BUILD YOUR AI TEAM (WEEK 1–2) ✅ COMPLETE
 
 ### Goal:
 
@@ -130,7 +132,7 @@ Agents that help you build — not just exist
 
 ---
 
-## Step 0.1 — Lock your core builder team
+## Step 0.1 — Lock your core builder team ✅ COMPLETE
 
 Create these agents:
 
@@ -144,7 +146,7 @@ WALL-E → Auditor (logs, compliance, validation)
 
 ---
 
-## Step 0.2 — Define their responsibilities (hard boundaries)
+## Step 0.2 — Define their responsibilities (hard boundaries) ✅ COMPLETE
 
 * Aria → decides
 * Nadia → plans
@@ -156,7 +158,7 @@ No overlap. No fluff.
 
 ---
 
-## Step 0.3 — Give them contracts (critical)
+## Step 0.3 — Give them contracts (critical) ✅ COMPLETE
 
 Each must output structured results:
 
@@ -167,7 +169,7 @@ Each must output structured results:
 
 ---
 
-## Step 0.4 — Force execution behavior
+## Step 0.4 — Force execution behavior ✅ COMPLETE
 
 All builder agents:
 
@@ -191,7 +193,7 @@ And:
 
 ---
 
-# 🏗️ PHASE 1 — FIRST WORKING SYSTEM (WEEK 3–6)
+# 🏗️ PHASE 1 — FIRST WORKING SYSTEM (WEEK 3–6) ✅ COMPLETE
 
 ### Goal:
 
@@ -199,7 +201,7 @@ One **complete construction workflow**
 
 ---
 
-## Step 1.1 — Pick the workflow (lock it)
+## Step 1.1 — Pick the workflow (lock it) ✅ COMPLETE
 
 **Variation Approval Process**
 
@@ -207,7 +209,7 @@ Do NOT change this.
 
 ---
 
-## Step 1.2 — Define state model
+## Step 1.2 — Define state model ✅ COMPLETE
 
 ```json
 {
@@ -225,7 +227,7 @@ Do NOT change this.
 
 ---
 
-## Step 1.3 — Define outputs
+## Step 1.3 — Define outputs ✅ COMPLETE
 
 * plan_v1 → how to handle variation
 * decision_v1 → approve/reject
@@ -234,7 +236,7 @@ Do NOT change this.
 
 ---
 
-## Step 1.4 — Build the loop
+## Step 1.4 — Build the loop ✅ COMPLETE
 
 ```text
 Input → Nadia (plan)  
@@ -246,7 +248,7 @@ Input → Nadia (plan)
 
 ---
 
-## Step 1.5 — Enforce contracts
+## Step 1.5 — Enforce contracts ✅ COMPLETE
 
 Every step:
 
@@ -313,6 +315,16 @@ Severity-based flags (LOW → MEDIUM → HIGH → CRITICAL):
 - Event Feed: `DECISION_FINALIZED_V1` anchor events visually distinct
 - API endpoints: `/project/health`, `/decisions/latest`
 - Replaced all mock data with real event-derived analytics
+
+---
+
+## Step 2.5 — Owen Intelligence Layer & Memory Infrastructure ✅
+
+- Memory Contract Layer (Cognitive Boundaries)
+- Three-tier memory architecture: Redis (Hot) → SQLite (Warm) → Events (Cold)
+- Owen Engine (Deterministic Synthesis of patterns/lessons)
+- SQLite DB with indexes for decisions, agent memories, and insights
+- Strictly enforced "3 Writers" discipline
 
 ---
 
@@ -550,3 +562,245 @@ Consistency over brilliance.
 ### Phase gate decision
 
 Phase 3.6 is complete and validated. Phase 4 external orchestration remains intentionally gated until new external-integration controls are implemented and approved.
+
+
+Pick this stack and don’t overthink it—you’re at the stage where **reliability > clever tooling**.
+
+---
+
+# 🧠 Your Core Stack (Best Fit for YOUR System)
+
+## 1. Brain (LLMs)
+
+**Recommendation:**
+
+* **Primary:** OpenAI (GPT-5 class models via API)
+* **Local fallback:** Ollama (LLaMA3 / Mixtral)
+
+**Why this combo works:**
+
+* OpenAI = high-quality reasoning for Aria/Nadia
+* Ollama = cheap/offline fallback + testing
+
+**Risk if you don’t do this:**
+Going full local right now will slow you down and degrade decision quality.
+
+---
+
+## 2. Memory Layer (You already nailed this)
+
+Keep exactly what you designed:
+
+* **Redis → HOT (fast context)**
+* **SQLite → WARM (decisions + Owen insights)**
+* **JSONL → COLD (event source of truth)**
+
+**One upgrade (important):**
+
+* Add **SQLite indexing on `scenario`, `timestamp`, `trace_id`**
+* Otherwise memory queries will start dragging
+
+---
+
+## 3. Orchestration (Control Layer)
+
+**Recommendation:**
+
+* Stick with your **custom orchestrator (what you built)**
+
+**Do NOT switch to:**
+
+* LangChain
+* AutoGen
+* CrewAI
+
+**Why:**
+They will fight your architecture (you already built stricter, better governance).
+
+---
+
+## 4. Tool Execution Layer (Critical for Phase 3+)
+
+You need controlled, boring, reliable tools:
+
+### Must-have tools:
+
+### 📧 Gmail
+
+* Google Gmail API (OAuth)
+* Scope: **drafts only**
+* Send = ALWAYS human-confirmed
+
+---
+
+### 📅 Calendar
+
+* Google Calendar API
+* Actions:
+
+  * create_event
+  * list_events
+
+---
+
+### 📁 File System
+
+* Controlled file access tool:
+
+```python
+allowed_paths = ["reports/", "exports/", "logs/"]
+```
+
+---
+
+### 🌐 HTTP Tool (VERY controlled)
+
+* Only allow:
+
+  * whitelisted domains
+  * GET requests initially
+
+**Risk:**
+Unrestricted HTTP = your agents doing dumb stuff fast
+
+---
+
+## 5. Observability (You’re missing this)
+
+**Add immediately:**
+
+### Logs + Metrics:
+
+* **Prometheus + Grafana** (you already have this stack 👌)
+
+Track:
+
+* decision latency
+* override rates
+* governance triggers
+* failure counts
+
+---
+
+### Debug UI (lightweight)
+
+* Simple dashboard showing:
+
+  * trace_id
+  * decision
+  * governance flags
+  * Owen briefing
+
+---
+
+## 6. Queue / Execution Buffer
+
+You started this — good.
+
+**Upgrade it slightly:**
+
+* Move from in-memory → **SQLite-backed queue (you planned it)**
+* Add:
+
+  * `status: pending | executing | failed | completed`
+  * retry count
+
+---
+
+## 7. Identity & Security Layer
+
+You’re doing this well already, but tighten:
+
+* Approval signatures → keep
+* Payload hashing → keep
+* Add:
+
+  * **idempotency keys (Phase 3.5)** ← non-negotiable
+
+---
+
+## 8. Dev + Testing
+
+**Keep it simple:**
+
+* pytest (you’re already using it)
+* no fancy frameworks
+
+Add:
+
+* **fixture for fake event logs**
+* **fixture for fake decisions DB**
+
+---
+
+# ⚠️ What You Should NOT Add (Right Now)
+
+This is where most people ruin systems like yours:
+
+❌ Vector DBs (Pinecone, Weaviate)
+→ You don’t need semantic search yet
+
+❌ LangChain / agent frameworks
+→ You already built something stricter and better
+
+❌ Kubernetes
+→ Total overkill
+
+❌ Streaming pipelines (Kafka)
+→ Your JSONL event log already does the job
+
+---
+
+# 🔥 One Smart Upgrade (High Impact)
+
+Add a **“Tool Permission Layer”**:
+
+Before ANY tool executes:
+
+```python
+if not tool_allowed(agent, action, context):
+    block_execution()
+```
+
+Example:
+
+* Aria → can approve, not execute
+* Gmail operator → can draft, not send
+* Owen → cannot call tools at all
+
+This prevents silent architecture drift.
+
+---
+
+# 🧭 Where You’re Actually At (Reality Check)
+
+You’re no longer “building an AI project.”
+
+You’re building:
+
+> **A governed decision system with controlled real-world actuation**
+
+That’s rare—and you’re doing it properly.
+
+---
+
+# ✅ Final Recommendation
+
+**Lock this stack in:**
+
+* OpenAI + Ollama
+* Redis + SQLite + JSONL
+* Custom orchestrator
+* Gmail + Calendar APIs (draft-only execution)
+* Prometheus/Grafana
+* Strict gateway + idempotency
+
+Don’t add anything else until Phase 3.5 is rock solid.
+
+---
+
+# 👉 Next Action (Do This Now)
+
+Implement **idempotency keys in your ExternalGateway** before adding any new tools.
+
+That’s the single highest-risk gap left.

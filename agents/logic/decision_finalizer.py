@@ -56,8 +56,11 @@ class FinalizedDecision:
     # Metadata
     was_overridden: bool = False
     was_system_forced: bool = False                # Contract validation failure
+    outcome_score: int = 0                         # 1 for success, -1 for failure/reject, 0 for neutral
     trace_id: str = ""
     scenario_type: str = ""
+    confidence_score: float = 0.0
+    confidence_reason: str = ""
 
     def to_event_payload(self) -> Dict[str, Any]:
         """Produce the canonical DECISION_FINALIZED_V1 event metadata."""
@@ -77,6 +80,9 @@ class FinalizedDecision:
             "reasoning_quality_warnings": self.reasoning_quality_warnings,
             "was_overridden": self.was_overridden,
             "was_system_forced": self.was_system_forced,
+            "outcome_score": self.outcome_score,
+            "confidence_score": self.confidence_score,
+            "confidence_reason": self.confidence_reason
         }
 
     def to_json(self) -> str:
@@ -94,6 +100,7 @@ def finalize_decision(
     memory_count: int,
     trace_id: str,
     scenario_type: str,
+    outcome_score: Optional[int] = None,
 ) -> FinalizedDecision:
     """
     The single decision canonicalization function.
@@ -114,6 +121,9 @@ def finalize_decision(
     final_justification = original_justification
     was_system_forced = False
     primary_reason: Optional[str] = None
+    
+    confidence_score = float(decision_data.get("confidence_score", 0.0))
+    confidence_reason = str(decision_data.get("confidence_reason", "No confidence reason provided."))
 
     # --- OVERRIDE 1: Contract validation failure (highest priority) ---
     if not decision_valid or not decision_data:
@@ -155,6 +165,51 @@ def finalize_decision(
         )
         override_chain.append("SAFETY_GATE_OVERRIDE")
         primary_reason = primary_reason or "safety_gate"
+
+    # --- OWEN CONFIDENCE ADJUSTMENT ---
+    from .owen_engine import OwenEngine
+    # Using 'gmail_draft' as the primary risk surface for pattern matching
+    penalty = OwenEngine().get_penalty_for_action("gmail_draft")
+    # Cap total penalty at 0.3 for the adaptive simulation as requested
+    penalty = min(penalty, 0.3)
+    adjusted_conf = max(0.0, confidence_score - penalty)
+    
+    BASE_THRESHOLD = 0.6
+    # Tiered sensitivity jumps:
+    if penalty > 0.25:
+        threshold = 0.8
+    elif penalty > 0.15:
+        threshold = 0.7
+    else:
+        threshold = BASE_THRESHOLD
+    
+    # Drift Pressure Index (DPI)
+    dpi = penalty / threshold if threshold > 0 else 0
+
+    # --- OVERRIDE 4: Confidence Gate (Dynamic Threshold) ---
+    if not was_system_forced and adjusted_conf < threshold and final_decision == "APPROVE":
+        final_decision = "ESCALATE"
+        reason_str = f"CONFIDENCE GATE OVERRIDE: Aria attempted to APPROVE with low confidence ({adjusted_conf:.2f} after {penalty:.2f} penalty). Threshold is {threshold:.2f}. DPI: {dpi:.2f}."
+        final_justification = (
+            f"{reason_str} "
+            f"Confidence Reason: {confidence_reason}. "
+            f"Original justification: {original_justification}"
+        )
+        override_chain.append("CONFIDENCE_GATE_OVERRIDE")
+        primary_reason = primary_reason or "low_confidence_with_failure_history"
+        
+        # Ensure we capture adjusted values upstream
+        decision_data["confidence_adjusted"] = adjusted_conf
+        decision_data["confidence_penalty"] = penalty
+        decision_data["confidence_threshold"] = threshold
+        decision_data["drift_pressure_index"] = dpi
+        decision_data["system_override"] = "LOW_CONFIDENCE_WITH_FAILURE_HISTORY"
+    else:
+        # Still record metrics even if not escalated
+        decision_data["confidence_adjusted"] = adjusted_conf
+        decision_data["confidence_penalty"] = penalty
+        decision_data["confidence_threshold"] = threshold
+        decision_data["drift_pressure_index"] = dpi
 
     # --- CONFLICT DETECTION: WALL-E vs Aria ---
     if not was_system_forced and critique_data:
@@ -213,6 +268,9 @@ def finalize_decision(
         reasoning_quality_warnings=warnings,
         was_overridden=was_overridden,
         was_system_forced=was_system_forced,
+        outcome_score=outcome_score if outcome_score is not None else 1 if final_decision == "APPROVE" else 0,
         trace_id=trace_id,
         scenario_type=scenario_type,
+        confidence_score=confidence_score,
+        confidence_reason=confidence_reason,
     )

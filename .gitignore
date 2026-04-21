@@ -35,3 +35,9 @@ node_modules/
 # Projects & Archive
 PROJECTS/
 ARCHIVE/
+
+# Persistence
+*.db
+*.jsonl
+data/*.db
+Agent logs/

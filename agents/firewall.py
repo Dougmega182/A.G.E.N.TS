@@ -14,8 +14,8 @@ LOG_ROOT = Path("Agent logs")
 LOG_ROOT.mkdir(parents=True, exist_ok=True)
 
 FIREWALL_LOG = LOG_ROOT / "firewall.jsonl"
-PREFLIGHT_STORE = LOG_ROOT / "preflight_approvals.json"
-PREFLIGHT_DRAFT_STORE = LOG_ROOT / "preflight_drafts.json"
+PREFLIGHT_STORE = Path(os.getenv("AGENTS_PREFLIGHT_STORE", str(LOG_ROOT / "preflight_approvals.json")))
+PREFLIGHT_DRAFT_STORE = Path(os.getenv("AGENTS_PREFLIGHT_DRAFT_STORE", str(LOG_ROOT / "preflight_drafts.json")))
 
 class FirewallViolation(Exception):
     def __init__(self, reason: str, details: dict):
@@ -31,8 +31,9 @@ class PreflightApprovalError(Exception):
 
 class PreflightApprovalEngine:
     def __init__(self, store_path: Optional[Path] = None, draft_store_path: Optional[Path] = None):
-        self.store_path = store_path or PREFLIGHT_STORE
-        self.draft_store_path = draft_store_path or PREFLIGHT_DRAFT_STORE
+        # Dynamically evaluate store paths to allow test isolation via env vars
+        self.store_path = store_path or Path(os.getenv("AGENTS_PREFLIGHT_STORE", str(PREFLIGHT_STORE)))
+        self.draft_store_path = draft_store_path or Path(os.getenv("AGENTS_PREFLIGHT_DRAFT_STORE", str(PREFLIGHT_DRAFT_STORE)))
         self._store: Optional[Dict[str, Any]] = None
         self._draft_store: Optional[Dict[str, Any]] = None
 
@@ -45,12 +46,8 @@ class PreflightApprovalEngine:
         }
 
     def _load_store(self) -> Dict[str, Any]:
-        if self._store is not None:
-            return self._store
-        
         if not self.store_path.exists():
-            self._store = self._default_store()
-            return self._store
+            return self._default_store()
         try:
             with open(self.store_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -363,6 +360,10 @@ class PreflightApprovalEngine:
                 result = await op.execute_intent(action_intent)
             elif action.startswith("construction_"):
                 result = await self.execute_construction_intent(action_intent)
+            elif action == "operator_bundle":
+                from .logic.external_gateway import ExternalGateway
+                gateway = ExternalGateway(approval_engine=self)
+                result = gateway.validate_and_execute(action_intent, request_id)
             else:
                 raise PreflightApprovalError("unsupported_task_action", {"action": action})
 

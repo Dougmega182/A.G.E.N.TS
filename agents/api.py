@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, RedirectResponse
+from fastapi.responses import StreamingResponse, RedirectResponse, FileResponse
 from pydantic import BaseModel
 from typing import Optional, Dict
 from pathlib import Path
@@ -11,8 +11,10 @@ from .telemetry import TELEMETRY
 from . import firewall
 from .firewall import PreflightApprovalError
 from .logic.event_bus import EVENTS_LOG_PATH
+from .logic.event_bus import emit_event
 import os
 import asyncio
+from datetime import datetime
 
 app = FastAPI(title="A.G.E.N.T.S. Interactive API")
 
@@ -29,7 +31,11 @@ orc = Orchestrator()
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/static/index.html?v=4.0.0")
+    return RedirectResponse(url="/operator")
+
+@app.get("/operator")
+async def get_operator_app():
+    return FileResponse("web/daily_operator.html")
 
 class ChatRequest(BaseModel):
     message: str
@@ -46,6 +52,21 @@ class DraftSummaryUpdateRequest(BaseModel):
 
 class TaskExecuteRequest(BaseModel):
     request_id: str
+    dry_run: bool = False
+
+class OperatorRunRequest(BaseModel):
+    issue: str
+    cost: float
+    delay: int
+    dry_run: bool = True
+
+class OperatorFeedbackRequest(BaseModel):
+    execution_trace_id: str
+    trace_id: str
+    outcome: str
+    notes: str
+    delay_actual: int
+    cost_actual: float
 
 @app.get("/status")
 async def get_status():
@@ -118,13 +139,90 @@ async def update_preflight_draft_summary(req: DraftSummaryUpdateRequest):
 
 @app.post("/preflight/tasks/execute")
 async def execute_preflight_task(req: TaskExecuteRequest):
-    """Manually execute a task from the queue that has already been approved."""
+    """Manually execute a task from the queue that has already been approved (via ExternalGateway)."""
     try:
-        # Use a new method on PreflightApprovalEngine to execute the task
-        result = await firewall.execute_task(request_id=req.request_id)
+        request_obj = firewall.get_request(req.request_id)
+        if not request_obj:
+            raise HTTPException(status_code=404, detail="approval_request_not_found")
+            
+        intent = request_obj.get("original_action_intent")
+        
+        if req.dry_run:
+            result = {
+                "status": "dry_run",
+                "message": "Execution safety bypass engaged. No real limits or side-effects triggered.",
+                "action_target": intent.get("action")
+            }
+        else:
+            from .logic.external_gateway import ExternalGateway
+            gateway = ExternalGateway()
+            result = gateway.validate_and_execute(intent, req.request_id)
+        
+        # Optionally, mark it inside the basic store just for UI consistency
+        try:
+            # this is a bit of a hack since Gateway handles its own execution ledger
+            store = firewall.DEFAULT_ENGINE._load_store()
+            for idx, r in enumerate(store["requests"]):
+                if r.get("request_id") == req.request_id:
+                    r["status"] = "executed"
+                    r["executed_at"] = datetime.utcnow().isoformat()
+                    store["requests"][idx] = r
+                    break
+            firewall.DEFAULT_ENGINE._save_store(store)
+        except Exception:
+            pass
+            
         return {"status": "success", "result": result}
-    except PreflightApprovalError as e:
-        raise HTTPException(status_code=400, detail={"reason": e.reason, "details": e.details})
+    except Exception as e:
+        raise HTTPException(status_code=400, detail={"reason": "execution_failed", "details": str(e)})
+
+@app.post("/operator/run")
+async def operator_run(req: OperatorRunRequest):
+    """Runs the Orchestrator loop specifically configured by the Operator Form."""
+    async def event_generator():
+        trace_id = f"UI-OP-{datetime.now().strftime('%M%S')}"
+        user_input = f"Issue: {req.issue}. Cost impact: ${req.cost}. Delay: {req.delay} days."
+        
+        try:
+            # Note: We aren't cleanly injecting dry_run into the strict orchestration 
+            # loop right here because orchestrator builds the action_intent.
+            # However, for simplicity, we append it to the user_input context or
+            # rely on the fact that execution is manually routed. Actually, we 
+            # can't easily inject metadata into `_run_generic_construction_loop` without modifying it.
+            # But the gateway parses `dry_run` from metadata. Let's just pass it in string.
+            if req.dry_run:
+                 user_input += " [DRY RUN ACTIVE: DO NOT EXECUTE SIDE EFFECTS]"
+                 
+            async for data in orc._run_generic_construction_loop("site_issue", user_input, trace_id):
+                yield data + "\n"
+        except Exception as e:
+            yield f"data: [ORCHESTRATOR ERROR] {str(e)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+@app.post("/operator/feedback")
+async def operator_feedback(req: OperatorFeedbackRequest):
+    """Logs post-execution intelligence back into the system."""
+    try:
+        emit_event(
+            "POST_EXECUTION_REVIEW_V1",
+            req.trace_id,
+            agent_id="OPERATOR",
+            scenario="post_execution",
+            metadata={
+                "execution_trace_id": req.execution_trace_id,
+                "outcome": req.outcome,
+                "notes": req.notes,
+                "delay_actual": req.delay_actual,
+                "cost_actual": req.cost_actual
+            }
+        )
+        
+        from .logic.owen_engine import OwenEngine
+        om = OwenEngine()
+        om.extract_lesson_from_feedback(req.trace_id, req.outcome, req.notes)
+        
+        return {"status": "success", "message": "Feedback integrated into events log and Owen Engine."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

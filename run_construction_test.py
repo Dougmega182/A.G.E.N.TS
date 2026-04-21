@@ -17,7 +17,7 @@ async def main():
     print(f"--- STARTING SAFETY & GOVERNANCE TEST (PHASE 2.1) ---")
     print(f"Input: {user_input}\n")
     
-    async for chunk in orchestrator.run_construction_loop(user_input):
+    async for chunk in orchestrator.astream_chat(user_input):
         if chunk.startswith("data: "):
             content = chunk.replace("data: ", "").strip()
             if content:

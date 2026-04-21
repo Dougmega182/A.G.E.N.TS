@@ -1,9 +1,19 @@
 {
   "id": "decision_v1",
   "type": "object",
-  "required": ["decision", "justification", "conditions", "impact"],
+  "required": ["decision", "justification", "conditions", "impact", "confidence_score", "confidence_reason"],
   "properties": {
     "decision": { "type": "string", "enum": ["APPROVE", "REJECT", "ESCALATE"] },
+    "confidence_score": { 
+      "type": "number", 
+      "minimum": 0, 
+      "maximum": 1,
+      "description": "0.0 to 1.0 based on structural integrity, governance flags, and Owen intel utilization."
+    },
+    "confidence_reason": {
+      "type": "string",
+      "description": "Explanation of why the confidence score is high or low."
+    },
     "justification": { 
       "type": "string", 
       "minLength": 20,
