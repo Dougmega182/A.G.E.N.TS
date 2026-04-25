@@ -125,11 +125,35 @@ CREATE TABLE IF NOT EXISTS owen_negative_patterns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     action_type TEXT NOT NULL,
     failure_key TEXT NOT NULL,
+    scenario_type TEXT NOT NULL DEFAULT 'global',
     count INTEGER DEFAULT 1,
     last_seen TEXT NOT NULL,
     penalty REAL DEFAULT 0.0,
-    UNIQUE(action_type, failure_key)
+    UNIQUE(action_type, failure_key, scenario_type)
 );
+
+-- Phase 5.1.5 — Decision Cache (Inference Caching Layer 1)
+-- Stores a serialized FinalizedDecision snapshot keyed on the deterministic
+-- hash of (scenario_type, normalized_issue, cost_bucket, delay_bucket,
+-- governance_flag_set, policy_version). UNIQUE(cache_key) + INSERT OR IGNORE
+-- makes concurrent writes race-safe.
+CREATE TABLE IF NOT EXISTS decision_cache (
+    cache_key TEXT PRIMARY KEY,
+    scenario_type TEXT NOT NULL,
+    normalized_issue TEXT NOT NULL,
+    cost_bucket TEXT NOT NULL,
+    delay_bucket TEXT NOT NULL,
+    governance_flag_set TEXT NOT NULL,
+    policy_version TEXT NOT NULL,
+    decision_snapshot_json TEXT NOT NULL,
+    source_trace_id TEXT NOT NULL,
+    hit_count INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL,
+    last_hit_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_decision_cache_scenario ON decision_cache(scenario_type);
+CREATE INDEX IF NOT EXISTS idx_decision_cache_created ON decision_cache(created_at);
 """
 
 
@@ -162,6 +186,43 @@ def _ensure_db() -> None:
             logger.info("MIGRATION: Adding deterministic_key column to owen_insights...")
             conn.execute("ALTER TABLE owen_insights ADD COLUMN deterministic_key TEXT")
             conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_owen_insights_det_key ON owen_insights(deterministic_key)")
+
+        # 3. Migration: Scope owen_negative_patterns by scenario_type.
+        # Legacy schema had UNIQUE(action_type, failure_key); the new schema
+        # scopes penalties by scenario to prevent "one bad scenario poisons all".
+        # We use a v2-swap (create new table, copy tagged as 'global', rename)
+        # so existing unique rows map cleanly and we avoid index-rebuild locking.
+        try:
+            cols = [r[1] for r in conn.execute("PRAGMA table_info(owen_negative_patterns)").fetchall()]
+        except sqlite3.OperationalError:
+            cols = []
+        if cols and "scenario_type" not in cols:
+            logger.info("MIGRATION: Scoping owen_negative_patterns by scenario_type (v2-swap)...")
+            conn.execute("DROP TABLE IF EXISTS owen_negative_patterns_v2")
+            conn.execute(
+                """
+                CREATE TABLE owen_negative_patterns_v2 (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    action_type TEXT NOT NULL,
+                    failure_key TEXT NOT NULL,
+                    scenario_type TEXT NOT NULL DEFAULT 'global',
+                    count INTEGER DEFAULT 1,
+                    last_seen TEXT NOT NULL,
+                    penalty REAL DEFAULT 0.0,
+                    UNIQUE(action_type, failure_key, scenario_type)
+                )
+                """
+            )
+            conn.execute(
+                """
+                INSERT INTO owen_negative_patterns_v2
+                    (id, action_type, failure_key, scenario_type, count, last_seen, penalty)
+                SELECT id, action_type, failure_key, 'global', count, last_seen, penalty
+                FROM owen_negative_patterns
+                """
+            )
+            conn.execute("DROP TABLE owen_negative_patterns")
+            conn.execute("ALTER TABLE owen_negative_patterns_v2 RENAME TO owen_negative_patterns")
 
 
 @contextmanager
@@ -532,40 +593,195 @@ def update_verification_job(component: str, job_id: str, status: str, scheduled_
 # OWEN NEGATIVE PATTERNS
 # =====================================================================
 
-def get_negative_pattern(component: str, action_type: str, failure_key: str) -> Optional[Dict[str, Any]]:
+def get_negative_pattern(
+    component: str,
+    action_type: str,
+    failure_key: str,
+    scenario_type: str = "global",
+) -> Optional[Dict[str, Any]]:
     assert_read_permission(component, MemoryDomain.OWEN_INSIGHTS)
     with _get_conn() as conn:
         cursor = conn.execute(
-            "SELECT * FROM owen_negative_patterns WHERE action_type = ? AND failure_key = ?",
-            (action_type, failure_key)
+            "SELECT * FROM owen_negative_patterns "
+            "WHERE action_type = ? AND failure_key = ? AND scenario_type = ?",
+            (action_type, failure_key, scenario_type),
         )
         row = cursor.fetchone()
         return dict(row) if row else None
 
-def get_patterns_for_action(component: str, action_type: str) -> List[Dict[str, Any]]:
+
+def get_patterns_for_action(
+    component: str,
+    action_type: str,
+    scenario_type: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Fetch failure patterns for an action.
+
+    Scoping semantics (pure scoping with explicit 'global' fallback):
+
+        scenario_type=None
+            Return every row for the action (cross-scenario view).
+            Used by briefings/diagnostics that want a raw count.
+
+        scenario_type=<name>
+            1. Return exact scenario matches if any exist.
+            2. If the scenario has no history, fall back to scenario_type='global'.
+            3. If exact matches exist, 'global' is IGNORED (never blended).
+
+    This is the isolation contract: drift learned in one scenario never
+    poisons unrelated scenarios; it only fills in where no history exists.
+    """
     assert_read_permission(component, MemoryDomain.OWEN_INSIGHTS)
     with _get_conn() as conn:
+        if scenario_type is None:
+            cursor = conn.execute(
+                "SELECT * FROM owen_negative_patterns WHERE action_type = ?",
+                (action_type,),
+            )
+            return [dict(row) for row in cursor.fetchall()]
+
         cursor = conn.execute(
-            "SELECT * FROM owen_negative_patterns WHERE action_type = ?",
-            (action_type,)
+            "SELECT * FROM owen_negative_patterns WHERE action_type = ? AND scenario_type = ?",
+            (action_type, scenario_type),
+        )
+        rows = [dict(row) for row in cursor.fetchall()]
+        if rows:
+            return rows
+
+        # Fall back to 'global' only when the scenario has no history of its own
+        if scenario_type != "global":
+            cursor = conn.execute(
+                "SELECT * FROM owen_negative_patterns WHERE action_type = ? AND scenario_type = 'global'",
+                (action_type,),
+            )
+            return [dict(row) for row in cursor.fetchall()]
+        return []
+
+
+# =====================================================================
+# DECISION CACHE (Phase 5.1.5 — Inference Caching Layer 1)
+# =====================================================================
+
+def cache_read(component: str, cache_key: str) -> Optional[Dict[str, Any]]:
+    """Fetch a decision cache entry by key, or None if missing."""
+    assert_read_permission(component, MemoryDomain.DECISIONS)
+    with _get_conn() as conn:
+        cursor = conn.execute(
+            "SELECT * FROM decision_cache WHERE cache_key = ?",
+            (cache_key,),
+        )
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+
+def cache_list_candidates(
+    component: str,
+    *,
+    scenario_type: str,
+    policy_version: str,
+    limit: int = 200,
+) -> List[Dict[str, Any]]:
+    """Return recent cache rows for a scenario/policy to classify misses."""
+    assert_read_permission(component, MemoryDomain.DECISIONS)
+    with _get_conn() as conn:
+        cursor = conn.execute(
+            """SELECT * FROM decision_cache
+               WHERE scenario_type = ? AND policy_version = ?
+               ORDER BY created_at DESC
+               LIMIT ?""",
+            (scenario_type, policy_version, int(limit)),
         )
         return [dict(row) for row in cursor.fetchall()]
 
-def upsert_negative_pattern(component: str, action_type: str, failure_key: str):
+
+def cache_write(
+    component: str,
+    *,
+    cache_key: str,
+    scenario_type: str,
+    normalized_issue: str,
+    cost_bucket: str,
+    delay_bucket: str,
+    governance_flag_set: str,
+    policy_version: str,
+    decision_snapshot_json: str,
+    source_trace_id: str,
+) -> bool:
+    """Insert a cache entry. Race-safe via INSERT OR IGNORE.
+
+    Returns True if a new row was written, False if another writer got there first.
+    """
+    assert_write_permission(component, MemoryDomain.DECISIONS)
+    now_ts = datetime.utcnow().isoformat()
+    with _get_conn() as conn:
+        cursor = conn.execute(
+            """INSERT OR IGNORE INTO decision_cache
+               (cache_key, scenario_type, normalized_issue, cost_bucket,
+                delay_bucket, governance_flag_set, policy_version,
+                decision_snapshot_json, source_trace_id, hit_count,
+                created_at, last_hit_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NULL)""",
+            (
+                cache_key,
+                scenario_type,
+                normalized_issue,
+                cost_bucket,
+                delay_bucket,
+                governance_flag_set,
+                policy_version,
+                decision_snapshot_json,
+                source_trace_id,
+                now_ts,
+            ),
+        )
+        return cursor.rowcount > 0
+
+
+def cache_touch_hit(component: str, cache_key: str) -> None:
+    """Bump hit_count and last_hit_at for a cache entry. Safe if row missing."""
+    assert_write_permission(component, MemoryDomain.DECISIONS)
+    now_ts = datetime.utcnow().isoformat()
+    with _get_conn() as conn:
+        conn.execute(
+            "UPDATE decision_cache SET hit_count = hit_count + 1, last_hit_at = ? WHERE cache_key = ?",
+            (now_ts, cache_key),
+        )
+
+
+def cache_clear_all(component: str) -> int:
+    """Delete every decision cache row. Returns row count removed. Test / admin use only."""
+    assert_write_permission(component, MemoryDomain.DECISIONS)
+    with _get_conn() as conn:
+        cursor = conn.execute("DELETE FROM decision_cache")
+        return cursor.rowcount
+
+
+# =====================================================================
+# OWEN NEGATIVE PATTERNS (writers section continues)
+# =====================================================================
+
+def upsert_negative_pattern(
+    component: str,
+    action_type: str,
+    failure_key: str,
+    scenario_type: str = "global",
+):
     assert_write_permission(component, MemoryDomain.OWEN_INSIGHTS)
     now_ts = datetime.utcnow().isoformat()
-    existing = get_negative_pattern(component, action_type, failure_key)
-    
+    existing = get_negative_pattern(component, action_type, failure_key, scenario_type)
+
     with _get_conn() as conn:
         if existing:
             new_count = existing["count"] + 1
             penalty = min(0.05 * new_count, 0.3)
             conn.execute(
                 "UPDATE owen_negative_patterns SET count = ?, penalty = ?, last_seen = ? WHERE id = ?",
-                (new_count, penalty, now_ts, existing["id"])
+                (new_count, penalty, now_ts, existing["id"]),
             )
         else:
             conn.execute(
-                "INSERT INTO owen_negative_patterns (action_type, failure_key, count, penalty, last_seen) VALUES (?, ?, 1, 0.05, ?)",
-                (action_type, failure_key, now_ts)
+                "INSERT INTO owen_negative_patterns "
+                "(action_type, failure_key, scenario_type, count, penalty, last_seen) "
+                "VALUES (?, ?, ?, 1, 0.05, ?)",
+                (action_type, failure_key, scenario_type, now_ts),
             )

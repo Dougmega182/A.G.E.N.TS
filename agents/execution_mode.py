@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import json
 import re
-import logging
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
 from .contracts import validate_against_contract
-
-logger = logging.getLogger(__name__)
 
 EXECUTION_OVERLAY_MINIMAL = """\
 
@@ -194,11 +191,6 @@ def build_decision_v1_system_prompt() -> str:
         "2. Reference at least one Institutional Memory item or Owen Intelligence insight — cite the pattern or past decision.\n"
         "3. If your decision DEVIATES from Owen's 'DON'T DO' patterns or past rejections, you MUST explicitly justify WHY circumstances differ now.\n"
         "4. Reference the risk_score and risk_trend.\n\n"
-        "CONFIDENCE SCORING (0.0 to 1.0):\n"
-        "You must output a 'confidence_score' and a 'confidence_reason'.\n"
-        "- Score 0.8 - 1.0: You used Owen's intelligence, considered governance flags, and clearly justified cost/delay vectors.\n"
-        "- Score 0.6 - 0.79: Plausible decision, but lacks strong institutional precedent or leaves minor governance risk unresolved.\n"
-        "- Score < 0.6: You had to guess, ignored Owen's intelligence entirely, or hit a direct conflict with governance flags.\n\n"
         "OUTPUT REQUIREMENTS (non-negotiable):\n"
         "- Reply with one JSON object only.\n"
         "- First character MUST be \"{\" and last character MUST be \"}\".\n"
@@ -206,8 +198,6 @@ def build_decision_v1_system_prompt() -> str:
         "SCHEMA:\n"
         "{\n"
         "  \"decision\": \"APPROVE | REJECT | ESCALATE\",\n"
-        "  \"confidence_score\": float,\n"
-        "  \"confidence_reason\": \"string\",\n"
         "  \"justification\": \"string\",\n"
         "  \"conditions\": [\"string\"],\n"
         "  \"impact\": {\n"
@@ -278,6 +268,10 @@ META_LANGUAGE_PATTERNS: Tuple[re.Pattern, ...] = tuple(
         r"\bnot (within|in) my (scope|role|remit)\b",
         r"\bnot (allowed|permitted|authorized|authorised)\b",
         r"\bi can(?:not|'t)\s+(comply|do that|help with that|assist)\b",
+        r"\bpolicy\b",
+        r"\bgovernance\b",
+        r"\bconstitution\b",
+        r"\bcharter\b",
         r"\blaws of the land\b",
         r"\bG\d{1,3}\b",
         r"\bgatekeeper approval\b",
@@ -363,17 +357,10 @@ class OutputContract:
 
     def contains_meta_language(self, obj: Any, skip_keys: Optional[set] = None) -> bool:
         if skip_keys is None:
-            skip_keys = {
-                "justification", "critique", "audit_entry", "summary", "audit_log", 
-                "lessons_learned", "patterns", "steps", "risks", "assumptions", "goal", "architecture"
-            }
+            skip_keys = {"justification", "critique", "audit_entry", "summary", "audit_log", "lessons_learned", "patterns"}
 
         if isinstance(obj, str):
-            for p in META_LANGUAGE_PATTERNS:
-                if p.search(obj):
-                    logger.warning(f"[CONTRACT] Meta-language trigger: '{p.pattern}' matched in text: '{obj[:100]}...'")
-                    return True
-            return False
+            return any(p.search(obj) for p in META_LANGUAGE_PATTERNS)
         if isinstance(obj, dict):
             # Disclosure: We allow meta-words in specific narrative fields like 'justification'
             return any(
@@ -384,6 +371,15 @@ class OutputContract:
         if isinstance(obj, list):
             return any(self.contains_meta_language(v, skip_keys) for v in obj)
         return False
+
+    def _recursive_strip_meta(self, text: str) -> str:
+        """Heuristically strip leading/trailing conversational filler before/after JSON."""
+        # Strip common preambles
+        # Pattern: finds the first '{' and the last '}' and returns everything between them (inclusive)
+        match = re.search(r'\{.*\}', text, re.DOTALL)
+        if match:
+            return match.group(0)
+        return text
 
     def _parse_json_object(self, text: Any) -> Optional[Mapping[str, Any]]:
         """
@@ -410,6 +406,9 @@ class OutputContract:
 
         candidate = text.strip()
 
+        # Phase 4 Hardening: Recursive strip of meta-talk preambles
+        candidate = self._recursive_strip_meta(candidate)
+
         # Tolerate common agent-name prefixes that sometimes leak into outputs.
         candidate = re.sub(r"^\s*\[[^\]]+\]\s*:\s*", "", candidate)
         candidate = re.sub(r"^\s*[A-Za-z]+\s*:\s*", "", candidate)
@@ -418,6 +417,7 @@ class OutputContract:
             candidate = re.sub(r"^```(?:json)?\s*", "", candidate, flags=re.IGNORECASE)
             candidate = re.sub(r"\s*```$", "", candidate)
             candidate = candidate.strip()
+        
         try:
             parsed = json.loads(candidate)
         except Exception:

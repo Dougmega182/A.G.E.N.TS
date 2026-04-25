@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from agents.orchestrator import Orchestrator
 from agents.firewall import decide_request, execute_task
+from agents.logic import pattern_registry
 
 USAGE_LOG_PATH = Path(__file__).parent / "Agent logs" / "usage_feedback.jsonl"
 
@@ -101,6 +102,26 @@ def capture_usage_feedback(context: dict) -> None:
         with USAGE_LOG_PATH.open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
         print(f"[FEEDBACK] Logged to {USAGE_LOG_PATH}")
+        quality = None
+        if manual_override_required is True:
+            quality = "partial"
+        elif would_use_again is False:
+            quality = "failure"
+        elif would_use_again is True:
+            quality = "success"
+        if quality:
+            pattern_registry.log_outcome_quality_update(
+                trace_id=str(context.get("trace_id") or "N/A"),
+                outcome_quality_signal=quality,
+                signal_source="cli",
+                source="usage_feedback",
+                details={
+                    "would_use_again": would_use_again,
+                    "manual_override_required": manual_override_required,
+                    "time_saved_minutes": time_saved_minutes,
+                    "notes": notes_raw or None,
+                },
+            )
     except OSError as e:
         print(f"[FEEDBACK] Failed to write feedback log: {e}")
 

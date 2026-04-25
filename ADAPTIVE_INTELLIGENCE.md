@@ -1,12 +1,51 @@
-# Adaptive Decision Intelligence (BUILD REV 3.0.0)
+# Adaptive Decision Intelligence (BUILD REV 3.5.0)
 
 This document defines the **Self-Correction Layer** of the A.G.E.N.T.S. platform. It shifts the system from "Blind Execution" to "Deterministic Skepticism" by closing the loop between execution reality and agent decision-making.
 
 ---
 
 ## 1. The Drift Pressure Index (DPI)
+(Calculated per scenario type since Build 3.2.0)
 
 The DPI is the primary unit of system skepticism. It is a dynamic multiplier that throttles the confidence required for an agent to move from `APPROVE` to `EXECUTE`.
+
+---
+
+## 5. Inference Caching (Layer 1 & 2)
+
+As of Phase 5.1.5, the system implements **deterministic inference caching** to minimize cost and latency while preserving safety.
+
+### Layer 1: Deterministic Context Matching
+The cache is keyed on the **Abstracted Hash**:
+`Key = SHA256(Scenario || Normalized_Issue || Cost_Bucket || Delay_Bucket || Gov_Flags || Policy_Version)`
+
+### Layer 2: Semantic Expansion (The "Honest Baseline")
+To increase recall without sacrificing precision, we use:
+*   **Parameter Abstraction**: Specific numbers (150mm) and drawing refs (A-102) are replaced with `{measurement}` and `{drawing}` placeholders.
+*   **Phrase Mapping**: Multi-word terms (e.g., "port strike") are canonicalized before tokenization.
+*   **Token Sorting**: Cache keys are bag-of-words stable (e.g., "rain delay" == "delay rain").
+
+**Bypass Matrix:** The cache is automatically bypassed if the **DPI > 0.3** or **CRITICAL** governance flags are active.
+
+---
+
+## 6. Momentum Engine (Phase 2 Logistics)
+
+The Momentum Engine translates abstracted issues into **Operational Vectors**.
+
+### The Handshake (momentum_signal_v1)
+*   **Velocity Impact**: Predicted change in project speed (-1.0 to +1.0).
+*   **Trend Direction**: `STALL | DRAG | STABLE | ACCEL`.
+*   **Confidence Score**: Heuristic based on domain alignment and signal clarity.
+
+### Deterministic Actuation (Eli Adapter)
+Eli consumes these signals to generate **Action Intents**:
+*   `DRAG` → `STABILISE` (Dispatched to Foreman for efficiency audit)
+*   `ACCEL` → `PRIORITISE` (Dispatched to Executive for fast-track)
+
+**Safety Protocol:** No logistics intent is executed until it passes the **Operator Dispatch Gate**.
+
+---
 
 ### The Formula
 $$DPI = \frac{\sum{Penalties_{Component}}}{ConfidenceThreshold}$$

@@ -1,9 +1,11 @@
 # A.G.E.N.T.S. Roadmap & Progress Log
 
-**Current Status:** [PHASE 3.6: ACTIVE GOVERNANCE (COMPLETED)]  
-**System Intelligence Level:** Level 3 (Autonomous Decision-Making with Trace Lineage)  
-**Safety Status:** LEVEL 4 (Hard Safety Gates + Blocking Validation Logic, VERIFIED)  
-**Last Verified:** 2026-04-16 (UTC)
+**Current Status:** [PHASE 2-LOGISTICS: MOMENTUM ACTUATION (IN PROGRESS)]
+**Next Objective:** Phase 2.6 Seal the Cracks (Conflict Resolver + Concept Normalization) - VERIFIED
+**System Intelligence Level:** Level 5 (Deterministic Actuation, Parameter-Abstracted, Context-Aware)
+**Safety Status:** LEVEL 6 (Approval-Gated Actuation, Duplicate Suppression, Conflict Resolution)
+**Build Rev:** 3.5.0
+**Last Verified:** 2026-04-24 (UTC)
 
 ---
 
@@ -11,12 +13,40 @@
 
 ```mermaid
 graph TD
-    P1[Phase 1: Core Foundation] -->|COMPLETED| P2[Phase 2: Intelligent Reasoning] ✅ COMPLETE
-    P2 -->|COMPLETED| P3[Phase 3: Multi-Scenario Platform] ✅ COMPLETE
-    P3 -->|COMPLETED| P35[Phase 3.5: Nervous System Telemetry] ✅ COMPLETE
-    P35 -->|COMPLETED| P36[Phase 3.6: Active Governance] ✅ COMPLETE
-    P36 -->|COMPLETED| P4[Phase 4: External Orchestration] ✅ COMPLETE
+    P1[Phase 1: Core Foundation] -->|COMPLETED| P2[Phase 2: Intelligent Reasoning]
+    P2 -->|COMPLETED| P3[Phase 3: Multi-Scenario Platform]
+    P3 -->|COMPLETED| P35[Phase 3.5: Nervous System Telemetry]
+    P35 -->|COMPLETED| P36[Phase 3.6: Active Governance]
+    P36 -->|COMPLETED| P4[Phase 4: External Orchestration]
+    P4 -->|COMPLETED| P5[Phase 5.0: Self-Correcting Intelligence v1]
+    P5 -->|COMPLETED| P51[Phase 5.1: Context-Scoped Distrust]
+    P51 -->|COMPLETED| P515[Phase 5.1.5: Inference Caching Layer 1]
+    P515 -->|COMPLETED| P52[Phase 5.2: Operator Dashboard]
+    P52 -->|COMPLETED| P53[Phase 5.3: Semantic Expansion]
+    P53 -->|IN PROGRESS| P2L[Phase 2: Momentum-Aware Logistics]
 ```
+
+---
+
+## ✅ Phase 5.2 & 5.3: Honest Measurement & Semantic Expansion (COMPLETED)
+*Goal: Move from exact-match caching to safe semantic-match caching.*
+
+- [x] **Adversarial Verification Audit**: Established 30% hit rate as true honest baseline.
+- [x] **Live Telemetry Tab**: Added miss-cluster visualization to identify bypass trends.
+- [x] **Layer 2.6 Parameter Abstraction**: Abstracted specific measurements and drawing references.
+- [x] **Phrase Normalization Layer**: Resolved token fragmentation for construction-specific terms.
+- [x] **Canonical Synonym Mapping**: Safely collapsed "late" -> `delay`, "raining" -> `rain`.
+
+---
+
+## ✅ Phase 2: Momentum-Aware Task Management (IN PROGRESS)
+*Goal: Bridge the gap between autonomous analysis and controlled real-world actuation.*
+
+- [x] **Phase 2.1: Momentum Handshake**: Formalized the `momentum_signal_v1` contract.
+- [x] **Phase 2.2: Deterministic Eli Engine**: Strict mapping of project velocity to logistics strategies.
+- [x] **Phase 2.3: Dispatch Intent Layer**: Visual queue for human authorization of logistics actions.
+- [x] **Phase 2.4: Stakeholder Targeting**: Automated routing based on operational domain (LABOUR/MATERIAL/LOGISTICS).
+- [x] **Phase 2.6: Cracks Sealing**: Implemented Conflict Resolver, Recency Rule, and Duplicate Suppression.
 
 ---
 
@@ -87,18 +117,155 @@ graph TD
 - [x] **Retry on No-Action**: Executor retries when no tool action is executed before producing final failure.
 - [x] **Terminal Telemetry**: `LOOP_COMPLETE` now includes execution summary metadata (`completion_status`, counts, attempts, error).
 
+
+
 ---
 
-## 🚀 Phase 5: Operationalized Self-Correction (v1) [ACTIVE]
-*Goal: Closing the loop between execution reality and future planning.*
+## ✅ Phase 5.0: Operationalized Self-Correction v1 (COMPLETED)
+*Goal: Close the loop between execution reality and future planning.*
 
 - [x] **Truth-Model Verification Daemon**: Implemented `api_ack` vs `read_back` reality checking.
 - [x] **Owen Loop Closure**: Automated ingestion of execution failure patterns into the briefing layer.
 - [x] **Adaptive Threshold Gate**: Implementation of the **Drift Pressure Index (DPI)** to throttle autonomy.
-- [x] **Simulation Test Suite**: Verified system resilience via targeted drift injection.
-- [ ] **Cross-Action Penalty Sharing**: Enabling failure in one operator (e.g. Gmail) to proactively increase skepticism in adjacent operators (e.g. Outlook).
-- [ ] **Penalty Decay/Forgiveness**: Implementing time-based recovery for reliability scores to prevent system "lock-up".
-- [ ] **Predictive Failure Modeling**: Anticipating drift before it occurs based on complex project state patterns.
+- [x] **Simulation Test Suite**: Verified system resilience via targeted drift injection (`tests/simulate_drift_escalation.py`).
+
+---
+
+## ✅ Phase 5.1: Context-Scoped Adaptive Distrust (COMPLETED)
+*Goal: Stop cross-scenario contamination of drift signals; make every decision self-explaining.*
+
+- [x] **Pure-Scoped Penalty Keys**: `owen_negative_patterns` schema migrated to `UNIQUE(action_type, failure_key, scenario_type)` via idempotent v2-swap.
+- [x] **Explicit Global Fallback**: `get_patterns_for_action` returns exact-scenario matches; falls back to `'global'` only when the scenario has zero history; never blends.
+- [x] **Why-Line Explainer**: `FinalizedDecision.why` renders a single human-readable sentence for every override path (contract / governance / safety / confidence / Aria-escalate).
+- [x] **Distrust Label**: Deterministic DPI → `LOW | ELEVATED | HIGH | BLOCKED` suffix on every WHY line. Label only; no downstream control path reads it.
+- [x] **Usage Feedback Capture**: `log_issue.py` records `time_saved_minutes`, `manual_override_required`, `would_use_again`, notes to `Agent logs/usage_feedback.jsonl`.
+- [x] **Verification Suite**: `tests/verify_context_scoped_distrust.py` asserts cross-scenario isolation, global fallback, exact-match-wins, adaptive distrust at conf=0.85, and distrust-label climb.
+
+### Phase 5.1 Verification Results (2026-04-21 UTC)
+
+- `python tests/verify_context_scoped_distrust.py` → **PASS**
+  - Isolation: 4 failures scoped to `variation` → `delay` run at conf=0.85 APPROVES with penalty=0.00 and empty top_patterns.
+  - Global fallback: `global` patterns apply when the scenario has no exact history.
+  - Exact-match wins: 8 saturated `global` failures are IGNORED when the scenario has even a single exact-match pattern.
+  - Adaptive distrust: at fixed conf=0.85, 3 of 4 later runs escalate purely from accumulated scenario history.
+  - Distrust label climbs: LOW → ELEVATED → HIGH as DPI rises.
+
+---
+
+## ✅ Phase 5.1.5: Inference Caching — Layer 1 (Decision Cache) (COMPLETED)
+*Goal: Stop paying for the same thinking on repeat inputs. Shipped before the dashboard so daily usage doesn't bleed tokens.*
+
+### Technical architecture (3 tiers, in order of leverage)
+
+- [ ] **Tier 1 — KV Caching (always-on, provider-side)**: No new code, but enforced prompt-ordering discipline so every request maximises KV hit rate.
+- [ ] **Tier 2 — Prefix Caching (highest leverage)**: Reuse KV state across requests by structuring every prompt as `static_prefix || dynamic_suffix`.
+  - Static prefix (in this order): system instructions → reference documents → few-shot examples → Owen briefing → governance flags.
+  - Dynamic suffix: user/agent message, session id, current date, trace id.
+  - Deterministic serialization: sorted dict keys, stable JSON indentation, no wall-clock strings in the prefix, no Python `set` dumps.
+- [ ] **Tier 3 — Semantic Caching (future)**: Only after prefix caching is measured and stable.
+
+### Application cache targets (priority order)
+
+- [ ] **Decision Cache (layer 1, ship first)**: Cache `FinalizedDecision` keyed on `hash(scenario_type || normalized_issue || cost_bucket || delay_bucket || governance_flag_set)`. On hit: skip Nadia + Aria, return decision, still log, still run the gateway.
+- [ ] **Planning Cache (layer 2)**: Cache `plan_v1` + risk breakdown for identical inputs.
+- [ ] **Prompt Fragment Cache (layer 3)**: Cache Owen briefings, system prompts, static reasoning blocks.
+
+### Non-negotiable bypass rules
+
+- [ ] **Do NOT cache** when any of: `governance_flags` includes CRITICAL, `confidence_score < 0.7`, `distrust_level in {HIGH, BLOCKED}`, `conflict_detected == True`, or `was_system_forced == True`.
+- [ ] **DO cache** when: decision is APPROVED, scenario history shows VERIFIED_SUCCESS, drift is low, no active CRITICAL flags.
+
+### Shipped in this increment
+
+- [x] **Decision Cache (Layer 1)**: `agents/logic/decision_cache.py` + new `decision_cache` table in `agents_memory.db`.
+- [x] **`policy_version` in key** (`"v2"`): governance/scoping logic changes invalidate existing entries cleanly.
+- [x] **TTL (48h default, env-overridable)**: stale entries return `MISS reason=expired`.
+- [x] **Centralized `build_cache_context()`**: one source of truth; read and write paths cannot drift.
+- [x] **Full `FinalizedDecision` snapshot**: deterministic `sort_keys=True` JSON; reconstituted via new `FinalizedDecision.from_payload()`. Jenny's email NOT cached (regenerated per run).
+- [x] **UNIQUE constraint + `INSERT OR IGNORE`**: race-safe writes.
+- [x] **STRICT+ v2 normalization**: lowercase, anchored scenario prefix strip, cost/days tokens stripped, punctuation collapsed, conservative word-suffix trim, curated connector stripping (`on/of/the/for/to/at/in`). Identifiers and location markers remain preserved. No fuzzy matching, no embeddings.
+- [x] **Bypass matrix (both sides)**: 7 write reasons + 2 live read reasons; every bypass emits a `CACHE_BYPASS` event with a stable reason code.
+- [x] **Cache telemetry**: `CACHE_HIT` / `CACHE_MISS` / `CACHE_BYPASS` registered in `STANDARD_EVENT_TYPES` and emitted on every cache interaction.
+- [x] **MISS classification**: `CACHE_MISS reason=no_entry` now carries `miss_classification` (`wording_variation`, `same_intent_different_entity`, `insufficient_context`, `new_intent`) for measurement only.
+- [x] **Pattern registry (passive)**: structural workflow observations append to `Agent logs/pattern_registry.log.jsonl` with repeat detection by structural signature only.
+- [x] **Outcome quality signal (downstream-only)**: pattern observations start as `pending`; later `outcome_quality_update` records append from execution completion, operator feedback, and CLI usage feedback.
+- [x] **Orchestrator integration**: lookup after risk + governance + Owen briefing, before Nadia. On hit, skip Nadia → Tucker → Sentinel → Aria → finalize_decision; still run Jenny, still persist to `decisions` table, still go through firewall + gateway + WALL-E audit. Owen `extract_lesson_from_decision` skipped on hits.
+- [x] **Deferred to Phase 5.2+**: Layer 2 (Planning Cache), Layer 3 (Prompt Fragment Cache), Tier 2 (prefix caching) prompt-builder refactor.
+
+### Verification Results (2026-04-21 UTC)
+
+**Unit**
+- `python tests/verify_decision_cache.py` → **PASS** (11 sections: normalization, bucketing, key determinism, round-trip, write bypass ×7, read bypass ×3, TTL, policy_version, bucket invalidation, race safety, hit counter).
+
+**Integration (live orchestrator loop, mocked LLM turns)**
+- `python tests/verify_cache_integration.py` → **PASS** (3 sections):
+  - **Skip proven**: Run 1 = 6 LLM turns `[nadia, tucker, wall-e, aria, jenny, wall-e]`; Run 2 = 2 LLM turns `[jenny, wall-e]`; **67% reduction**. Nadia / Tucker / Sentinel / Aria never called on hit.
+  - **Telemetry**: `CACHE_MISS` → `CACHE_HIT` with `source_trace_id` + `distrust_level`; `DECISION_FINALIZED_V1` carries `served_from_cache=true`.
+  - **Bypass flips on drift**: after injecting scenario-scoped drift patterns, the cached key emits `CACHE_BYPASS reason=distrust_high` and the full chain re-runs.
+  - **STRICT+ v2 boundary**: pluralization + curated connector variants collapse; topic changes and different physical locations remain distinct (all end-to-end through the orchestrator).
+
+**Regression**
+- `python tests/verify_context_scoped_distrust.py` → **PASS** (no regressions from the finalizer refactor).
+
+### Still manual (intentionally out of automated scope)
+
+- **Wall-clock latency delta** — meaningful only against real LLM latency. Run `log_issue.py` twice with identical input; target: HIT < 100ms excluding gateway.
+- **Real-world hit-rate** — Phase 6 daily-use signal; needs `log_issue.py` exercised on actual site issues over 5 real runs.
+
+### Expected impact (to be measured in Phase 6 daily use)
+
+- 40–70% token reduction on repeat inputs
+- Near-instant responses on known-safe patterns
+- Cache hit rate becomes the primary input to the Phase 5.2 dashboard
+
+---
+
+## 🔽 Immediate Next Step — Phase 5.2: Measurement, then (only if justified) Dashboard
+*Goal: Measurement discipline > new features. The dashboard is a READ-ONLY aggregator over telemetry that already exists; build it only once real data proves it's worth it.*
+
+Before any new feature work, answer three questions from 20–50 real runs of `log_issue.py`:
+- **Hit rate** = `count(CACHE_HIT) / (count(CACHE_HIT) + count(CACHE_MISS))`. Healthy Layer 1 lands 10–30%.
+- **Miss clusters** — are near-duplicate `normalized_issue` forms a real pattern, or a phantom? If real, a `policy_version="v2"` bump with a curated connector whitelist may be justified. If not, don't touch normalization.
+- **Bypass distribution** by reason: high `distrust_high` means upstream is unstable (fix drift, not cache); high `low_confidence` means Aria isn't decisive enough (fix model behaviour, not cache); mostly clean means Layer 2 is a legitimate candidate.
+
+All telemetry needed is already flowing:
+- `DECISION_FINALIZED_V1.metadata.served_from_cache` (bool)
+- `DECISION_FINALIZED_V1.metadata.decision_phase_ms` (wall-clock ms from cache lookup to finalized decision — added for `effective_savings_ms = avg(miss) − avg(hit)`)
+- `CACHE_HIT / CACHE_MISS / CACHE_BYPASS` events with `reason` codes
+- `decision_cache` table rows (`normalized_issue`, `hit_count`, `last_hit_at`)
+- `Agent logs/pattern_registry.log.jsonl` with `pattern_observed` and `outcome_quality_update` records
+
+Current measurement posture:
+- Treat miss classification as the primary reuse-failure lens: `wording_variation`, `same_intent_different_entity`, `insufficient_context`, `new_intent`.
+- Treat the pattern registry as a passive structural lens only; it is not an optimization input.
+- Treat `outcome_quality_signal` as the truth anchor for repeated workflow shape, sourced downstream from execution completion, operator feedback, and CLI usage feedback.
+- Normalization is frozen at STRICT+ v2 unless real miss-classification data justifies a targeted rule change.
+
+---
+
+## 🔮 Phase 5.2 (actual): Operator Dashboard — build only when data justifies it
+*Goal: A single screen that makes this system usable daily. Control, not cosmetics.*
+
+- [ ] **Base vs Adjusted Confidence**: Per-decision strip chart.
+- [ ] **Penalty Trajectory**: Per-scenario × action over time.
+- [ ] **Active Top Failure Patterns**: Scenario-scoped, live.
+- [ ] **Escalation Rate**: Rolling 7d / 30d.
+- [ ] **Distrust Distribution**: LOW / ELEVATED / HIGH / BLOCKED counts.
+- [ ] **Cache Hit Rate + `decision_phase_ms` distribution**: miss mean, hit mean, derived `effective_savings_ms`. Added so Phase 5.1.5 is observable.
+- [ ] **Top repeated `normalized_issue` forms**: miss-cluster driver — reveals whether normalization v2 is needed.
+- [ ] **Usage Feedback Summary**: Rolling `would_use_again` trend from `usage_feedback.jsonl`.
+- [ ] **Pattern / Outcome Divergence View**: repeated workflow signatures vs downstream `outcome_quality_signal`, read-only only.
+
+Data source is the existing `decisions` table + `owen_negative_patterns` + `usage_feedback.jsonl` + cache telemetry + `pattern_registry.log.jsonl`. No new agents, no new abstractions, no LLM calls in the loop. Read-only aggregation only.
+
+---
+
+## 📌 Deferred (do not start until dashboard proves useful)
+
+- [ ] **Penalty Decay / Forgiveness**: Time-based recovery so recent failures weigh heavier than old ones. Computed on read from `owen_negative_patterns.last_seen` — never by mutating historical rows.
+- [ ] **Cross-Action Penalty Sharing**: Opt-in per action-family; never automatic. Only after dashboard + decay are stable.
+- [ ] **Predictive Failure Modeling**: Speculative. Anticipate drift from composite project-state signals. Far horizon.
+- [ ] **Recovery Agent (HIGH_DELAY)**: Optional recovery attempt before final approval (triggered only after escalation, not before). For 31–40 day delay scenarios, run a single constrained pass to explore resequencing or scope slicing before final gatekeeper decision.
 
 ---
 

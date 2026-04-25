@@ -153,6 +153,8 @@ class PreflightApprovalEngine:
         request = {
             "request_id": f"APR-{uuid.uuid4().hex[:12].upper()}",
             "status": "pending",
+            "execution_status": None,
+            "outcome": None,
             "action": action,
             "agent_id": agent_id,
             "trace_id": trace_id,
@@ -207,10 +209,24 @@ class PreflightApprovalEngine:
         target_request = None
         for idx, request in enumerate(store["requests"]):
             if request.get("request_id") == request_id:
+                request_metadata = request.get("metadata", {}) or {}
+                if (
+                    status == "approved"
+                    and str(request_metadata.get("severity", "")).upper() == "HIGH_DELAY"
+                    and not str(reason or "").strip()
+                ):
+                    raise PreflightApprovalError(
+                        "approval_justification_required",
+                        {
+                            "request_id": request_id,
+                            "severity": "HIGH_DELAY",
+                            "reason": "Approval justification is required for HIGH_DELAY requests.",
+                        },
+                    )
                 request["status"] = status
                 request["decided_at"] = datetime.utcnow().isoformat()
                 request["decided_by"] = decided_by
-                request["decision_reason"] = reason
+                request["decision_reason"] = str(reason or "").strip()
                 store["requests"][idx] = request
                 target_request = request
                 break
@@ -229,6 +245,13 @@ class PreflightApprovalEngine:
             "decision": status,
             "reason": reason
         })
+
+        if status == "approved":
+            from .execution_dispatch import enqueue_execution
+            enqueue_execution(
+                request_id=target_request.get("request_id"),
+                source="approval_server",
+            )
         return target_request
 
     def ensure_approved(
@@ -360,6 +383,16 @@ class PreflightApprovalEngine:
                 result = await op.execute_intent(action_intent)
             elif action.startswith("construction_"):
                 result = await self.execute_construction_intent(action_intent)
+            elif action == "audit_log":
+                from .operators.construction_op import ConstructionOperator
+                executor_task = {
+                    "trace_id": trace_id,
+                    "tool_calls": [{
+                        "tool": "audit_log",
+                        "arguments": action_intent["parameters"]
+                    }]
+                }
+                result = ConstructionOperator.handle_tool_call(executor_task)
             elif action == "operator_bundle":
                 from .logic.external_gateway import ExternalGateway
                 gateway = ExternalGateway(approval_engine=self)
@@ -405,24 +438,36 @@ class PreflightApprovalEngine:
         
         base_type = scenario_type.replace("construction_", "")
         
-        # Build the executor task payload (matching the logic from orchestrator)
-        tool_calls = [{
-            "tool": "update_entity",
-            "arguments": {
-                "type": base_type,
-                "risk_score": risk_score,
-                "justification": decision_data.get("justification", ""),
-                "data": {
-                    "cost": impact.get("cost", 0),
-                    "days": impact.get("days", 0),
-                    "status": status,
-                    "reason": user_input,
-                    "risk_delta": impact.get("risk_delta", 0)
+        # Build the executor task payload based on the decision
+        tool_calls = []
+        if decision_text == "APPROVE":
+            tool_calls.append({
+                "tool": "update_entity",
+                "arguments": {
+                    "type": base_type,
+                    "risk_score": risk_score,
+                    "justification": decision_data.get("justification", ""),
+                    "data": {
+                        "cost": impact.get("cost", 0),
+                        "days": impact.get("days", 0),
+                        "status": status,
+                        "reason": user_input,
+                        "risk_delta": impact.get("risk_delta", 0)
+                    }
                 }
-            }
-        }]
+            })
+        else: # Handle REJECT or ESCALATE
+            tool_calls.append({
+                "tool": "audit_log",
+                "arguments": {
+                    "step": f"{base_type.upper()}_DECISION_LOG",
+                    "agent": "ARIA",
+                    "input": f"Decision: {decision_text}, Justification: {decision_data.get('justification', '')}",
+                    "output": f"State not mutated for {base_type} due to {decision_text}."
+                }
+            })
 
-        # NEW: Check implementation plan for actual tool calls (e.g., file_write)
+        # Add any file_write calls from the implementation plan
         impl_plan = parameters.get("implementation_plan", {})
         if "tool_calls" in impl_plan and isinstance(impl_plan["tool_calls"], list):
             for call in impl_plan["tool_calls"]:

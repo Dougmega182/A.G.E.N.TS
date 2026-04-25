@@ -49,6 +49,20 @@ Phase 5.0 is now active and operationalizes system skepticism:
 - **Immediate Failure Ingestion**: Operator crashes are now fed directly into Owen's briefing engine.
 - **Reliability Alerts**: Agents are briefed on system weaknesses before planning actions.
 
+## Current Telemetry Boundary
+
+The system now separates reuse and observability into four non-overlapping layers:
+
+- **Decision Cache**: efficiency layer for exact reusable decisions.
+- **Miss Classification**: diagnostic layer explaining why cache reuse failed.
+- **Pattern Registry**: passive structural workflow observation in `Agent logs/pattern_registry.log.jsonl`.
+- **Outcome Quality Signal**: downstream truth anchor appended later from execution, verification, operator feedback, or CLI usage feedback.
+
+Important constraint:
+
+- Pattern data is **not** used for routing, caching, or optimization decisions.
+- Outcome quality is recorded from downstream signals only; it is never inferred inside the registry layer.
+
 ## Execution Gate (DO > TALK)
 
 The orchestrator now enforces execution-first completion in construction loops:

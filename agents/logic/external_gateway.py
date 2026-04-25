@@ -174,6 +174,14 @@ class ExternalGateway:
         if approval.get("status") != "approved":
             raise GatewayError("intent_not_approved", {"status": approval.get("status")})
 
+        # 5. Idempotency Check (before operator execution)
+        idempotency_key = self._generate_idempotency_key(action_intent)
+        if idempotency_key in self._executed_idempotency_keys:
+            raise GatewayError("duplicate_intent_blocked", {
+                "idempotency_key": idempotency_key,
+                "reason": "This identical intent has already been executed successfully within the current time bucket. Duplicate blocked."
+            })
+
         # 7. REPLAY PROTECTION — block double execution
         if self.is_approval_executed(approval_id):
             raise GatewayError("replay_blocked", {
@@ -248,26 +256,41 @@ class ExternalGateway:
                 
                 try:
                     from ..operators.operator_gateway import route_execution
-                    res = route_execution(sub_intent, execution_trace_id)
-                    
-                    # Persist immediate success
-                    self._executed_idempotency_keys.add(ikey)
-                    memory_db.write_execution_key("orchestrator", ikey, execution_trace_id, trace_id, action_type)
-                    
-                    if res.get("status") == "SUCCESS":
+                    from ..operators.construction_op import ConstructionOperator # Import ConstructionOperator
+                    if action_type == "audit_log":
+                        # Handle audit_log within the bundle
+                        audit_args = single_action.get("arguments", {})
+                        executor_task = {
+                            "trace_id": trace_id,
+                            "tool_calls": [{
+                                "tool": "audit_log",
+                                "arguments": audit_args
+                            }]
+                        }
+                        res = ConstructionOperator.handle_tool_call(executor_task)
+                        normalized_status = "success" if res.get("completion_status") == "EXECUTED" else "failed"
+                    else:
+                        res = route_execution(sub_intent, execution_trace_id)
+                        normalized_status = self._normalize_operator_status(res)
+
+                    if normalized_status in {"success", "partial"}:
+                        self._executed_idempotency_keys.add(ikey)
+                        memory_db.write_execution_key("orchestrator", ikey, execution_trace_id, trace_id, action_type)
+
+                    if normalized_status == "success":
                         external_id = res.get("draft_id") or res.get("event_id")
                         if external_id:
                             memory_db.enqueue_verification_job(
-                                "orchestrator", 
-                                action_type, 
-                                external_id, 
-                                sub_intent["parameters"], 
+                                "orchestrator",
+                                action_type,
+                                external_id,
+                                sub_intent["parameters"],
                                 120
                             )
 
                     bundle_results.append({
-                        "type": action_type, 
-                        "status": "success", 
+                        "type": action_type,
+                        "status": normalized_status,
                         "idempotency_key": ikey,
                         "result": res
                     })
@@ -280,14 +303,22 @@ class ExternalGateway:
                         "idempotency_key": ikey,
                         "error": str(e)
                     })
-                    # HIGH LEVERAGE: Feed immediate logic/API failures back to Owen
+                    # HIGH LEVERAGE: Feed immediate logic/API failures back to Owen.
+                    # Scope the failure to the originating scenario so drift
+                    # learned here does not bleed into unrelated scenarios.
                     from .owen_engine import OwenEngine
                     owen = OwenEngine()
+                    failure_scenario = (
+                        action_intent.get("scenario")
+                        or orig_metadata.get("scenario")
+                        or "global"
+                    )
                     owen.ingest_execution_failure({
-                        "type": "TRUE_FAILURE", # It crashed before even creating an object
+                        "type": "TRUE_FAILURE",  # It crashed before even creating an object
                         "action_type": action_type,
+                        "scenario_type": failure_scenario,
                         "diff_keys": ["api_connection_or_parameters"],
-                        "confidence_penalty": 0.15 # High penalty for hard crashes
+                        "confidence_penalty": 0.15,  # High penalty for hard crashes
                     })
             
             # Record composite bundle result
@@ -296,21 +327,64 @@ class ExternalGateway:
             self._executed_approvals.add(approval_id)
             self._recent_executions.append(datetime.utcnow())
             
+            bundle_statuses = [item.get("status") for item in bundle_results]
+            if any(status in {"failed", "partial"} for status in bundle_statuses):
+                overall_status = "partial" if any(status in {"success", "skipped"} for status in bundle_statuses) else "failed"
+            else:
+                overall_status = "success"
+
             event_bus.emit_event(
                 "EXTERNAL_ACTION_EXECUTED", trace_id, agent_id=action_intent.get("agent_id", "SYSTEM"), scenario=action_intent.get("scenario", "unknown"),
                 metadata={
                     "execution_trace_id": execution_trace_id,
                     "approval_id": approval_id,
-                    "status": "success",
+                    "status": overall_status,
                     "result": bundle_results
                 }
             )
             return {
-                "status": "success",
+                "status": overall_status,
                 "execution_trace_id": execution_trace_id,
                 "result": bundle_results
             }
+        elif intent_action == "audit_log":
+            # Handle standalone audit_log calls
+            from ..operators.construction_op import ConstructionOperator
+            executor_task = {
+                "trace_id": trace_id,
+                "tool_calls": [{
+                    "tool": "audit_log",
+                    "arguments": action_intent.get("parameters", {})
+                }]
+            }
+            result = ConstructionOperator.handle_tool_call(executor_task)
+            normalized_status = "success" if result.get("completion_status") == "EXECUTED" else "failed"
 
+            self._execution_ledger[execution_trace_id]["state"] = "completed"
+            self._execution_ledger[execution_trace_id]["result"] = result
+            self._executed_approvals.add(approval_id)
+            self._recent_executions.append(datetime.utcnow())
+
+            if normalized_status in {"success", "partial"}:
+                self._executed_idempotency_keys.add(idempotency_key)
+                memory_db.write_execution_key("orchestrator", idempotency_key, execution_trace_id, trace_id, intent_action)
+
+            event_bus.emit_event(
+                "EXTERNAL_ACTION_EXECUTED", trace_id, agent_id=action_intent.get("agent_id", "SYSTEM"), scenario=action_intent.get("scenario", "unknown"),
+                metadata={
+                    "execution_trace_id": execution_trace_id,
+                    "approval_id": approval_id,
+                    "idempotency_key": idempotency_key,
+                    "status": normalized_status,
+                    "result": result
+                }
+            )
+            return {
+                "status": normalized_status,
+                "execution_trace_id": execution_trace_id,
+                "idempotency_key": idempotency_key,
+                "result": result
+            }
         else:
             # --- Fallback for old single-intent actions ---
             idempotency_key = self._generate_idempotency_key(action_intent)
@@ -323,23 +397,25 @@ class ExternalGateway:
             try:
                 from ..operators.operator_gateway import route_execution
                 result = route_execution(action_intent, execution_trace_id)
+                normalized_status = self._normalize_operator_status(result)
 
                 self._execution_ledger[execution_trace_id]["state"] = "completed"
                 self._execution_ledger[execution_trace_id]["result"] = result
                 self._executed_approvals.add(approval_id)
-                self._executed_idempotency_keys.add(idempotency_key)
                 self._recent_executions.append(datetime.utcnow())
 
-                memory_db.write_execution_key("orchestrator", idempotency_key, execution_trace_id, trace_id, action_intent.get("action", "unknown"))
+                if normalized_status in {"success", "partial"}:
+                    self._executed_idempotency_keys.add(idempotency_key)
+                    memory_db.write_execution_key("orchestrator", idempotency_key, execution_trace_id, trace_id, intent_action)
 
-                if result.get("status") == "SUCCESS":
+                if normalized_status == "success":
                     external_id = result.get("draft_id") or result.get("event_id")
                     if external_id:
                         memory_db.enqueue_verification_job(
-                            "orchestrator", 
-                            action_intent.get("action", "unknown"), 
-                            external_id, 
-                            action_intent.get("parameters", {}), 
+                            "orchestrator",
+                            intent_action,
+                            external_id,
+                            action_intent.get("parameters", {}),
                             120
                         )
 
@@ -349,13 +425,13 @@ class ExternalGateway:
                         "execution_trace_id": execution_trace_id,
                         "approval_id": approval_id,
                         "idempotency_key": idempotency_key,
-                        "status": "success",
+                        "status": normalized_status,
                         "result": result
                     }
                 )
 
                 return {
-                    "status": "success",
+                    "status": normalized_status,
                     "execution_trace_id": execution_trace_id,
                     "idempotency_key": idempotency_key,
                     "result": result
@@ -375,36 +451,66 @@ class ExternalGateway:
             return str(text)
         return " ".join(text.strip().split())
 
+    @staticmethod
+    def _normalize_operator_status(result: Dict[str, Any]) -> str:
+        """Convert adapter-specific result shapes into honest gateway statuses."""
+        if not isinstance(result, dict):
+            return "failed"
+
+        raw_status = str(result.get("status", "")).strip().lower()
+        if raw_status in {"failed", "failure", "error"}:
+            return "failed"
+        if raw_status == "partial":
+            return "partial"
+        if raw_status in {"success", "succeeded"}:
+            nested = result.get("result")
+            if isinstance(nested, dict):
+                nested_status = str(nested.get("status", "")).strip().lower()
+                if nested_status in {"failed", "failure", "error"}:
+                    return "failed"
+                if nested_status == "partial":
+                    return "partial"
+            return "success"
+
+        nested = result.get("result")
+        if isinstance(nested, dict):
+            nested_status = str(nested.get("status", "")).strip().lower()
+            if nested_status in {"failed", "failure", "error"}:
+                return "failed"
+            if nested_status == "partial":
+                return "partial"
+            if nested_status in {"success", "succeeded"}:
+                return "success"
+        return "failed"
+
     def _generate_idempotency_key(self, intent: Dict[str, Any]) -> str:
         """
         Generate a unique, deterministic hash for an intent.
-        Formula: hash(action + recp + subject + body + time_bucket + salt)
+        Prioritizes an explicit 'idempotency_key' in metadata.
+        Formula: hash(action + normalized_parameters + time_bucket + explicit_key/salt)
         Excludes trace_id to block duplicate outcomes across time/traces.
         """
         action = intent.get("action", "")
         params = intent.get("parameters", {})
+        metadata = intent.get("metadata", {})
         
-        # 1. Normalize core fields for Gmail (and fallback for generic)
-        recipient = self._normalize_text(params.get("to", ""))
-        subject = self._normalize_text(params.get("subject", ""))
-        body = self._normalize_text(params.get("body", ""))
+        # 1. Explicit key in metadata takes precedence
+        explicit_key = metadata.get("idempotency_key")
+        if explicit_key:
+            raw_str = f"EXPLICIT:{explicit_key}"
+            return hashlib.sha256(raw_str.encode("utf-8")).hexdigest()
+
+        # 2. Normalize parameters deterministically
+        stable_params = json.dumps(params, sort_keys=True, default=str)
         
-        # 2. Time Bucketing (ISO Year-Week) to allow periodic repeats
+        # 3. Time Bucketing (ISO Year-Week) to allow periodic repeats
+        # This prevents accidental replay of a very old, but otherwise identical, intent.
         time_bucket = datetime.utcnow().strftime("%Y-%W")
         
-        # 3. Optional Salt for manual override
-        salt = intent.get("metadata", {}).get("intent_salt", "")
+        # 4. Optional Salt for manual override of deterministic key
+        salt = metadata.get("idempotency_salt", "") # Use a different key name to avoid collision with explicit_key
 
-        # 4. Deterministic Payload
-        # For non-gmail actions, we fall back to a full parameter hash but still bucketed
-        if not recipient and not subject:
-            # Generic action normalization
-            stable_params = json.dumps(params, sort_keys=True)
-            raw_str = f"{action}:{stable_params}:{time_bucket}:{salt}"
-        else:
-            # Action specific normalization
-            raw_str = f"{action}:{recipient}:{subject}:{body}:{time_bucket}:{salt}"
-        
+        raw_str = f"{action}:{stable_params}:{time_bucket}:{salt}"
         return hashlib.sha256(raw_str.encode("utf-8")).hexdigest()
 
     def restore_from_db(self):

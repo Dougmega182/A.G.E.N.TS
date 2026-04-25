@@ -61,6 +61,46 @@ class FinalizedDecision:
     scenario_type: str = ""
     confidence_score: float = 0.0
     confidence_reason: str = ""
+    
+    # Adaptive metrics
+    confidence_adjusted: float = 0.0
+    confidence_penalty: float = 0.0
+    confidence_threshold: float = 0.6
+    drift_pressure_index: float = 0.0
+    why: str = ""
+    distrust_level: str = "LOW"
+    momentum_signal: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_payload(cls, payload: Dict[str, Any]) -> FinalizedDecision:
+        """Reconstruct a FinalizedDecision from a dict payload."""
+        return cls(
+            final_decision=payload.get("final_decision", "UNKNOWN"),
+            final_justification=payload.get("final_justification", ""),
+            original_decision=payload.get("original_decision", "UNKNOWN"),
+            original_justification=payload.get("original_justification", ""),
+            override_chain=payload.get("override_chain", []),
+            primary_override_reason=payload.get("primary_override_reason"),
+            risk_score=payload.get("risk_score", 0.0),
+            governance_flags=payload.get("governance_flags", []),
+            governance_flag_count=payload.get("governance_flag_count", 0),
+            has_critical_governance=payload.get("has_critical_governance", False),
+            conflict_detected=payload.get("conflict_detected", False),
+            conflict_detail=payload.get("conflict_detail", ""),
+            reasoning_quality_warnings=payload.get("reasoning_quality_warnings", []),
+            was_overridden=payload.get("was_overridden", False),
+            was_system_forced=payload.get("was_system_forced", False),
+            outcome_score=payload.get("outcome_score", 0),
+            confidence_score=payload.get("confidence_score", 0.0),
+            confidence_reason=payload.get("confidence_reason", ""),
+            confidence_adjusted=payload.get("confidence_adjusted", 0.0),
+            confidence_penalty=payload.get("confidence_penalty", 0.0),
+            confidence_threshold=payload.get("confidence_threshold", 0.6),
+            drift_pressure_index=payload.get("drift_pressure_index", 0.0),
+            why=payload.get("why", ""),
+            distrust_level=payload.get("distrust_level", "LOW"),
+            momentum_signal=payload.get("momentum_signal", {})
+        )
 
     def to_event_payload(self) -> Dict[str, Any]:
         """Produce the canonical DECISION_FINALIZED_V1 event metadata."""
@@ -82,11 +122,46 @@ class FinalizedDecision:
             "was_system_forced": self.was_system_forced,
             "outcome_score": self.outcome_score,
             "confidence_score": self.confidence_score,
-            "confidence_reason": self.confidence_reason
+            "confidence_reason": self.confidence_reason,
+            "confidence_adjusted": self.confidence_adjusted,
+            "confidence_penalty": self.confidence_penalty,
+            "confidence_threshold": self.confidence_threshold,
+            "drift_pressure_index": self.drift_pressure_index,
+            "why": self.why,
+            "distrust_level": self.distrust_level,
+            "momentum_signal": self.momentum_signal
         }
 
     def to_json(self) -> str:
         return json.dumps(self.to_event_payload(), ensure_ascii=False)
+
+
+def compute_current_distrust_level(scenario_type: str) -> tuple[float, float, str]:
+    """
+    Computes penalty, DPI and label for the current state.
+    Factored out for orchestrator to use in cache decisions.
+    """
+    from .owen_engine import OwenEngine
+    # Using 'gmail_draft' as the primary risk surface
+    penalty = OwenEngine().get_penalty_for_action("gmail_draft")
+    penalty = min(penalty, 0.3)
+    
+    BASE_THRESHOLD = 0.6
+    if penalty > 0.25:
+        threshold = 0.8
+    elif penalty > 0.15:
+        threshold = 0.7
+    else:
+        threshold = BASE_THRESHOLD
+        
+    dpi = penalty / threshold if threshold > 0 else 0
+    
+    label = "LOW"
+    if dpi > 0.4: label = "BLOCKED"
+    elif dpi > 0.3: label = "HIGH"
+    elif dpi > 0.15: label = "ELEVATED"
+    
+    return penalty, dpi, label
 
 
 def finalize_decision(
@@ -167,24 +242,10 @@ def finalize_decision(
         primary_reason = primary_reason or "safety_gate"
 
     # --- OWEN CONFIDENCE ADJUSTMENT ---
-    from .owen_engine import OwenEngine
-    # Using 'gmail_draft' as the primary risk surface for pattern matching
-    penalty = OwenEngine().get_penalty_for_action("gmail_draft")
-    # Cap total penalty at 0.3 for the adaptive simulation as requested
-    penalty = min(penalty, 0.3)
+    penalty, dpi, distrust_label = compute_current_distrust_level(scenario_type)
     adjusted_conf = max(0.0, confidence_score - penalty)
     
-    BASE_THRESHOLD = 0.6
-    # Tiered sensitivity jumps:
-    if penalty > 0.25:
-        threshold = 0.8
-    elif penalty > 0.15:
-        threshold = 0.7
-    else:
-        threshold = BASE_THRESHOLD
-    
-    # Drift Pressure Index (DPI)
-    dpi = penalty / threshold if threshold > 0 else 0
+    threshold = 0.8 if penalty > 0.25 else 0.7 if penalty > 0.15 else 0.6
 
     # --- OVERRIDE 4: Confidence Gate (Dynamic Threshold) ---
     if not was_system_forced and adjusted_conf < threshold and final_decision == "APPROVE":
@@ -197,19 +258,6 @@ def finalize_decision(
         )
         override_chain.append("CONFIDENCE_GATE_OVERRIDE")
         primary_reason = primary_reason or "low_confidence_with_failure_history"
-        
-        # Ensure we capture adjusted values upstream
-        decision_data["confidence_adjusted"] = adjusted_conf
-        decision_data["confidence_penalty"] = penalty
-        decision_data["confidence_threshold"] = threshold
-        decision_data["drift_pressure_index"] = dpi
-        decision_data["system_override"] = "LOW_CONFIDENCE_WITH_FAILURE_HISTORY"
-    else:
-        # Still record metrics even if not escalated
-        decision_data["confidence_adjusted"] = adjusted_conf
-        decision_data["confidence_penalty"] = penalty
-        decision_data["confidence_threshold"] = threshold
-        decision_data["drift_pressure_index"] = dpi
 
     # --- CONFLICT DETECTION: WALL-E vs Aria ---
     if not was_system_forced and critique_data:
@@ -247,10 +295,7 @@ def finalize_decision(
 
     # --- BUILD CANONICAL RESULT ---
     was_overridden = len(override_chain) > 0
-
-    # Update decision_data to reflect final state
-    decision_data["decision"] = final_decision
-    decision_data["justification"] = final_justification
+    why = f"{final_decision}: {primary_reason}" if was_overridden else f"{final_decision}: Direct Approval"
 
     return FinalizedDecision(
         final_decision=final_decision,
@@ -273,4 +318,10 @@ def finalize_decision(
         scenario_type=scenario_type,
         confidence_score=confidence_score,
         confidence_reason=confidence_reason,
+        confidence_adjusted=adjusted_conf,
+        confidence_penalty=penalty,
+        confidence_threshold=threshold,
+        drift_pressure_index=dpi,
+        why=why,
+        distrust_level=distrust_label
     )

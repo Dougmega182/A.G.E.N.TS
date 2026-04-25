@@ -246,33 +246,39 @@
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder('utf-8');
+            let buffer = '';
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                const chunk = decoder.decode(value, { stream: true });
-                const lines = chunk.split('\n');
-                
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const dataMsg = line.slice(6);
-                        logTerm(dataMsg);
-                        
-                        // Look for the Request ID in the stream so we can approve it
-                        if (dataMsg.includes("PROPOSAL CREATED. Request ID: ")) {
-                            currentRequestId = dataMsg.split("Request ID: ")[1].trim();
-                        }
-                        // Stop the stream parsing visually if waiting for approval
-                        if (dataMsg.includes("Awaiting human approval")) {
-                            document.getElementById('approvalBlock').style.display = 'flex';
-                            document.getElementById('intentSummary').innerText = `Request ID: ${currentRequestId}. Review reasonings above.`;
-                        }
-                        if (dataMsg.includes("[Trace:")) {
-                            const match = dataMsg.match(/\[Trace:\s*([^\]]+)\]/);
-                            if (match) {
-                                currentTraceId = match[1].trim();
-                            }
+                buffer += decoder.decode(value, { stream: true });
+                const events = buffer.split('\n\n');
+                buffer = events.pop() || '';
+
+                for (const eventBlock of events) {
+                    const dataMsg = eventBlock
+                        .split('\n')
+                        .filter(line => line.startsWith('data: '))
+                        .map(line => line.slice(6))
+                        .join('\n')
+                        .trim();
+
+                    if (!dataMsg) continue;
+
+                    logTerm(dataMsg);
+
+                    if (dataMsg.includes("PROPOSAL CREATED. Request ID: ")) {
+                        currentRequestId = dataMsg.split("Request ID: ")[1].trim();
+                    }
+                    if (dataMsg.includes("Awaiting human approval")) {
+                        document.getElementById('approvalBlock').style.display = 'flex';
+                        document.getElementById('intentSummary').innerText = `Request ID: ${currentRequestId}. Review reasonings above.`;
+                    }
+                    if (dataMsg.includes("[Trace:")) {
+                        const match = dataMsg.match(/\[Trace:\s*([^\]]+)\]/);
+                        if (match) {
+                            currentTraceId = match[1].trim();
                         }
                     }
                 }
@@ -303,26 +309,10 @@
             
             if (res.ok) {
                 logTerm(`> Approval Engine updated. Routing to execution gateway...`);
-                // If execution requires a separate endpoint or it happens synchronously during decision in this new UI loop, handle it.
-                // In demo_workflow, API decision doesn't automatically execute, it just flips bits. Gateway is called manually.
                 
                 if (decision === "approved") {
-                    const dryRun = document.getElementById('dryRun').checked;
-                    const execRes = await fetch('/preflight/tasks/execute', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ request_id: currentRequestId, dry_run: dryRun })
-                    });
-                    
-                    const execData = await execRes.json();
-                    
-                    if (execRes.ok) {
-                        logTerm(`[SUCCESS] Side-effects confirmed valid. Gateway response:`);
-                        logTerm(JSON.stringify(execData.result, null, 2));
-                        document.getElementById('feedbackBlock').style.display = 'flex';
-                    } else {
-                        logTerm(`[EXECUTION BLOCKED] ${JSON.stringify(execData)}`);
-                    }
+                    logTerm(`> Approval acknowledged. Execution is now queued automatically by the server...`);
+                    document.getElementById('feedbackBlock').style.display = 'flex';
                 }
             } else {
                 logTerm(`> Error updating decision.`);

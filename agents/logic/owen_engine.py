@@ -92,11 +92,6 @@ class OwenEngine:
         donts = [i["summary"] for i in existing_insights if i["insight_type"] == "dont_do"]
         risk_patterns = [i["summary"] for i in existing_insights if i["insight_type"] == "risk_pattern"]
 
-        # 4b. Pull Negative Patterns (Execution Drift)
-        # We focus on the core construction actions (gmail_draft) for now
-        from .memory_db import get_patterns_for_action
-        negative_patterns = get_patterns_for_action(COMPONENT_NAME, "gmail_draft")
-
         # 5. Build Briefing
         briefing = {
             "scenario": scenario_type,
@@ -110,8 +105,7 @@ class OwenEngine:
             "patterns": {
                 "dos": dos,
                 "donts": donts,
-                "risk_patterns": risk_patterns,
-                "negative_patterns": negative_patterns
+                "risk_patterns": risk_patterns
             },
             "timestamp": datetime.utcnow().isoformat()
         }
@@ -142,11 +136,7 @@ class OwenEngine:
             original = meta.get("original_decision", "UNKNOWN")
             reason = meta.get("primary_override_reason", "policy_alignment")
             
-            if reason == "low_confidence":
-                conf_reason = meta.get("confidence_reason", "No justification provided.")
-                summary = f"Attempt to '{original}' was overridden due to LOW CONFIDENCE. Reason given: {conf_reason}. Avoid proposals lacking strong governance/historical backing."
-            else:
-                summary = f"Variation intent '{original}' was overridden by orchestrator ({reason}). Ensure alignment with governance before proposing."
+            summary = f"Variation intent '{original}' was overridden by orchestrator ({reason}). Ensure alignment with governance before proposing."
             
             det_key = self._generate_deterministic_key(summary, scenario)
             insight_id = write_owen_insight(
@@ -266,26 +256,49 @@ class OwenEngine:
         logger.info(f"[OWEN] Ingested human operational feedback from trace {trace_id}")
         return insight_id
 
-    def ingest_execution_failure(self, event: dict):
-        """Process execution drift and true failures to assign dynamic penalties."""
-        action_type = event.get("action_type")
-        diffs = event.get("diff", {})
+    def ingest_execution_failure(self, failure_data: Dict[str, Any]):
+        """
+        Ingest a hard execution failure (Gateway layer) to immediately penalize confidence.
+        """
+        assert_write_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
         
-        # If TRUE_FAILURE, there is no diff, we just use a generic 'missing' key
-        if not diffs:
-            from .memory_db import upsert_negative_pattern
-            upsert_negative_pattern(COMPONENT_NAME, action_type, "object_missing")
-            return
-            
-        for key in diffs.keys():
-            from .memory_db import upsert_negative_pattern
-            upsert_negative_pattern(COMPONENT_NAME, action_type, key)
+        action_type = failure_data.get("action_type", "unknown")
+        scenario = failure_data.get("scenario_type", "global")
+        penalty = failure_data.get("confidence_penalty", 0.1)
+        
+        summary = f"CRITICAL FAILURE: {action_type} crashed during execution. Applying -{penalty} penalty to future intents."
+        
+        write_owen_insight(
+            COMPONENT_NAME,
+            insight_type="risk_pattern",
+            summary=summary,
+            scenario_type=scenario,
+            evidence=["gateway_crash"],
+            confidence=penalty, # Abuse confidence field to store penalty weight for fast lookup
+            deterministic_key=self._generate_deterministic_key(summary, f"{action_type}_{scenario}")
+        )
+        logger.warning(f"[OWEN] Hard failure ingested for {action_type}. Confidence penalty applied.")
 
     def get_penalty_for_action(self, action_type: str) -> float:
-        """Calculate the total confidence penalty for an action based on recent failures."""
-        from .memory_db import get_patterns_for_action
-        patterns = get_patterns_for_action(COMPONENT_NAME, action_type)
-        total_penalty = sum(p.get("penalty", 0.0) for p in patterns)
+        """
+        Calculate the total confidence penalty for an action based on recent failures.
+        Deterministic and fast.
+        """
+        assert_read_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
+        
+        insights = read_owen_insights(COMPONENT_NAME, limit=50)
+        # Filter for recent critical failures matching this action
+        failures = [
+            i for i in insights 
+            if i["insight_type"] == "risk_pattern" 
+            and action_type.lower() in i["summary"].lower()
+        ]
+        
+        if not failures:
+            return 0.0
+            
+        # Sum of penalties (max 0.4 per action to prevent total paralysis)
+        total_penalty = sum(i.get("confidence", 0.1) for i in failures)
         return min(total_penalty, 0.4)
 
     def _generate_deterministic_key(self, summary: str, scenario: str) -> str:
@@ -321,12 +334,5 @@ class OwenEngine:
             lines.append("\nREJECTED/OVERRIDDEN PATTERNS (DON'T DO):")
             for d in donts:
                 lines.append(f" - {d}")
-
-        # Add Reliability Alerts (Drift detection)
-        neg_patterns = briefing.get("patterns", {}).get("negative_patterns", [])
-        if neg_patterns:
-            lines.append("\n⚠️ SYSTEM RELIABILITY ALERTS (EXECUTION DRIFT detected):")
-            for p in neg_patterns:
-                lines.append(f" - WARNING: Action '{p['action_type']}' has recurring failure on key '{p['failure_key']}' (Count: {p['count']}). Trust Index: {max(0, 1.0 - p['penalty']):.2f}")
 
         return "\n".join(lines)

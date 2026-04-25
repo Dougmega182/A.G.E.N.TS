@@ -10,6 +10,7 @@ from .orchestrator import Orchestrator
 from .telemetry import TELEMETRY
 from . import firewall
 from .firewall import PreflightApprovalError
+from .execution_dispatch import enqueue_execution
 from .logic.event_bus import EVENTS_LOG_PATH
 from .logic.event_bus import emit_event
 import os
@@ -35,7 +36,7 @@ async def root():
 
 @app.get("/operator")
 async def get_operator_app():
-    return FileResponse("web/daily_operator.html")
+    return FileResponse("web/index.html")
 
 class ChatRequest(BaseModel):
     message: str
@@ -89,6 +90,43 @@ async def get_telemetry():
     """Return live token and cost stats in the new structured format."""
     return TELEMETRY.get_stats()
 
+@app.get("/telemetry/miss-clusters")
+async def get_miss_clusters():
+    """Analyze the event log to return the top 5 cache miss clusters for Layer 2 Semantic Cache feeding."""
+    if not EVENTS_LOG_PATH.exists():
+        return {"clusters": []}
+
+    from collections import Counter
+    miss_clusters = Counter()
+    total_lookups = 0
+    cache_hits = 0
+
+    with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+                event_type = event.get("type")
+                metadata = event.get("metadata", {})
+
+                if event_type == "CACHE_HIT":
+                    cache_hits += 1
+                    total_lookups += 1
+                elif event_type == "CACHE_MISS":
+                    total_lookups += 1
+                    if "normalized_issue" in metadata:
+                        miss_clusters[metadata["normalized_issue"]] += 1
+            except json.JSONDecodeError:
+                continue
+
+    top_clusters = [{"issue": issue, "count": count} for issue, count in miss_clusters.most_common(5)]
+    hit_rate = (cache_hits / total_lookups) * 100 if total_lookups > 0 else 0
+
+    return {
+        "hit_rate_percent": round(hit_rate, 2),
+        "total_lookups": total_lookups,
+        "clusters": top_clusters
+    }
+
 @app.get("/preflight/approvals")
 async def get_preflight_approvals(status: Optional[str] = None, limit: int = 100):
     return {
@@ -113,7 +151,8 @@ async def decide_preflight_approval(req: ApprovalDecisionRequest):
             reason=req.reason or "",
         )
     except PreflightApprovalError as e:
-        raise HTTPException(status_code=404, detail={"reason": e.reason, "details": e.details})
+        status_code = 404 if e.reason == "approval_request_not_found" else 400
+        raise HTTPException(status_code=status_code, detail={"reason": e.reason, "details": e.details})
 
 @app.get("/preflight/drafts")
 async def get_preflight_drafts(action: Optional[str] = None, limit: int = 100):
@@ -139,42 +178,15 @@ async def update_preflight_draft_summary(req: DraftSummaryUpdateRequest):
 
 @app.post("/preflight/tasks/execute")
 async def execute_preflight_task(req: TaskExecuteRequest):
-    """Manually execute a task from the queue that has already been approved (via ExternalGateway)."""
+    """Manually enqueue a task that has already been approved."""
     try:
-        request_obj = firewall.get_request(req.request_id)
-        if not request_obj:
-            raise HTTPException(status_code=404, detail="approval_request_not_found")
-            
-        intent = request_obj.get("original_action_intent")
-        
-        if req.dry_run:
-            result = {
-                "status": "dry_run",
-                "message": "Execution safety bypass engaged. No real limits or side-effects triggered.",
-                "action_target": intent.get("action")
-            }
-        else:
-            from .logic.external_gateway import ExternalGateway
-            gateway = ExternalGateway()
-            result = gateway.validate_and_execute(intent, req.request_id)
-        
-        # Optionally, mark it inside the basic store just for UI consistency
-        try:
-            # this is a bit of a hack since Gateway handles its own execution ledger
-            store = firewall.DEFAULT_ENGINE._load_store()
-            for idx, r in enumerate(store["requests"]):
-                if r.get("request_id") == req.request_id:
-                    r["status"] = "executed"
-                    r["executed_at"] = datetime.utcnow().isoformat()
-                    store["requests"][idx] = r
-                    break
-            firewall.DEFAULT_ENGINE._save_store(store)
-        except Exception:
-            pass
-            
-        return {"status": "success", "result": result}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail={"reason": "execution_failed", "details": str(e)})
+        return enqueue_execution(
+            request_id=req.request_id,
+            source="manual_api",
+            dry_run_override=req.dry_run,
+        )
+    except PreflightApprovalError as e:
+        raise HTTPException(status_code=400, detail={"reason": e.reason, "details": e.details})
 
 @app.post("/operator/run")
 async def operator_run(req: OperatorRunRequest):
@@ -182,8 +194,14 @@ async def operator_run(req: OperatorRunRequest):
     async def event_generator():
         trace_id = f"UI-OP-{datetime.now().strftime('%M%S')}"
         user_input = f"Issue: {req.issue}. Cost impact: ${req.cost}. Delay: {req.delay} days."
+        issue_label = " ".join(str(req.issue or "").split()).strip()
         
         try:
+            yield (
+                "data: [ARIA] "
+                f"Aria: Acknowledge Dale, request received for {issue_label or 'operator submission'}. "
+                "Now engaging the site issue workflow.\n\n"
+            )
             # Note: We aren't cleanly injecting dry_run into the strict orchestration 
             # loop right here because orchestrator builds the action_intent.
             # However, for simplicity, we append it to the user_input context or
@@ -221,10 +239,79 @@ async def operator_feedback(req: OperatorFeedbackRequest):
         from .logic.owen_engine import OwenEngine
         om = OwenEngine()
         om.extract_lesson_from_feedback(req.trace_id, req.outcome, req.notes)
+
+        from .logic import pattern_registry
+        outcome = str(req.outcome).strip().lower()
+        if outcome in {"success", "passed", "verified_success"}:
+            quality = "success"
+        elif outcome in {"partial", "degraded_success", "warning"}:
+            quality = "partial"
+        elif outcome in {"failure", "failed", "drift_confirmed", "true_failure"}:
+            quality = "failure"
+        else:
+            quality = outcome or "unknown"
+        pattern_registry.log_outcome_quality_update(
+            trace_id=req.trace_id,
+            outcome_quality_signal=quality,
+            signal_source="operator",
+            source="operator_feedback",
+            details={
+                "execution_trace_id": req.execution_trace_id,
+                "notes": req.notes,
+                "delay_actual": req.delay_actual,
+                "cost_actual": req.cost_actual,
+            },
+        )
         
         return {"status": "success", "message": "Feedback integrated into events log and Owen Engine."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# State for Phase 2.3 Task Queue (Visual Dispatch)
+from .logic.task_queue import (
+    enqueue_logistics_task as queue_task,
+    list_logistics_tasks,
+    get_logistics_task,
+    resolve_logistics_task
+)
+
+@app.get("/logistics/tasks")
+async def get_logistics_tasks():
+    """Returns the queue of pending logistics dispatch intents."""
+    tasks = list_logistics_tasks()
+    return {"items": tasks, "count": len(tasks)}
+
+@app.post("/logistics/tasks/{task_id}/decide")
+async def decide_logistics_task(task_id: str, decision: str):
+    """Approve or reject a logistics task intent."""
+    task = get_logistics_task(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if decision.lower() == "approve":
+        # 1. Physically execute the Gmail Draft if present
+        if "gmail_draft" in task:
+            from .operators.gmail_operator import execute_gmail_draft
+            # Simulated trace id
+            exe_trace = f"EXE-ELI-{uuid.uuid4().hex[:8].upper()}"
+            execute_gmail_draft(task["gmail_draft"], exe_trace)
+        
+        task["status"] = "approved"
+        event_bus.emit_event("LOGISTICS_TASK_APPROVED", task["trace_id"], agent_id="gatekeeper", metadata={"task_id": task_id})
+    else:
+        task["status"] = "rejected"
+        event_bus.emit_event("LOGISTICS_TASK_REJECTED", task["trace_id"], agent_id="gatekeeper", metadata={"task_id": task_id})
+
+    # Remove from pending queue
+    resolve_logistics_task(task_id)
+    
+    return {"status": "success", "task_id": task_id, "decision": decision}
+
+@app.post("/logistics/tasks/enqueue")
+async def enqueue_logistics_task(task: Dict[str, Any]):
+    """Internal endpoint for Orchestrator to push logistics intents."""
+    task_id = queue_task(task)
+    return {"status": "success", "task_id": task_id}
 
 @app.get("/preflight/events")
 async def get_preflight_events(limit: int = 200):
@@ -324,4 +411,3 @@ async def chat_endpoint(req: ChatRequest):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

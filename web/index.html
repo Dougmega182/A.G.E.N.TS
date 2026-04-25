@@ -2,1028 +2,790 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>A.G.E.N.T.S. | Command Terminal</title>
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#0a0a0c">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/static/icons/icon-512.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.G.E.N.T.S. Operator Console</title>
     <style>
         :root {
-            --bg: #0a0a0c;
-            --surface: #16161a;
-            --accent: #bb86fc;
-            --text: #e1e1e6;
-            --text-dim: #a1a1aa;
-            --border: #27272a;
-            --glass: rgba(22, 22, 26, 0.8);
+            --bg: #0b1020;
+            --panel: #121931;
+            --panel-2: #18213e;
+            --border: #2b365f;
+            --text: #ecf2ff;
+            --text-dim: #9aa8cf;
+            --accent: #4cc9f0;
+            --accent-2: #84cc16;
+            --warn: #f59e0b;
+            --danger: #ef4444;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 280px;
-            background-color: var(--surface);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            padding-top: calc(20px + env(safe-area-inset-top));
-        }
-
-        .logo {
-            font-weight: 600;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            color: var(--accent);
-        }
-
-        .agent-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .agent-item {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .agent-item:hover {
-            background: rgba(187, 134, 252, 0.05);
-            border-color: rgba(187, 134, 252, 0.2);
-        }
-
-        .agent-item.active {
-            background: rgba(187, 134, 252, 0.1);
-            border-color: var(--accent);
-        }
-
-        .agent-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .agent-title {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 4px;
-        }
-
-        header {
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border);
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            display: grid;
-            grid-template-columns: auto auto 1fr auto auto auto auto;
-            align-items: center;
-            gap: 20px;
-            z-index: 100;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-
-        /* Main Chat Area */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at top right, #1a1a2e, #0a0a0c);
-        }
-
-        .dashboard-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            grid-auto-rows: minmax(200px, auto);
-            gap: 15px;
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .dashboard-panel {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-
-        .dashboard-panel-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        /* Adjustments for existing chat components within a panel */
-        .dashboard-panel .chat-window,
-        .dashboard-panel .event-feed,
-        .dashboard-panel .approval-queue,
-        .dashboard-panel .task-queue {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 5px; /* For scrollbar */
-        }
-        .dashboard-panel .chat-window::-webkit-scrollbar,
-        .dashboard-panel .event-feed::-webkit-scrollbar,
-        .dashboard-panel .approval-queue::-webkit-scrollbar,
-        .dashboard-panel .task-queue::-webkit-scrollbar {
-            width: 8px;
-        }
-        .dashboard-panel .chat-window::-webkit-scrollbar-thumb,
-        .dashboard-panel .event-feed::-webkit-scrollbar-thumb,
-        .dashboard-panel .approval-queue::-webkit-scrollbar-thumb,
-        .dashboard-panel .task-queue::-webkit-scrollbar-thumb {
-            background-color: var(--border);
-            border-radius: 4px;
-        }
-
-        .dashboard-panel .message {
-            max-width: 100%; /* Override default message width */
-            margin-left: 0;
-            margin-right: 0;
-        }
-
-        .dashboard-panel .input-container {
-            padding: 15px 0 0 0; /* Adjust padding for panel */
-            background: none; /* Remove gradient background */
-            backdrop-filter: none;
-        }
-
-        .dashboard-panel .input-wrapper {
             margin: 0;
-        }
-
-        .dashboard-panel input {
-            padding: 12px 18px;
-            border-radius: 25px;
-        }
-        .dashboard-panel button#send-btn {
-            width: 38px;
-            height: 38px;
-        }
-
-        /* Responsive adjustments for dashboard grid */
-        @media (min-width: 1025px) {
-            .dashboard-grid {
-                grid-template-columns: 2fr 1fr; /* Example: Two wide columns, one narrow */
-                grid-auto-rows: 1fr; /* Make rows expand to fill space */
-            }
-
-            .chat-panel {
-                grid-column: span 1; /* Chat takes one column */
-                grid-row: span 2; /* Chat takes two rows */
-            }
-            .event-feed-panel {
-                grid-column: 2;
-                grid-row: 1;
-            }
-            .approval-queue-panel {
-                grid-column: 2;
-                grid-row: 2;
-            }
-            .project-health-panel {
-                grid-column: span 1;
-            }
-            .agent-roster-panel {
-                grid-column: span 1;
-            }
-        }
-
-
-        .header-brand {
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .header-clock {
-            color: var(--text-dim);
-            font-family: 'Fira Code', monospace;
-            border-right: 1px solid var(--border);
-            padding-right: 20px;
-        }
-
-        .header-stat-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .stat-label {
-            color: var(--text-dim);
-            font-size: 0.6rem;
-            margin-right: 5px;
-        }
-
-        .stat-value {
-            font-family: 'Fira Code', monospace;
-        }
-
-        .gemini-value { color: #448aff; }
-        .ollama-value { color: #69f0ae; }
-        .cost-value { color: #4ade80; }
-        .saved-value { color: #ffd740; }
-
-        #menu-toggle {
-            background: rgba(187, 134, 252, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--accent);
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-            margin-right: 15px; /* Separation from input */
-        }
-
-        #menu-toggle:hover {
-            background: rgba(187, 134, 252, 0.2);
-            border-color: var(--accent);
-        }
-
-        #current-agent-display {
-            font-weight: 600;
-        }
-
-        #chat-window {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-            position: relative;
-        }
-
-        #chat-window::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50vw;
-            height: 50vw;
-            max-width: 512px;
-            max-height: 512px;
-            background: url('/static/icons/icon-512.png') no-repeat center;
-            background-size: contain;
-            opacity: 0.04;
-            pointer-events: none;
-            filter: grayscale(1) brightness(2);
-            z-index: 0;
-        }
-
-        .message {
-            max-width: 95%;
-            margin: 0 auto 30px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1;
-        }
-
-        .message.user {
-            align-items: flex-end;
-        }
-
-        .bubble {
-            padding: 16px 20px;
-            border-radius: 12px;
-            line-height: 1.6;
-            max-width: 90%;
-            font-size: 0.95rem;
-        }
-
-        .user .bubble {
-            background-color: var(--accent);
-            color: #000;
-            font-weight: 500;
-        }
-
-        .assistant .bubble {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
+            font-family: "Segoe UI", system-ui, sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(76, 201, 240, 0.12), transparent 28%),
+                linear-gradient(180deg, #09101d, #0b1020 35%, #0d1327 100%);
             color: var(--text);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .bubble pre {
-            background: #000;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            overflow-x: auto;
-        }
-
-        /* Input Area */
-        .input-container {
-            padding: 20px 40px 40px;
-            background: linear-gradient(to top, var(--bg), transparent);
-            backdrop-filter: blur(10px);
-            z-index: 10;
-        }
-
-        .input-wrapper {
+        .shell {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 24px;
+        }
+
+        .hero {
             display: flex;
-            align-items: center;
-            gap: 15px;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 20px;
         }
 
-        input {
-            width: 100%;
-            background: var(--surface);
+        .hero h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 0.04em;
+        }
+
+        .hero p {
+            margin: 8px 0 0;
+            color: var(--text-dim);
+        }
+
+        .status-strip {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
             border: 1px solid var(--border);
-            padding: 18px 60px 18px 24px;
-            border-radius: 50px;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
+            background: rgba(24, 33, 62, 0.8);
+            color: var(--text-dim);
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
         }
 
-        input:focus {
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn, .type-btn, button {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .tab-btn.active, .type-btn.active {
+            background: linear-gradient(180deg, rgba(76, 201, 240, 0.18), rgba(76, 201, 240, 0.08));
             border-color: var(--accent);
         }
 
-        button#send-btn {
-            background: var(--accent);
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
+        .layout {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: rgba(18, 25, 49, 0.92);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+
+        .panel h2, .panel h3 {
+            margin-top: 0;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .type-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .field {
             display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        textarea, input {
+            width: 100%;
+            background: #0a0f1f;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            font: inherit;
+        }
+
+        textarea { min-height: 120px; resize: vertical; }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .run-row {
+            display: flex;
+            gap: 10px;
             align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-            flex-shrink: 0;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
-        button#send-btn:hover {
-            transform: translateY(-50%) scale(1.05);
+        .primary { background: #0f766e; border-color: #14b8a6; }
+        .approve { background: #166534; border-color: #22c55e; }
+        .reject { background: #991b1b; border-color: #ef4444; }
+
+        .feed {
+            background: #050816;
+            border: 1px solid #1d2748;
+            border-radius: 16px;
+            padding: 16px;
+            min-height: 540px;
+            max-height: 68vh;
+            overflow: auto;
+            white-space: pre-wrap;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            line-height: 1.45;
+            color: #d7e0ff;
         }
 
-        /* Mobile Adjustments */
-        @media (max-width: 1024px) {
-            body { flex-direction: column; }
-            
-            #menu-toggle { display: flex !important; }
-
-            aside { 
-                position: fixed;
-                left: -280px;
-                top: 0;
-                bottom: 0;
-                width: 280px;
-                z-index: 1000;
-                transition: left 0.3s ease;
-                box-shadow: 10px 0 20px rgba(0,0,0,0.5);
-                background-color: var(--surface);
-                border-right: 1px solid var(--border);
-            }
-
-            aside.open { left: 0; }
-
-            .logo { display: block; margin-bottom: 20px; }
-            
-            #agent-list { 
-                display: block !important; 
-                flex-direction: column !important;
-            }
-            .agent-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; }
-            .agent-title { display: block; font-size: 0.75rem; }
-            .agent-name { font-size: 0.9rem; white-space: normal; }
-            
-            main { flex: 1; height: 100dvh; display: flex; flex-direction: column; }
-            header { padding: 10px 20px; flex-shrink: 0; background: var(--glass); }
-            #chat-window { flex: 1; padding: 20px; }
-            .input-container { 
-                flex-shrink: 0;
-                padding: 15px; 
-                padding-bottom: calc(15px + env(safe-area-inset-bottom));
-                background: var(--glass);
-                backdrop-filter: blur(10px);
-            }
+        .subtle {
+            color: var(--text-dim);
+            font-size: 13px;
         }
 
-        /* Overlay */
-        #body-overlay {
+        .approval-block, .feedback-block {
             display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 999;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
         }
-        #body-overlay.visible { display: block; }
+
+        .list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .meta {
+            color: var(--text-dim);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #0a0f1f;
+            border: 1px solid #1d2748;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 12px;
+            color: #cbd5e1;
+            max-height: 220px;
+            overflow: auto;
+        }
+
+        @media (max-width: 1000px) {
+            .layout { grid-template-columns: 1fr; }
+            .type-tabs { grid-template-columns: repeat(2, 1fr); }
+            .row { grid-template-columns: 1fr; }
+            .feed { min-height: 360px; max-height: none; }
+        }
     </style>
 </head>
 <body>
-    <aside>
-        <div class="logo">A.G.E.N.T.S.</div>
-        <div class="agent-list" id="agent-list">
-            <!-- Agents will be loaded here -->
+<div class="shell">
+    <div class="hero">
+        <div>
+            <h1>A.G.E.N.T.S. Operator Console</h1>
+            <p>Single source of truth for lodging work, observing agents, approving actions, and checking live system events.</p>
         </div>
-    </aside>
-
-    <main>
-        <header>
-            <div class="header-brand">A.G.E.N.T.S.</div>
-            <div class="header-clock" id="header-clock">--:--:--</div>
-            
-            <div class="header-stat-group">
-                <span class="stat-label">Gemini API TOKENS:</span>
-                <span class="stat-value gemini-value" id="stat-gemini-tokens">0</span>
-            </div>
-
-            <div class="header-stat-group">
-                <span class="stat-label">Ollama API TOKENS:</span>
-                <span class="stat-value ollama-value" id="stat-ollama-tokens">0</span>
-            </div>
-
-            <div class="header-stat-group">
-                <span class="stat-label">Gemini Spend A$:</span>
-                <span class="stat-value cost-value" id="stat-gemini-spend">0.00</span>
-            </div>
-
-            <div class="header-stat-group">
-                <span class="stat-label">Ollama Use Saved A$:</span>
-                <span class="stat-value saved-value" id="stat-ollama-saved">0.00</span>
-            </div>
-        </header>
-
-        <div id="body-overlay"></div>
-
-        <div class="dashboard-grid">
-            <!-- Chat Panel -->
-            <div class="dashboard-panel chat-panel">
-                <div class="dashboard-panel-title">Command & Control</div>
-                <div class="chat-window" id="chat-window">
-                    <!-- Messages appear here -->
-                </div>
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <button id="menu-toggle" title="Select Agents">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-                        </button>
-                        <input type="text" id="user-input" placeholder="Give a command to the team..." autocomplete="off">
-                        <button id="send-btn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Live Event Feed Panel -->
-            <div class="dashboard-panel event-feed-panel">
-                <div class="dashboard-panel-title">Live Event Feed</div>
-                <div class="event-feed" id="event-feed">
-                    <!-- Events will be streamed here -->
-                </div>
-            </div>
-
-            <!-- Approval Queue Panel -->
-            <div class="dashboard-panel approval-queue-panel">
-                <div class="dashboard-panel-title">Approval Queue</div>
-                <div class="approval-queue" id="approval-queue">
-                    <!-- Pending approvals appear here -->
-                </div>
-            </div>
-
-            <!-- Project Health Panel -->
-            <div class="dashboard-panel project-health-panel">
-                <div class="dashboard-panel-title">Project Health</div>
-                <div id="project-health-content" style="font-family: 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.8;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: var(--text-dim);">Risk Trend</span>
-                        <span id="risk-direction" style="font-weight: 600;">--</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: var(--text-dim);">Avg (5)</span>
-                        <span id="risk-avg-5">--</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: var(--text-dim);">Avg (10)</span>
-                        <span id="risk-avg-10">--</span>
-                    </div>
-                    <hr style="border: none; border-top: 1px solid var(--border); margin: 10px 0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: var(--text-dim);">Outcome Signal</span>
-                        <span id="outcome-signal" style="font-weight: 600;">--</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <span style="color: var(--text-dim);">Net Score</span>
-                        <span id="outcome-net-score">--</span>
-                    </div>
-                    <hr style="border: none; border-top: 1px solid var(--border); margin: 10px 0;">
-                    <div id="last-decision-summary" style="color: var(--text-dim); font-size: 0.75rem;">
-                        No decisions recorded yet.
-                    </div>
-                </div>
-            </div>
-
-            
-            <!-- Task Queue Panel -->
-            <div class="dashboard-panel task-queue-panel">
-                <div class="dashboard-panel-title">Task Queue</div>
-                <div class="task-queue" id="task-queue">
-                    <!-- Approved tasks ready for execution appear here -->
-                    <p style="color: var(--text-dim); font-size: 0.85rem;">No tasks ready for execution.</p>
-                </div>
-            </div>
-
+        <div class="status-strip">
+            <div class="chip" id="backendStatus">Backend: checking...</div>
+            <div class="chip">Operator: /operator</div>
+            <div class="chip">Dashboard mirror: /static/index.html</div>
         </div>
-    </main>
+    </div>
+<div class="tabs">
+    <button class="tab-btn active" data-tab="lodge">Lodge</button>
+    <button class="tab-btn" data-tab="logistics">Logistics</button>
+    <button class="tab-btn" data-tab="approvals">Approvals</button>
+    <button class="tab-btn" data-tab="events">Events</button>
+    <button class="tab-btn" data-tab="telemetry">Telemetry</button>
+</div>
 
-    <script>
-        const API_BASE = window.location.origin;
-        let currentAgentId = "AGT-001";
+<div id="lodge" class="tab-panel active">
+    <div class="layout">
+...
+<div id="logistics" class="tab-panel">
+    <div class="panel">
+        <h2>Logistics Dispatch Intent Layer</h2>
+        <p class="subtle">Binary approval staging for Eli's logistics intents. Approve to generate Gmail drafts.</p>
+        <div id="logisticsTasks" class="list"></div>
+    </div>
+</div>
+
+<div id="approvals" class="tab-panel">
+
+                <h2>Lodge Work</h2>
+                <p class="subtle">Choose the work type, enter the issue, then run the decision loop. This is the primary operator workflow.</p>
+
+                <div class="type-tabs">
+                    <button class="type-btn active" data-type="defect">Defect</button>
+                    <button class="type-btn" data-type="variation">Variation</button>
+                    <button class="type-btn" data-type="rfi">RFI</button>
+                    <button class="type-btn" data-type="delay">Delay</button>
+                </div>
+
+                <div class="field">
+                    <label for="issue">Issue / Request</label>
+                    <textarea id="issue" placeholder="Ensuite waterproofing failure (Lot 12, Level 2). Membrane flood test failed at shower hob; moisture detected in adjacent wall frame."></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="cost">Cost Impact ($)</label>
+                        <input id="cost" type="number" placeholder="2800">
+                    </div>
+                    <div class="field">
+                        <label for="delay">Delay Impact (Days)</label>
+                        <input id="delay" type="number" placeholder="3">
+                    </div>
+                </div>
+
+                <div class="run-row">
+                    <label><input id="dryRun" type="checkbox" checked> Dry run</label>
+                    <button id="runBtn" class="primary">Run Decision Loop</button>
+                    <span class="subtle" id="workTypeHint">Submitting as Defect via site issue workflow.</span>
+                </div>
+
+                <div id="approvalBlock" class="approval-block">
+                    <h3>Approval Required</h3>
+                    <p id="intentSummary" class="subtle"></p>
+                    <div id="approvalReasonField" class="field" style="display:none;">
+                        <label for="approvalReason">Approval Justification</label>
+                        <textarea id="approvalReason" placeholder="Why are you approving this high-delay escalation?"></textarea>
+                        <div class="subtle">Required for HIGH_DELAY approvals.</div>
+                    </div>
+                    <div class="run-row">
+                        <button id="approveBtn" class="approve">Approve & Queue Execution</button>
+                        <button id="rejectBtn" class="reject">Reject</button>
+                    </div>
+                </div>
+
+                <div id="feedbackBlock" class="feedback-block">
+                    <h3>Post-Execution Review</h3>
+                    <div class="run-row">
+                        <label><input type="radio" name="outcome" value="success" checked> Success</label>
+                        <label><input type="radio" name="outcome" value="partial"> Partial</label>
+                        <label><input type="radio" name="outcome" value="failure"> Failure</label>
+                    </div>
+                    <div class="field">
+                        <label for="feedbackNotes">Operational Notes</label>
+                        <textarea id="feedbackNotes" placeholder="Notes for Owen and operator review."></textarea>
+                    </div>
+                    <button id="submitFeedbackBtn">Submit Operational Intelligence</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Live Agent Feed</h2>
+                <p class="subtle">Aria acknowledgement, specialist outputs, approval state, and execution queue updates appear here.</p>
+                <div id="terminal" class="feed">> Ready. Lodge a defect, variation, RFI, or delay.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="approvals" class="tab-panel">
+        <div class="panel">
+            <h2>Pending Approvals</h2>
+            <p class="subtle">Read-only queue view. Approve or reject from the Lodge tab while running the active case.</p>
+            <div id="approvalQueue" class="list"></div>
+        </div>
+    </div>
+
+    <div id="events" class="tab-panel">
+        <div class="panel">
+            <h2>Live System Events</h2>
+            <p class="subtle">Append-only event stream for cache telemetry, decisions, execution state, and outcome signals.</p>
+            <div id="eventFeed" class="feed"></div>
+        </div>
+    </div>
+
+    <div id="telemetry" class="tab-panel">
+        <div class="panel">
+            <h2>Cache Miss Clusters</h2>
+            <p class="subtle">Top "normalized_issue" strings that bypassed Layer 1 cache. Feed these to the Semantic Layer (Layer 2).</p>
+            <div id="missClustersStats" class="meta" style="margin-bottom: 12px;"></div>
+            <div id="missClustersQueue" class="list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const state = {
+    workType: 'defect',
+    currentRequestId: null,
+    currentTraceId: null,
+    currentApproval: null,
+    eventSource: null,
+};
+
+const terminal = document.getElementById('terminal');
+const eventFeed = document.getElementById('eventFeed');
+const approvalQueue = document.getElementById('approvalQueue');
+
+function logTerm(message) {
+    terminal.textContent += `\n${message}`;
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+function logEventLine(message) {
+    eventFeed.textContent += `${message}\n`;
+    const lines = eventFeed.textContent.split('\n');
+    if (lines.length > 300) {
+        eventFeed.textContent = lines.slice(lines.length - 300).join('\n');
+    }
+    eventFeed.scrollTop = eventFeed.scrollHeight;
+}
+
+function setApprovalContext(request) {
+    state.currentApproval = request || null;
+    const reasonField = document.getElementById('approvalReasonField');
+    const reasonInput = document.getElementById('approvalReason');
+    const summary = document.getElementById('intentSummary');
+    const severity = (((request || {}).metadata || {}).severity || '').toUpperCase();
+    const noteRequired = Boolean(((request || {}).metadata || {}).approval_note_required) || severity === 'HIGH_DELAY';
+
+    if (reasonField) {
+        reasonField.style.display = noteRequired ? 'block' : 'none';
+    }
+    if (reasonInput && !noteRequired) {
+        reasonInput.value = '';
+    }
+    if (summary) {
+        const requestId = (request && request.request_id) || state.currentRequestId || 'unknown';
+        summary.textContent = noteRequired
+            ? `Request ID: ${requestId}. HIGH_DELAY approval requires a justification note before approval.`
+            : `Request ID: ${requestId}. Review the agent feed, then approve or reject.`;
+    }
+}
+
+async function loadCurrentApproval() {
+    if (!state.currentRequestId) return null;
+    const res = await fetch(`/preflight/approvals/${state.currentRequestId}`);
+    if (!res.ok) {
+        throw new Error('Failed to load active approval');
+    }
+    const request = await res.json();
+    setApprovalContext(request);
+    return request;
+}
+
+function setActiveTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === tabId));
+    if (tabId === 'telemetry') {
+        loadTelemetry();
+    }
+    if (tabId === 'logistics') {
+        loadLogisticsTasks();
+    }
+}
+
+async function loadLogisticsTasks() {
+    try {
+        const res = await fetch('/logistics/tasks');
+        const data = await res.json();
+        const list = document.getElementById('logisticsTasks');
+        list.innerHTML = '';
         
-        const agentListEl = document.getElementById('agent-list');
-        const taskQueueEl = document.getElementById('task-queue');
-        const chatWindow = document.getElementById('chat-window');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const currentAgentDisplay = document.getElementById('current-agent-display');
-
-        async function loadAgents() {
-            const res = await fetch(`${API_BASE}/agents`);
-            const agents = await res.json();
-            
-            const agentHtml = `
-                <div style="font-size: 0.6rem; color: var(--text-dim); margin-right: 15px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Roster</div>
-            ` + agents.map(a => `
-                <div class="agent-item">
-                    <div class="agent-name">${a.name}</div>
-                    <div class="agent-title">${a.title}</div>
-                </div>
-            `).join('');
-
-            agentListEl.innerHTML = agentHtml;
+        if (data.items.length === 0) {
+            list.innerHTML = '<div class="card"><div class="meta">No pending logistics intents.</div></div>';
+            return;
         }
 
-        async function loadTaskQueue() {
-            try {
-                // Fetch approved tasks
-                const response = await fetch(`${API_BASE}/preflight/approvals?status=approved`);
-                const data = await response.json();
+        data.items.forEach(task => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="card-title">${task.strategy} - ${task.dispatch.domain}</div>
+                <div class="meta">Target: ${task.dispatch.to} | Urgency: ${task.dispatch.urgency}</div>
+                <div class="meta">Priority: ${task.execution_priority} | Conf: ${task.meta.confidence}</div>
                 
-                taskQueueEl.innerHTML = '';
-                if (data.items.length === 0) {
-                    taskQueueEl.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No tasks ready for execution.</p>';
-                    return;
-                }
+                <details style="margin-top: 8px;">
+                    <summary class="subtle" style="cursor: pointer; font-size: 0.9em;">🔍 View Signal Trace</summary>
+                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.85em; margin-top: 4px; border-left: 2px solid var(--accent);">
+                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Abstracted Key:</strong> ${task.signal_trace}</div>
+                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Velocity Impact:</strong> ${task.momentum_signal.velocity_impact}</div>
+                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Trend:</strong> ${task.momentum_signal.trend_direction}</div>
+                        <div><strong style="color: var(--accent);">Justification:</strong> ${task.momentum_signal.justification}</div>
+                    </div>
+                </details>
 
-                data.items.forEach(task => {
-                    const taskDiv = document.createElement('div');
-                    taskDiv.className = 'task-item';
-                    taskDiv.style.borderBottom = '1px solid var(--border)';
-                    taskDiv.style.paddingBottom = '10px';
-                    taskDiv.style.marginBottom = '10px';
-                    
-                    taskDiv.innerHTML = `
-                        <p style="font-size: 0.85rem;"><strong>Action:</strong> ${task.action}</p>
-                        <p style="font-size: 0.85rem;"><strong>Agent:</strong> ${task.agent_id}</p>
-                        <p style="font-size: 0.75rem; color: var(--text-dim);">${task.summary || 'No summary'}</p>
-                        <div style="margin-top: 10px;">
-                            <button class="execute-btn" data-request-id="${task.request_id}" style="background-color: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">Execute</button>
-                        </div>
-                    `;
-                    taskQueueEl.appendChild(taskDiv);
-                });
-
-                taskQueueEl.querySelectorAll('.execute-btn').forEach(btn => {
-                    btn.onclick = () => executeTask(btn.dataset.requestId);
-                });
-            } catch (err) {
-                console.error('Failed to load task queue:', err);
-            }
-        }
-
-        async function executeTask(requestId) {
-            try {
-                const response = await fetch(`${API_BASE}/preflight/tasks/execute`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ request_id: requestId })
-                });
-                const result = await response.json();
-                console.log('Execution result:', result);
-                loadTaskQueue(); // Refresh queue
-            } catch (err) {
-                console.error('Failed to execute task:', err);
-            }
-        }
-
-        const AGENT_COLOURS = {
-            "ARIA":   "#bb86fc",
-            "MARCUS": "#ff5252",
-            "ELI":    "#ffd740",
-            "JENNY":  "#69f0ae",
-            "OWEN":   "#448aff",
-            "NADIA":  "#e040fb",
-            "JAMES":  "#ffab40",
-            "LEO":    "#40c4ff",
-            "CLARA":  "#f5f5f5",
-            "VICTOR": "#ff5252",
-            "JAX":    "#b2ff59",
-            "REESE":  "#ffff00",
-            "ELENA":  "#18ffff",
-        };
-
-        async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
-
-            // Clear previous UI placeholders
-            
-            const userMsgDiv = document.createElement('div');
-            userMsgDiv.className = `message user`;
-            userMsgDiv.innerHTML = `
-                <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px;">GATEKEEPER</div>
-                <div class="bubble">${text.replace(/\n/g, '<br>')}</div>
+                <div class="run-row" style="margin-top: 12px; gap: 8px;">
+                    <button class="approve-btn" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1;" onclick="decideTask('${task.id}', 'approve')">Approve Dispatch</button>
+                    <button class="reject-btn" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1;" onclick="decideTask('${task.id}', 'reject')">Reject</button>
+                </div>
             `;
-            chatWindow.appendChild(userMsgDiv);
-            userInput.value = '';
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            list.appendChild(div);
+        });
+    } catch (err) {
+        logTerm(`[ERROR] Failed to load logistics tasks: ${err.message}`);
+    }
+}
 
-            let currentBubble = null;
-            let currentAgentName = "";
-
-            try {
-                const response = await fetch(`${API_BASE}/chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text }) // No agent_id needed
-                });
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let fullText = "";
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split('\n');
-                    
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const data = line.slice(6);
-                            
-                            // Signal Detection: [NAME] START
-                            if (data.includes(' START')) {
-                                currentAgentName = data.replace(' START', '').replace('[', '').replace(']', '');
-                                const msgDiv = document.createElement('div');
-                                msgDiv.className = `message assistant`;
-                                const color = AGENT_COLOURS[currentAgentName] || "#bb86fc";
-                                msgDiv.innerHTML = `
-                                    <div style="font-size: 0.7rem; color: ${color}; margin-bottom: 5px; font-weight: bold;">${currentAgentName}</div>
-                                    <div class="bubble" id="bubble-${currentAgentName}" style="border-left: 4px solid ${color}">...</div>
-                                `;
-                                chatWindow.appendChild(msgDiv);
-                                currentBubble = document.getElementById(`bubble-${currentAgentName}`);
-                                fullText = "";
-                                continue;
-                            }
-                            
-                            if (data.includes(' END')) {
-                                if (currentBubble) currentBubble.id = ''; // Clean up
-                                continue;
-                            }
-
-                            // Token processing
-                            if (currentBubble && data.startsWith(`[${currentAgentName}]: `)) {
-                                const token = data.replace(`[${currentAgentName}]: `, '');
-                                fullText += token;
-                                
-                                // Live render
-                                let formatted = fullText.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-                                formatted = formatted.replace(/\n/g, '<br>');
-                                currentBubble.innerHTML = formatted;
-                                chatWindow.scrollTop = chatWindow.scrollHeight;
-                            }
-                        }
-                    }
-                }
-            } catch (err) {
-                if (currentBubble) currentBubble.innerHTML += ' <br>[ERROR] Connection lost.';
-            }
+async function decideTask(taskId, decision) {
+    try {
+        const res = await fetch(`/logistics/tasks/${taskId}/decide?decision=${decision}`, { method: 'POST' });
+        if (res.ok) {
+            logTerm(`[SYSTEM] Task ${taskId} ${decision}d.`);
+            loadLogisticsTasks();
         }
+    } catch (err) {
+        logTerm(`[ERROR] Task decision failed: ${err.message}`);
+    }
+}
 
-        sendBtn.onclick = sendMessage;
-        userInput.onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
-
-        // Mobile Menu Toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const asideBar = document.querySelector('aside');
-        const overlay = document.getElementById('body-overlay');
-
-        function toggleMenu() {
-            asideBar.classList.toggle('open');
-            overlay.classList.toggle('visible');
-        }
-
-        if (menuToggle) {
-            menuToggle.onclick = toggleMenu;
-            overlay.onclick = toggleMenu;
-        }
-
-        // Init
-        loadAgents();
+async function loadTelemetry() {
+    try {
+        const res = await fetch('/telemetry/miss-clusters');
+        const data = await res.json();
         
-        // Register PWA Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/static/sw.js')
-                    .then(reg => console.log('Service Worker Registered'))
-                    .catch(err => console.log('Service Worker Selection Failed', err));
-            });
+        const statsEl = document.getElementById('missClustersStats');
+        const queueEl = document.getElementById('missClustersQueue');
+        queueEl.innerHTML = '';
+        
+        statsEl.innerHTML = `<strong>Hit Rate:</strong> ${data.hit_rate_percent}% | <strong>Total Lookups:</strong> ${data.total_lookups}`;
+        
+        if (!data.clusters || data.clusters.length === 0) {
+            queueEl.innerHTML = '<div class="card"><div class="meta">No miss clusters recorded.</div></div>';
+            return;
         }
-        // Telemetry & Clock
-        function tick() {
-            const now = new Date();
-            document.getElementById('header-clock').innerText = now.toLocaleString('en-AU', {
-                dateStyle: 'medium',
-                timeStyle: 'medium'
-            });
-        }
-        setInterval(tick, 1000);
-        tick();
 
-        async function updateTelemetry() {
-            try {
-                const response = await fetch('/telemetry');
-                const data = await response.json();
-                
-                document.getElementById('stat-gemini-tokens').innerText = data.gemini_tokens.toLocaleString();
-                document.getElementById('stat-ollama-tokens').innerText = data.ollama_tokens.toLocaleString();
-                
-                const spendEl = document.getElementById('stat-gemini-spend');
-                const spendStr = data.gemini_cost_aud.toFixed(2);
-                if (spendEl.innerText !== spendStr) {
-                    spendEl.innerText = spendStr;
-                    spendEl.style.color = '#fff';
-                    setTimeout(() => spendEl.style.color = '#4ade80', 500);
-                }
+        data.clusters.forEach(cluster => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="card-title">Miss Count: ${cluster.count}</div>
+                <div class="meta" style="color: var(--accent); font-family: monospace;">${cluster.issue}</div>
+            `;
+            queueEl.appendChild(div);
+        });
+    } catch (error) {
+        document.getElementById('missClustersStats').textContent = 'Failed to load telemetry.';
+    }
+}
 
-                const savedEl = document.getElementById('stat-ollama-saved');
-                const savedStr = data.ollama_saved_aud.toFixed(2);
-                if (savedEl.innerText !== savedStr) {
-                    savedEl.innerText = savedStr;
-                    savedEl.style.color = '#fff';
-                    setTimeout(() => savedEl.style.color = '#ffd740', 500);
+function setWorkType(type) {
+    state.workType = type;
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.type === type));
+    const hintMap = {
+        defect: 'Submitting as Defect via site issue workflow.',
+        variation: 'Submitting as Variation via construction decision workflow.',
+        rfi: 'Submitting as RFI via construction decision workflow.',
+        delay: 'Submitting as Delay via construction decision workflow.',
+    };
+    document.getElementById('workTypeHint').textContent = hintMap[type] || '';
+}
+
+function buildMessage() {
+    const issue = document.getElementById('issue').value.trim();
+    const cost = document.getElementById('cost').value.trim() || '0';
+    const delay = document.getElementById('delay').value.trim() || '0';
+    if (!issue) return '';
+
+    if (state.workType === 'defect') {
+        return `Defect: +$${cost}, +${delay} days, ${issue}`;
+    }
+    if (state.workType === 'variation') {
+        return `Variation: +$${cost}, +${delay} days, ${issue}`;
+    }
+    if (state.workType === 'rfi') {
+        return `RFI: ${issue} | cost impact $${cost} | delay ${delay} days`;
+    }
+    return `Delay: +$${cost}, +${delay} days, ${issue}`;
+}
+
+async function readSSEStream(response) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+
+        for (const eventBlock of events) {
+            const dataMsg = eventBlock
+                .split('\n')
+                .filter(line => line.startsWith('data: '))
+                .map(line => line.slice(6))
+                .join('\n')
+                .trim();
+
+            if (!dataMsg) continue;
+
+            logTerm(dataMsg);
+
+            if (dataMsg.includes('PROPOSAL CREATED. Request ID: ')) {
+                state.currentRequestId = dataMsg.split('Request ID: ')[1].trim();
+            }
+            if (dataMsg.includes('Awaiting human approval')) {
+                document.getElementById('approvalBlock').style.display = 'block';
+                setApprovalContext(null);
+                if (state.currentRequestId) {
+                    try {
+                        await loadCurrentApproval();
+                    } catch (error) {
+                        logTerm(`[WARN] ${error.message}`);
+                    }
                 }
-            } catch (err) {
-                console.error('Telemetry failed:', err);
+                loadApprovalQueue();
+            }
+            if (dataMsg.includes('[Trace:')) {
+                const match = dataMsg.match(/\[Trace:\s*([^\]]+)\]/);
+                if (match) {
+                    state.currentTraceId = match[1].trim();
+                }
             }
         }
-        setInterval(updateTelemetry, 5000); 
-        updateTelemetry();
+    }
+}
 
-        // Live Event Feed Integration
-        const eventFeed = document.getElementById('event-feed');
-        if (typeof EventSource !== 'undefined') {
-            const eventSource = new EventSource(`${API_BASE}/events/stream`);
+async function runDecisionLoop() {
+    const message = buildMessage();
+    const dryRun = document.getElementById('dryRun').checked;
+    if (!message) {
+        alert('Issue / request is required.');
+        return;
+    }
 
-            eventSource.onmessage = function(event) {
-                const eventData = JSON.parse(event.data);
-                const eventLine = document.createElement('div');
-                eventLine.className = 'event-line';
-                const eventType = eventData.type || 'UNKNOWN';
-                const meta = eventData.metadata || {};
-                
-                // Determine color based on event type
-                let color = 'var(--text-dim)';
-                let isFinalizedDecision = false;
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('approvalBlock').style.display = 'none';
+    document.getElementById('feedbackBlock').style.display = 'none';
+    document.getElementById('approvalReasonField').style.display = 'none';
+    document.getElementById('approvalReason').value = '';
+    state.currentRequestId = null;
+    state.currentTraceId = null;
+    state.currentApproval = null;
+    terminal.textContent = `> Starting ${state.workType.toUpperCase()} workflow...\n`;
 
-                if (eventType === 'DECISION_FINALIZED_V1') {
-                    isFinalizedDecision = true;
-                    const finalDecision = (meta.final_decision || '').toUpperCase();
-                    if (finalDecision === 'APPROVE') color = '#00cc66';
-                    else if (finalDecision === 'REJECT') color = '#ff3333';
-                    else if (finalDecision === 'ESCALATE') color = '#ffcc00';
-                } else if (eventType.includes('APPROVAL_REQUESTED')) {
-                    color = '#ffcc00';
-                } else if (eventType.includes('ACTION_APPROVED')) {
-                    color = '#00cc66';
-                } else if (eventType.includes('ACTION_BLOCKED') || eventType.includes('EXTERNAL_ACTION_REJECTED')) {
-                    color = '#ff3333';
-                } else if (eventType.includes('ACTION_EXECUTED')) {
-                    color = '#66ccff';
-                } else if (eventType.includes('ACTION_INTENT_CREATED')) {
-                    color = '#9966cc';
-                } else if (eventType === 'DECISION_MADE') {
-                    color = 'var(--text-dim)'; // De-emphasize — FINALIZED_V1 is the anchor
+    try {
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: dryRun ? `${message} [DRY RUN ACTIVE: DO NOT EXECUTE SIDE EFFECTS]` : message })
+        });
+        if (!response.ok) throw new Error('Failed to start run');
+        await readSSEStream(response);
+    } catch (error) {
+        logTerm(`[ERROR] ${error.message}`);
+    } finally {
+        document.getElementById('runBtn').disabled = false;
+    }
+}
+
+async function handleDecision(decision) {
+    if (!state.currentRequestId) {
+        logTerm('[ERROR] No approval request is active.');
+        return;
+    }
+
+    const approvalReason = document.getElementById('approvalReason').value.trim();
+    const noteRequired = Boolean(((state.currentApproval || {}).metadata || {}).approval_note_required)
+        || ((((state.currentApproval || {}).metadata || {}).severity || '').toUpperCase() === 'HIGH_DELAY');
+    if (decision === 'approved' && noteRequired && !approvalReason) {
+        logTerm('[ERROR] Approval justification is required for HIGH_DELAY requests.');
+        return;
+    }
+
+    document.getElementById('approveBtn').disabled = true;
+    document.getElementById('rejectBtn').disabled = true;
+    logTerm(`> Submitting decision: ${decision}...`);
+
+    try {
+        const res = await fetch('/preflight/approvals/decide', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                request_id: state.currentRequestId,
+                decision,
+                decided_by: 'OPERATOR',
+                reason: approvalReason || 'Unified operator console decision'
+            })
+        });
+
+        if (!res.ok) {
+            let message = 'Approval decision failed';
+            try {
+                const detail = await res.json();
+                const apiReason = detail && detail.detail;
+                if (apiReason && apiReason.reason === 'approval_justification_required') {
+                    message = 'Approval justification is required for HIGH_DELAY requests.';
                 }
-                
-                eventLine.style.color = color;
-                eventLine.style.fontFamily = 'Fira Code, monospace';
-                eventLine.style.fontSize = '0.75rem';
-                eventLine.style.marginBottom = '5px';
+            } catch {}
+            throw new Error(message);
+        }
+        logTerm('> Approval decision acknowledged by the system.');
 
-                if (isFinalizedDecision) {
-                    // Anchor event — visually distinct
-                    const overrideChain = (meta.override_chain || []).join(' → ') || 'none';
-                    const wasOverridden = meta.was_overridden ? 'YES' : 'NO';
-                    const warnings = (meta.reasoning_quality_warnings || []).join(', ') || 'none';
-
-                    eventLine.style.borderLeft = `3px solid ${color}`;
-                    eventLine.style.paddingLeft = '8px';
-                    eventLine.style.marginTop = '4px';
-                    eventLine.style.marginBottom = '8px';
-                    eventLine.innerHTML = `
-                        <div style="font-weight: 600;">[${new Date(eventData.timestamp).toLocaleTimeString()}] DECISION FINALIZED: <span style="color: ${color};">${meta.final_decision || '?'}</span></div>
-                        <div style="color: var(--text-dim); font-size: 0.7rem; margin-top: 2px;">
-                            Original: ${meta.original_decision || '?'} | Override: ${wasOverridden} ${meta.was_overridden ? '(' + overrideChain + ')' : ''} | Warnings: ${warnings}
-                        </div>
-                    `;
-
-                    // Also update the last decision summary in Project Health
-                    const summaryEl = document.getElementById('last-decision-summary');
-                    if (summaryEl) {
-                        summaryEl.innerHTML = `Last: <strong style="color: ${color};">${meta.final_decision}</strong> (${meta.was_overridden ? 'overridden' : 'clean'}) — ${eventData.scenario || 'N/A'}`;
-                    }
-                } else {
-                    eventLine.innerHTML = `[${new Date(eventData.timestamp).toLocaleTimeString()}] <strong>${eventType}</strong>: ${meta ? JSON.stringify(meta) : ''}`;
-                }
-                
-                eventFeed.appendChild(eventLine);
-                eventFeed.scrollTop = eventFeed.scrollHeight;
-            };
-
-
-            eventSource.onerror = function(err) {
-                console.error("EventSource failed:", err);
-                eventSource.close();
-            };
+        if (decision === 'approved') {
+            logTerm('[QUEUED] Execution ownership is now server-side. Approved requests are queued automatically.');
+            document.getElementById('feedbackBlock').style.display = 'block';
         } else {
-            eventFeed.innerHTML = '<p style="color: var(--text-dim);">Your browser does not support Server-Sent Events.</p>';
+            logTerm('> Request rejected.');
         }
 
-        // Approval Queue Integration
-        const approvalQueue = document.getElementById('approval-queue');
-
-        async function loadApprovalQueue() {
-            try {
-                const response = await fetch(`${API_BASE}/preflight/approvals?status=pending`);
-                const data = await response.json();
-                
-                approvalQueue.innerHTML = ''; // Clear previous requests
-                if (data.items.length === 0) {
-                    approvalQueue.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">No pending approval requests.</p>';
-                    return;
-                }
-
-                data.items.forEach(request => {
-                    const requestDiv = document.createElement('div');
-                    requestDiv.className = 'approval-request';
-                    requestDiv.style.borderBottom = '1px solid var(--border)';
-                    requestDiv.style.paddingBottom = '10px';
-                    requestDiv.style.marginBottom = '10px';
-                    requestDiv.innerHTML = `
-                        <p style="font-size: 0.85rem;"><strong>Action:</strong> ${request.action}</p>
-                        <p style="font-size: 0.85rem;"><strong>Agent:</strong> ${request.agent_id}</p>
-                        <p style="font-size: 0.85rem;"><strong>Summary:</strong> ${request.summary || 'N/A'}</p>
-                        <pre style="background: #000; padding: 8px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.7rem; overflow-x: auto; margin-top: 5px;">${JSON.stringify(request.payload, null, 2)}</pre>
-                        <div style="margin-top: 10px;">
-                            <button class="approve-btn" data-request-id="${request.request_id}" style="background-color: #00cc66; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Approve</button>
-                            <button class="reject-btn" data-request-id="${request.request_id}" style="background-color: #ff3333; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">Reject</button>
-                        </div>
-                    `;
-                    approvalQueue.appendChild(requestDiv);
-                });
-
-                // Add event listeners for buttons
-                approvalQueue.querySelectorAll('.approve-btn').forEach(button => {
-                    button.onclick = () => decideApproval(button.dataset.requestId, 'approved');
-                });
-                approvalQueue.querySelectorAll('.reject-btn').forEach(button => {
-                    button.onclick = () => decideApproval(button.dataset.requestId, 'rejected');
-                });
-
-            } catch (err) {
-                console.error('Failed to load approval queue:', err);
-                approvalQueue.innerHTML = '<p style="color: var(--text-dim);">Failed to load approval requests.</p>';
-            }
-        }
-
-        async function decideApproval(requestId, decision) {
-            try {
-                const response = await fetch(`${API_BASE}/preflight/approvals/decide`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ request_id: requestId, decision: decision, decided_by: "gatekeeper" })
-                });
-                const result = await response.json();
-                console.log(`Approval ${decision} for ${requestId}:`, result);
-                loadApprovalQueue(); // Refresh the queue
-            } catch (err) {
-                console.error(`Failed to decide approval for ${requestId}:`, err);
-            }
-        }
-
-        // Initial load and periodic refresh
         loadApprovalQueue();
-        setInterval(loadApprovalQueue, 10000); // Refresh every 10 seconds
-        
-        loadTaskQueue();
-        setInterval(loadTaskQueue, 10000); // Refresh task queue every 10 seconds
+    } catch (error) {
+        logTerm(`[ERROR] ${error.message}`);
+    } finally {
+        document.getElementById('approveBtn').disabled = false;
+        document.getElementById('rejectBtn').disabled = false;
+    }
+}
 
-        // Project Health Integration (real data from event stream)
-        const riskDirectionEl = document.getElementById('risk-direction');
-        const riskAvg5El = document.getElementById('risk-avg-5');
-        const riskAvg10El = document.getElementById('risk-avg-10');
-        const outcomeSignalEl = document.getElementById('outcome-signal');
-        const outcomeNetScoreEl = document.getElementById('outcome-net-score');
+async function submitFeedback() {
+    if (!state.currentTraceId) {
+        logTerm('[ERROR] No active trace available for feedback.');
+        return;
+    }
 
-        async function updateProjectHealth() {
-            try {
-                const response = await fetch(`${API_BASE}/project/health`);
-                const data = await response.json();
-                
-                const trend = data.risk_trend || {};
-                const signal = data.outcome_signal || {};
-                
-                // Risk trend direction
-                const direction = (trend.direction || 'unknown').toUpperCase();
-                riskDirectionEl.innerText = direction;
-                if (direction === 'RISING') {
-                    riskDirectionEl.style.color = '#ff3333';
-                } else if (direction === 'FALLING') {
-                    riskDirectionEl.style.color = '#00cc66';
-                } else {
-                    riskDirectionEl.style.color = '#ffcc00';
-                }
+    const outcome = document.querySelector('input[name="outcome"]:checked').value;
+    const notes = document.getElementById('feedbackNotes').value;
 
-                // Risk averages
-                riskAvg5El.innerText = typeof trend.avg_5 === 'number' ? trend.avg_5.toFixed(2) : '--';
-                riskAvg10El.innerText = typeof trend.avg_10 === 'number' ? trend.avg_10.toFixed(2) : '--';
-                
-                // Outcome signal
-                const quality = (signal.quality || 'no_history').replace(/_/g, ' ');
-                outcomeSignalEl.innerText = quality;
-                if (signal.quality === 'historically_positive') {
-                    outcomeSignalEl.style.color = '#00cc66';
-                } else if (signal.quality === 'historically_poor') {
-                    outcomeSignalEl.style.color = '#ff3333';
-                } else {
-                    outcomeSignalEl.style.color = '#ffcc00';
-                }
+    try {
+        await fetch('/operator/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                execution_trace_id: state.currentRequestId,
+                trace_id: state.currentTraceId,
+                outcome,
+                notes,
+                delay_actual: parseInt(document.getElementById('delay').value || '0', 10),
+                cost_actual: parseFloat(document.getElementById('cost').value || '0')
+            })
+        });
+        logTerm('[SUCCESS] POST_EXECUTION_REVIEW_V1 submitted.');
+        document.getElementById('feedbackBlock').style.display = 'none';
+    } catch (error) {
+        logTerm(`[ERROR] Feedback submission failed: ${error.message}`);
+    }
+}
 
-                const netScore = signal.net_score || 0;
-                outcomeNetScoreEl.innerText = (netScore >= 0 ? '+' : '') + netScore;
-                outcomeNetScoreEl.style.color = netScore > 0 ? '#00cc66' : netScore < 0 ? '#ff3333' : 'var(--text-dim)';
+async function loadApprovalQueue() {
+    try {
+        const res = await fetch('/preflight/approvals?status=pending');
+        const data = await res.json();
+        approvalQueue.innerHTML = '';
 
-            } catch (err) {
-                console.error('Failed to update project health:', err);
-                riskDirectionEl.innerText = 'Error';
-                riskDirectionEl.style.color = 'var(--text-dim)';
-            }
+        if (!data.items || data.items.length === 0) {
+            approvalQueue.innerHTML = '<div class="card"><div class="meta">No pending approvals.</div></div>';
+            return;
         }
 
+        data.items.forEach(request => {
+            const displayAction = (request.metadata && request.metadata.display_action) || request.action;
+            const severity = ((request.metadata && request.metadata.severity) || '').toUpperCase();
+            const noteRequired = !!(request.metadata && request.metadata.approval_note_required);
+            const severityLine = severity ? `Severity: ${severity}${noteRequired ? ' | approval note required' : ''}` : '';
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <div class="card-title">${displayAction}</div>
+                <div class="meta">${request.summary || 'No summary'}${severityLine ? `<br>${severityLine}` : ''}</div>
+                <pre>${JSON.stringify(request.payload, null, 2)}</pre>
+            `;
+            approvalQueue.appendChild(div);
+        });
+    } catch (error) {
+        approvalQueue.innerHTML = `<div class="card"><div class="meta">Failed to load approvals: ${error.message}</div></div>`;
+    }
+}
 
-        // Initial load and periodic refresh
-        updateProjectHealth();
-        setInterval(updateProjectHealth, 15000); // Refresh every 15 seconds
-    </script>
+function startEventStream() {
+    if (state.eventSource) state.eventSource.close();
+    state.eventSource = new EventSource('/events/stream');
+    state.eventSource.onmessage = (event) => {
+        try {
+            const parsed = JSON.parse(event.data);
+            logEventLine(`[${parsed.type || 'EVENT'}] ${parsed.trace_id || '-'} ${JSON.stringify(parsed.metadata || {})}`);
+            if ((parsed.type || '').startsWith('TASK_EXECUTION_') || (parsed.type || '').startsWith('APPROVAL_')) {
+                loadApprovalQueue();
+            }
+        } catch {
+            logEventLine(event.data);
+        }
+    };
+    state.eventSource.onerror = () => {
+        logEventLine('[stream] event source disconnected');
+    };
+}
+
+async function checkBackend() {
+    try {
+        const res = await fetch('/status');
+        const data = await res.json();
+        document.getElementById('backendStatus').textContent = `Backend: ${data.status}`;
+    } catch {
+        document.getElementById('backendStatus').textContent = 'Backend: offline';
+    }
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
+document.querySelectorAll('.type-btn').forEach(btn => btn.addEventListener('click', () => setWorkType(btn.dataset.type)));
+document.getElementById('runBtn').addEventListener('click', runDecisionLoop);
+document.getElementById('approveBtn').addEventListener('click', () => handleDecision('approved'));
+document.getElementById('rejectBtn').addEventListener('click', () => handleDecision('rejected'));
+document.getElementById('submitFeedbackBtn').addEventListener('click', submitFeedback);
+
+checkBackend();
+setWorkType('defect');
+loadApprovalQueue();
+startEventStream();
+</script>
 </body>
 </html>

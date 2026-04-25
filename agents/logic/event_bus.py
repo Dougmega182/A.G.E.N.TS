@@ -29,7 +29,11 @@ STANDARD_EVENT_TYPES = {
     "EXTERNAL_ACTION_INTENT",
     "EXTERNAL_ACTION_EXECUTED",
     "OWEN_INSIGHT_EXTRACTED",
-    "OWEN_INSIGHT_VALIDATED"
+    "OWEN_INSIGHT_VALIDATED",
+    # Phase 5.1.5 — Inference Caching (Decision Cache telemetry)
+    "CACHE_HIT",
+    "CACHE_MISS",
+    "CACHE_BYPASS",
 }
 
 def emit_event(

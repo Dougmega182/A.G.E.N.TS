@@ -1,0 +1,10 @@
+interface:
+  display_name: "Trace Lifecycle Auditor"
+  short_description: "Audit lifecycle completeness of decision traces"
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon.png"
+  brand_color: "#3B82F6"
+  default_prompt: "Use $trace-lifecycle-auditor to audit trace lifecycle completeness"
+
+policy:
+  allow_implicit_invocation: true

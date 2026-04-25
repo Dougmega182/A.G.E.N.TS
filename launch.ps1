@@ -7,7 +7,7 @@ $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $ScriptRoot
 
 $serverPort = 8000
-$webUrl = "http://localhost:8000/static/index.html"
+$webUrl = "http://localhost:8000/operator"
 $statusUrl = "http://localhost:8000/status"
 $telemetryUrl = "http://localhost:8000/telemetry"
 

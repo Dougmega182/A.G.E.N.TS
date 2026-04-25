@@ -13,8 +13,6 @@ logger = logging.getLogger("agents.gmail_operator")
 # Allowed fields — reject anything unexpected
 REQUIRED_FIELDS = {"to", "subject", "body"}
 ALLOWED_FIELDS = {"to", "subject", "body", "cc", "bcc"}
-
-
 class OperatorValidationError(Exception):
     """Raised when operator-level input validation fails."""
     def __init__(self, reason: str, details: Dict[str, Any] = None):
@@ -51,7 +49,6 @@ def _validate_parameters(parameters: Dict[str, Any]):
         # Basic encoding safety — reject null bytes
         if "\x00" in value:
             raise OperatorValidationError("encoding_violation", {"field": field})
-
 
 from .google_auth import get_gmail_service, get_calendar_service
 import base64

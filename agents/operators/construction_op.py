@@ -100,11 +100,11 @@ class ConstructionOperator:
                     base_type = entity_type.replace("construction_", "")
                     state_key = base_type + "s"
                     state.setdefault(state_key, []).append(entry)
-                    
-                    if status == "approved" and base_type == "variation":
+
+                    # Update totals only on approval of any construction entity type
+                    if status == "approved":
                         state["current_cost"] = float(state.get("current_cost", 0)) + float(cost)
                         state["current_duration"] = int(state.get("current_duration", 0)) + int(days)
-
                     executed_count += 1
                     scenarios.append(entity_type)
                     statuses.append(status)
@@ -146,6 +146,19 @@ class ConstructionOperator:
                         "success": False,
                         "error": str(e)
                     })
+            elif tool == "audit_log":
+                try:
+                    cls.log_to_sentinel(
+                        step=args.get("step", "AUDIT"),
+                        agent=args.get("agent", "SYSTEM"),
+                        input_data=args.get("input", ""),
+                        output_data=args.get("output", "")
+                    )
+                    executed_count += 1
+                    results.append({"tool": tool, "success": True})
+                except Exception as e:
+                    failed_count += 1
+                    results.append({"tool": tool, "success": False, "error": str(e)})
             else:
                 failed_count += 1
                 results.append({

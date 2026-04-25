@@ -140,6 +140,11 @@ def validate_action_intent(payload: Any) -> ContractValidationResult:
     return validate_against_contract(payload, "action_intent_v1")
 
 
+def validate_momentum_signal(payload: Any) -> ContractValidationResult:
+    """Validates a momentum signal against the momentum_signal_v1 schema."""
+    return validate_against_contract(payload, "momentum_signal_v1")
+
+
 
 
 

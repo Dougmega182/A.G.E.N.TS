@@ -195,3 +195,25 @@ def get_trace_lineage(trace_id: str) -> List[Dict[str, Any]]:
     events = _read_all_events()
     return [e for e in events if e.get("trace_id") == trace_id]
 
+def get_avg_miss_latency(limit: int = 20) -> int:
+    """
+    Calculate average decision_phase_ms for non-cached decisions.
+    Defaults to 33000 (33s) if no history exists (baseline).
+    """
+    events = _read_all_events()
+    finalized_events = [e for e in events if e.get("type") == "DECISION_FINALIZED_V1"]
+    
+    # Filter for MISS/BYPASS cases only
+    miss_latencies = [
+        int(e["metadata"].get("decision_phase_ms", 0))
+        for e in finalized_events
+        if not e["metadata"].get("served_from_cache", False)
+        and e["metadata"].get("decision_phase_ms") is not None
+    ]
+    
+    if not miss_latencies:
+        return 33000 # 33s baseline per Phase 5.1 dataset
+        
+    recent = miss_latencies[-limit:]
+    return int(sum(recent) / len(recent))
+
