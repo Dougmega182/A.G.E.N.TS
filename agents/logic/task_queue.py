@@ -4,8 +4,11 @@ Used to avoid circular imports between API and Orchestrator.
 """
 
 import uuid
+import logging
 from datetime import datetime
 from typing import List, Dict, Any
+
+logger = logging.getLogger("agents.task_queue")
 
 # Shared state
 PENDING_LOGISTICS_TASKS: List[Dict[str, Any]] = []
@@ -33,7 +36,7 @@ def _get_concept(issue_key: str) -> str:
 def enqueue_logistics_task(task: Dict[str, Any]):
     """
     Adds a new logistics intent to the pending queue. 
-    Enforces Phase 2.6 Conflict Resolver (Entity + Polarity + Recency).
+    Enforces Phase 2.6 Conflict Resolver and Recency Rule.
     """
     global PENDING_LOGISTICS_TASKS
     
@@ -43,23 +46,25 @@ def enqueue_logistics_task(task: Dict[str, Any]):
     concept = _get_concept(task.get("signal_trace", ""))
     
     task["concept"] = concept
+    task["lifecycle"] = "ACTIVE"
 
     # 1. Conflict Resolver (Entity + Domain match)
-    # Rule: Fresh update overrides older conflicting or duplicate intent.
-    existing_conflict = next(
-        (t for t in PENDING_LOGISTICS_TASKS 
-         if t.get("entity") == entity and t["dispatch"].get("domain") == domain), 
-        None
-    )
+    # Rule: Fresh update supersedes older conflicting or duplicate active intents.
+    existing_active = [
+        t for t in PENDING_LOGISTICS_TASKS 
+        if t.get("entity") == entity 
+        and t["dispatch"].get("domain") == domain
+        and t.get("lifecycle") == "ACTIVE"
+    ]
 
-    if existing_conflict:
-        # Check for polarity opposition (e.g. DELAY vs RESOLVED)
-        if existing_conflict.get("polarity") != polarity:
+    for existing in existing_active:
+        # Check for polarity opposition
+        if existing.get("polarity") != polarity:
             task["status"] = "CONFLICT_RESOLVED_NEWER"
-            logger.info(f"Conflict detected for {entity}. Newer {polarity} signal overrides {existing_conflict.get('polarity')}.")
+            logger.info(f"Conflict detected for {entity}. Newer {polarity} signal supersedes {existing.get('polarity')}.")
         
-        # Recency Override: Remove the old stale intent
-        resolve_logistics_task(existing_conflict["id"])
+        # Recency Rule: Mark the old intent as SUPERSEDED
+        existing["lifecycle"] = "SUPERSEDED"
 
     task_id = f"TSK-{uuid.uuid4().hex[:8].upper()}"
     task["id"] = task_id
@@ -73,14 +78,31 @@ def enqueue_logistics_task(task: Dict[str, Any]):
     return task_id
 
 def list_logistics_tasks():
-    """Returns all pending tasks."""
-    return PENDING_LOGISTICS_TASKS
+    """Returns pending tasks sorted by Impact Score (DESC) then Recency (DESC)."""
+    # Filter for only ACTIVE or pending tasks for the primary display
+    active_tasks = [t for t in PENDING_LOGISTICS_TASKS if t.get("lifecycle") in {None, "ACTIVE", "pending"}]
+    
+    return sorted(
+        active_tasks,
+        key=lambda x: (
+            x.get("momentum_signal", {}).get("impact_score", 0), 
+            x.get("created_at", "")
+        ),
+        reverse=True
+    )
 
 def get_logistics_task(task_id: str):
     """Retrieves a specific task."""
     return next((t for t in PENDING_LOGISTICS_TASKS if t["id"] == task_id), None)
 
-def resolve_logistics_task(task_id: str):
-    """Removes a task from the pending queue after decision."""
+def resolve_logistics_task(task_id: str, lifecycle_state: str = "RESOLVED"):
+    """Update a task's lifecycle state and remove it from memory if needed."""
     global PENDING_LOGISTICS_TASKS
-    PENDING_LOGISTICS_TASKS = [t for t in PENDING_LOGISTICS_TASKS if t["id"] != task_id]
+    task = get_logistics_task(task_id)
+    if task:
+        task["lifecycle"] = lifecycle_state
+        task["resolved_at"] = datetime.utcnow().isoformat()
+    
+    # For Phase 2.3 parity, we actually remove from active list if it's no longer pending
+    # but we'll keep the record in memory for now. 
+    # To keep list_logistics_tasks clean, we use the filter above.

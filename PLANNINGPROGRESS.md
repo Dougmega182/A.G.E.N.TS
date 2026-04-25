@@ -28,8 +28,8 @@ graph TD
 **Next Objective:** Phase 2.6 Seal the Cracks (Conflict Resolver + Concept Normalization) - VERIFIED
 **System Intelligence Level:** Level 5 (Deterministic Actuation, Parameter-Abstracted, Context-Aware)
 **Safety Status:** LEVEL 6 (Approval-Gated Actuation, Duplicate Suppression, Conflict Resolution)
-**Build Rev:** 3.5.0
-**Last Verified:** 2026-04-24 (UTC)
+**Build Rev:** 3.7.0
+**Last Verified:** 2026-04-25 (UTC)
 
 ---
 

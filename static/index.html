@@ -446,9 +446,15 @@ async function loadLogisticsTasks() {
         data.items.forEach(task => {
             const div = document.createElement('div');
             div.className = 'card';
+            const severityColor = task.momentum_signal.severity === 'CRITICAL' ? '#e74c3c' : 
+                                 task.momentum_signal.severity === 'HIGH' ? '#e67e22' : '#2ecc71';
+
             div.innerHTML = `
-                <div class="card-title">${task.strategy} - ${task.dispatch.domain}</div>
-                <div class="meta">Target: ${task.dispatch.to} | Urgency: ${task.dispatch.urgency}</div>
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${task.strategy} - ${task.dispatch.domain}</span>
+                    <span class="chip" style="background: ${severityColor}; color: white; font-size: 0.75em; padding: 2px 6px;">${task.momentum_signal.severity}</span>
+                </div>
+                <div class="meta">Target: ${task.dispatch.to} | Impact: <strong>${task.momentum_signal.impact_score}</strong></div>
                 <div class="meta">Priority: ${task.execution_priority} | Conf: ${task.meta.confidence}</div>
                 
                 <details style="margin-top: 8px;">

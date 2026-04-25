@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-04-25T08:38:45.416237",
+  "updated_at": "2026-04-25T10:04:11.793465",
   "requests": [
     {
       "request_id": "APR-2E3B51A11163",
@@ -69734,9 +69734,9 @@
     },
     {
       "request_id": "APR-35B9934A22BE",
-      "status": "pending",
-      "execution_status": null,
-      "outcome": null,
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
       "action": "operator_bundle",
       "agent_id": "system",
       "trace_id": "dc50bbe7-923c-4829-90d4-40d262bd601d",
@@ -69760,8 +69760,8 @@
       "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
       "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
       "created_at": "2026-04-25T03:43:36.283790",
-      "decided_at": null,
-      "decided_by": null,
+      "decided_at": "2026-04-25T09:08:21.795001",
+      "decided_by": "gatekeeper",
       "decision_reason": "",
       "original_action_intent": {
         "action": "operator_bundle",
@@ -69785,7 +69785,14 @@
           "final_decision": "ESCALATE",
           "why": "ESCALATE: low_confidence_with_failure_history"
         }
-      }
+      },
+      "execution_queued_at": "2026-04-25T09:08:21.968723",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:11:29.020568",
+      "executed_at": "2026-04-25T09:11:29.463490",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:11:29.636094"
     },
     {
       "request_id": "APR-27375F07D362",
@@ -69919,9 +69926,9 @@
     },
     {
       "request_id": "APR-8DF37E0DD081",
-      "status": "pending",
-      "execution_status": null,
-      "outcome": null,
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
       "action": "operator_bundle",
       "agent_id": "system",
       "trace_id": "366f5739-3f9c-49b4-a49c-2e33feb81091",
@@ -69945,8 +69952,8 @@
       "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
       "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
       "created_at": "2026-04-25T08:38:45.416237",
-      "decided_at": null,
-      "decided_by": null,
+      "decided_at": "2026-04-25T09:09:08.735349",
+      "decided_by": "gatekeeper",
       "decision_reason": "",
       "original_action_intent": {
         "action": "operator_bundle",
@@ -69969,6 +69976,3602 @@
           "risk_score": 0.0,
           "final_decision": "REJECT",
           "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:09:08.904887",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:11:29.841331",
+      "executed_at": "2026-04-25T09:11:30.206268",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:11:30.379416"
+    },
+    {
+      "request_id": "APR-807B5473B1C8",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "e5223bb2-cb04-4ba6-a05a-22f9b4c6e23d",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:10:03.185487",
+      "decided_at": "2026-04-25T09:10:06.166579",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "e5223bb2-cb04-4ba6-a05a-22f9b4c6e23d",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:10:06.341347",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:11:30.615640",
+      "executed_at": "2026-04-25T09:11:31.112956",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:11:31.296141"
+    },
+    {
+      "request_id": "APR-113F2BD92E80",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "46169680-a645-41b0-b45f-3cb4ed586aa0",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:10:43.843672",
+      "decided_at": "2026-04-25T09:10:46.755055",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "46169680-a645-41b0-b45f-3cb4ed586aa0",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:10:46.960659",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:11:31.511933",
+      "executed_at": "2026-04-25T09:11:31.962980",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:11:32.147594"
+    },
+    {
+      "request_id": "APR-8D9D21D7DE3D",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "4283489f-315e-4a97-ab4e-a908778147c4",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:11:24.385793",
+      "decided_at": "2026-04-25T09:11:28.549773",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "4283489f-315e-4a97-ab4e-a908778147c4",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:11:28.729219",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:11:32.367358",
+      "executed_at": "2026-04-25T09:11:32.804052",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:11:32.976233"
+    },
+    {
+      "request_id": "APR-0A5220ACBED1",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "c70ec1f8-1ff3-4bb5-8995-14fdf2a83076",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:13:16.366075",
+      "decided_at": "2026-04-25T09:13:20.133256",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "c70ec1f8-1ff3-4bb5-8995-14fdf2a83076",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:13:20.344160",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:52.038618",
+      "executed_at": "2026-04-25T09:19:52.456066",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:52.621476"
+    },
+    {
+      "request_id": "APR-804E0AF644C3",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "188e7b01-e363-40db-a3de-44b112e6b360",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:13:56.775561",
+      "decided_at": "2026-04-25T09:13:59.671052",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "188e7b01-e363-40db-a3de-44b112e6b360",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:13:59.854251",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:52.822084",
+      "executed_at": "2026-04-25T09:19:53.178987",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:53.341357"
+    },
+    {
+      "request_id": "APR-5D7AE36FBBCD",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "4ef0e6ae-da44-49ed-82f2-401741bafb53",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: contract_failure"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:14:36.532696",
+      "decided_at": "2026-04-25T09:14:40.409619",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "4ef0e6ae-da44-49ed-82f2-401741bafb53",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: contract_failure"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:14:40.589640",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:53.547698",
+      "executed_at": "2026-04-25T09:19:53.954083",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:54.131909"
+    },
+    {
+      "request_id": "APR-D2C428146DA7",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "b3bdccf7-77f9-414d-8cb2-41f50f8748d7",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:15:19.714590",
+      "decided_at": "2026-04-25T09:15:23.089539",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "b3bdccf7-77f9-414d-8cb2-41f50f8748d7",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:15:23.274789",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:54.327971",
+      "executed_at": "2026-04-25T09:19:54.771871",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:54.940140"
+    },
+    {
+      "request_id": "APR-46A5508DAB1B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "3dd472e7-0ddb-4cd6-8d93-d40e11af51d9",
+      "summary": "",
+      "metadata": {
+        "scenario": "rfi",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:16:01.090204",
+      "decided_at": "2026-04-25T09:16:04.824877",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "3dd472e7-0ddb-4cd6-8d93-d40e11af51d9",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "rfi",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:16:04.989229",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:55.165088",
+      "executed_at": "2026-04-25T09:19:55.585731",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:55.760529"
+    },
+    {
+      "request_id": "APR-3DD4BC491A01",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "37ba5a18-5871-4476-8b31-27c53c3f51ad",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:16:42.641434",
+      "decided_at": "2026-04-25T09:16:45.645142",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "37ba5a18-5871-4476-8b31-27c53c3f51ad",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:16:45.813718",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:55.962880",
+      "executed_at": "2026-04-25T09:19:56.388026",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:56.565001"
+    },
+    {
+      "request_id": "APR-0136A205F999",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "3ec70829-6580-4015-a907-d8954b92f7df",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.05,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:17:29.561121",
+      "decided_at": "2026-04-25T09:17:33.459703",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "3ec70829-6580-4015-a907-d8954b92f7df",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.05,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:17:33.645171",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:56.774238",
+      "executed_at": "2026-04-25T09:19:57.264281",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:57.439912"
+    },
+    {
+      "request_id": "APR-727FE5D6C612",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "97b5c741-83fb-45cb-b220-3ad1fec23f66",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:18:05.963357",
+      "decided_at": "2026-04-25T09:18:09.722929",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "97b5c741-83fb-45cb-b220-3ad1fec23f66",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:18:09.903581",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:57.670176",
+      "executed_at": "2026-04-25T09:19:58.081017",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:58.256600"
+    },
+    {
+      "request_id": "APR-2630699FB433",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "60df879b-a2e0-43d7-9100-2ef6526c423a",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:18:50.960695",
+      "decided_at": "2026-04-25T09:18:54.214971",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "60df879b-a2e0-43d7-9100-2ef6526c423a",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:18:54.458253",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:58.458583",
+      "executed_at": "2026-04-25T09:19:58.888094",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:59.053917"
+    },
+    {
+      "request_id": "APR-F3D28617202E",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "94b284b4-fc0f-46bd-8fde-e4c42491ba38",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:19:48.687479",
+      "decided_at": "2026-04-25T09:19:51.585940",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "94b284b4-fc0f-46bd-8fde-e4c42491ba38",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:19:51.754245",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:19:59.264497",
+      "executed_at": "2026-04-25T09:19:59.723883",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:19:59.891168"
+    },
+    {
+      "request_id": "APR-9C688AC6F28C",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "2594f4af-0a11-422e-a641-7d43be04567c",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:21:40.777614",
+      "decided_at": "2026-04-25T09:21:43.392651",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "2594f4af-0a11-422e-a641-7d43be04567c",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:21:43.574786",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:27:57.864387",
+      "executed_at": "2026-04-25T09:27:58.298455",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:27:58.475000"
+    },
+    {
+      "request_id": "APR-DD1493A8A175",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "b28fb9e5-511a-4b65-b6bd-c73d92982045",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:22:21.076597",
+      "decided_at": "2026-04-25T09:22:24.970346",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "b28fb9e5-511a-4b65-b6bd-c73d92982045",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:22:25.145083",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:27:58.682233",
+      "executed_at": "2026-04-25T09:27:59.119202",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:27:59.283652"
+    },
+    {
+      "request_id": "APR-BA514011A09B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "a5673351-0225-4b58-9dd5-97b3fd1cc559",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:22:57.178393",
+      "decided_at": "2026-04-25T09:23:00.390374",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "a5673351-0225-4b58-9dd5-97b3fd1cc559",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:23:00.578216",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:27:59.487507",
+      "executed_at": "2026-04-25T09:27:59.905312",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:00.096163"
+    },
+    {
+      "request_id": "APR-D53A03CBD111",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "ae00c9ae-1001-4748-902a-9dbf89008fd8",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:23:41.812963",
+      "decided_at": "2026-04-25T09:23:45.196189",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "ae00c9ae-1001-4748-902a-9dbf89008fd8",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:23:45.373717",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:00.302977",
+      "executed_at": "2026-04-25T09:28:00.735169",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:00.906273"
+    },
+    {
+      "request_id": "APR-33B01E865EB3",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "9992d934-a29c-4535-a42b-bf39c0657848",
+      "summary": "",
+      "metadata": {
+        "scenario": "rfi",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:24:18.627716",
+      "decided_at": "2026-04-25T09:24:22.476290",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "9992d934-a29c-4535-a42b-bf39c0657848",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "rfi",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:24:22.649709",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:01.108341",
+      "executed_at": "2026-04-25T09:28:01.517274",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:01.688861"
+    },
+    {
+      "request_id": "APR-0A7EF548071A",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "68fa78cc-83df-4e9a-9af2-9e68478978d7",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:25:00.977759",
+      "decided_at": "2026-04-25T09:25:03.838741",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "68fa78cc-83df-4e9a-9af2-9e68478978d7",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:25:04.036414",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:01.892025",
+      "executed_at": "2026-04-25T09:28:02.304298",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:02.476610"
+    },
+    {
+      "request_id": "APR-DB1DBC4062E6",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "ce062bcc-3ac5-4da8-b8ad-ee42059e37c8",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.05,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:25:44.704049",
+      "decided_at": "2026-04-25T09:25:47.840808",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "ce062bcc-3ac5-4da8-b8ad-ee42059e37c8",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.05,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:25:48.017755",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:02.693631",
+      "executed_at": "2026-04-25T09:28:03.125499",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:03.313029"
+    },
+    {
+      "request_id": "APR-7469A39DC7CA",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "655e5737-f238-4af5-899a-0b18f4f1f83b",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:26:27.891870",
+      "decided_at": "2026-04-25T09:26:31.111467",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "655e5737-f238-4af5-899a-0b18f4f1f83b",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:26:31.284946",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:03.511494",
+      "executed_at": "2026-04-25T09:28:03.942922",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:04.116012"
+    },
+    {
+      "request_id": "APR-C7C5AC12B410",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "3ea50515-9f7b-44a4-b317-e5c09119827f",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:27:11.302256",
+      "decided_at": "2026-04-25T09:27:14.730287",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "3ea50515-9f7b-44a4-b317-e5c09119827f",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:27:14.901267",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:04.329385",
+      "executed_at": "2026-04-25T09:28:04.749153",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:04.911624"
+    },
+    {
+      "request_id": "APR-947C63B63CAF",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "1a27fbb8-1707-44c0-a396-4aab8ac9741e",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:27:53.431523",
+      "decided_at": "2026-04-25T09:27:57.398487",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "1a27fbb8-1707-44c0-a396-4aab8ac9741e",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:27:57.587210",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:28:05.116849",
+      "executed_at": "2026-04-25T09:28:05.530037",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:28:05.703826"
+    },
+    {
+      "request_id": "APR-2BEA50618050",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "00f0da42-5907-48db-b4d1-b1e2555b2a6d",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:32:12.257243",
+      "decided_at": "2026-04-25T09:32:15.416266",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "00f0da42-5907-48db-b4d1-b1e2555b2a6d",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:32:15.633708",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:28.755937",
+      "executed_at": "2026-04-25T09:38:29.194585",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:29.364112"
+    },
+    {
+      "request_id": "APR-F5ED15125A71",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "473875dd-5cb5-4906-9e60-e8936829b89e",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:32:48.621511",
+      "decided_at": "2026-04-25T09:32:51.883674",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "473875dd-5cb5-4906-9e60-e8936829b89e",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:32:52.076268",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:29.572464",
+      "executed_at": "2026-04-25T09:38:29.994758",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:30.175218"
+    },
+    {
+      "request_id": "APR-F9CC07A745B1",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "c2492f88-3803-4720-8743-e38d6ef0ecec",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:33:23.476474",
+      "decided_at": "2026-04-25T09:33:26.794821",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "c2492f88-3803-4720-8743-e38d6ef0ecec",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:33:26.963886",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:30.379179",
+      "executed_at": "2026-04-25T09:38:30.795356",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:30.963187"
+    },
+    {
+      "request_id": "APR-00C16238920D",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "d8ea2072-d701-461c-8633-06e8870d3d4f",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:34:01.821535",
+      "decided_at": "2026-04-25T09:34:07.315751",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "d8ea2072-d701-461c-8633-06e8870d3d4f",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:34:07.481717",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:31.188816",
+      "executed_at": "2026-04-25T09:38:31.606428",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:31.781466"
+    },
+    {
+      "request_id": "APR-0094E165BB1D",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "c45d5fd9-89bf-4fcb-8f22-d34c9286e9a1",
+      "summary": "",
+      "metadata": {
+        "scenario": "rfi",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:34:42.731846",
+      "decided_at": "2026-04-25T09:34:45.901817",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "c45d5fd9-89bf-4fcb-8f22-d34c9286e9a1",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "rfi",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:34:46.078683",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:31.988487",
+      "executed_at": "2026-04-25T09:38:32.405289",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:32.583607"
+    },
+    {
+      "request_id": "APR-FDE6661843E7",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "b0bee625-ee73-4635-b7ef-72b1311b17b6",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:35:30.714628",
+      "decided_at": "2026-04-25T09:35:34.861820",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "b0bee625-ee73-4635-b7ef-72b1311b17b6",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:35:35.064746",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:32.789555",
+      "executed_at": "2026-04-25T09:38:33.224092",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:33.396950"
+    },
+    {
+      "request_id": "APR-4AF4518E982B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "d66c9881-c510-40c9-87bc-d76fa1cc0109",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.05,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:36:17.293827",
+      "decided_at": "2026-04-25T09:36:20.348961",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "d66c9881-c510-40c9-87bc-d76fa1cc0109",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.05,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:36:20.521141",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:33.608888",
+      "executed_at": "2026-04-25T09:38:34.018994",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:34.211387"
+    },
+    {
+      "request_id": "APR-11149AF1F7DC",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "fc5db20f-3948-482c-aaba-88ca5af71b60",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:36:57.031988",
+      "decided_at": "2026-04-25T09:37:00.803608",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "fc5db20f-3948-482c-aaba-88ca5af71b60",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:37:00.985931",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:34.413105",
+      "executed_at": "2026-04-25T09:38:34.821141",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:34.988661"
+    },
+    {
+      "request_id": "APR-B96482FB9EBF",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "45e0a580-4dce-427e-848a-35abdbf82bd9",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:37:41.183205",
+      "decided_at": "2026-04-25T09:37:44.190837",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "45e0a580-4dce-427e-848a-35abdbf82bd9",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:37:44.357267",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:35.199126",
+      "executed_at": "2026-04-25T09:38:35.600625",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:35.781890"
+    },
+    {
+      "request_id": "APR-9BA9B0EE172A",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "4a6d7e7f-a6c9-471a-905b-c22d90292e44",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:38:24.353082",
+      "decided_at": "2026-04-25T09:38:28.302209",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "4a6d7e7f-a6c9-471a-905b-c22d90292e44",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:38:28.473256",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:38:35.987156",
+      "executed_at": "2026-04-25T09:38:36.462295",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:38:36.637869"
+    },
+    {
+      "request_id": "APR-9B053186F657",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "9d8e6eef-b14a-47ef-9c44-7080b1d96307",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:40:41.853881",
+      "decided_at": "2026-04-25T09:40:44.990706",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "9d8e6eef-b14a-47ef-9c44-7080b1d96307",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:40:45.163317",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:33.999694",
+      "executed_at": "2026-04-25T09:47:34.439454",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:34.613966"
+    },
+    {
+      "request_id": "APR-61D16EF532B1",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "44766613-87b5-4ac1-b577-802c85855301",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:41:30.123997",
+      "decided_at": "2026-04-25T09:41:33.790163",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "44766613-87b5-4ac1-b577-802c85855301",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:41:33.965498",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:34.816800",
+      "executed_at": "2026-04-25T09:47:35.238812",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:35.414109"
+    },
+    {
+      "request_id": "APR-B2AD9E404104",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "6ad0ac8a-b78e-43c3-a910-934b37f22cc9",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:42:13.163939",
+      "decided_at": "2026-04-25T09:42:16.856150",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "6ad0ac8a-b78e-43c3-a910-934b37f22cc9",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:42:17.049167",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:35.641400",
+      "executed_at": "2026-04-25T09:47:36.089871",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:36.268556"
+    },
+    {
+      "request_id": "APR-39A86E6549D0",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "b3ee6782-3def-4934-b853-d232030ae39e",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:43:01.181750",
+      "decided_at": "2026-04-25T09:43:03.723603",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "b3ee6782-3def-4934-b853-d232030ae39e",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:43:03.911061",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:36.483960",
+      "executed_at": "2026-04-25T09:47:36.913567",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:37.120645"
+    },
+    {
+      "request_id": "APR-110A0E2FBB41",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "d1b2e1dc-5908-47db-b00a-63218610a793",
+      "summary": "",
+      "metadata": {
+        "scenario": "rfi",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:43:41.984299",
+      "decided_at": "2026-04-25T09:43:45.451848",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "d1b2e1dc-5908-47db-b00a-63218610a793",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "rfi",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:43:45.626174",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:37.329703",
+      "executed_at": "2026-04-25T09:47:37.771131",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:37.959556"
+    },
+    {
+      "request_id": "APR-EFA51193CA1A",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "8dd5b2c0-59c6-4300-8b57-be3838262087",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:44:22.658659",
+      "decided_at": "2026-04-25T09:44:25.790655",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "8dd5b2c0-59c6-4300-8b57-be3838262087",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:44:25.973851",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:38.172540",
+      "executed_at": "2026-04-25T09:47:38.616599",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:38.785732"
+    },
+    {
+      "request_id": "APR-1DD5B9D7728B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "253e78dc-8879-4832-8f02-bcc3a20cf79d",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.05,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:45:02.744535",
+      "decided_at": "2026-04-25T09:45:06.096944",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "253e78dc-8879-4832-8f02-bcc3a20cf79d",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.05,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:45:06.293601",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:38.994745",
+      "executed_at": "2026-04-25T09:47:39.409320",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:39.605172"
+    },
+    {
+      "request_id": "APR-613B77E7BBBC",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "1a9fc692-e68d-430b-98ed-2e13cd63ba4d",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:45:56.492407",
+      "decided_at": "2026-04-25T09:46:00.066868",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "1a9fc692-e68d-430b-98ed-2e13cd63ba4d",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:46:00.234924",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:39.809196",
+      "executed_at": "2026-04-25T09:47:40.225056",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:40.389573"
+    },
+    {
+      "request_id": "APR-58A199D133F5",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "bd4567a1-99a4-471f-ab95-273b3d21dc8b",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:46:47.198279",
+      "decided_at": "2026-04-25T09:46:50.351636",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "bd4567a1-99a4-471f-ab95-273b3d21dc8b",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:46:50.529150",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:40.602065",
+      "executed_at": "2026-04-25T09:47:41.004229",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:41.182521"
+    },
+    {
+      "request_id": "APR-C381203872AA",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "4c8ca548-4750-42af-884f-50059e18bfe3",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:47:29.918951",
+      "decided_at": "2026-04-25T09:47:33.537013",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "4c8ca548-4750-42af-884f-50059e18bfe3",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:47:33.705084",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:47:41.382028",
+      "executed_at": "2026-04-25T09:47:41.792838",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:47:41.961503"
+    },
+    {
+      "request_id": "APR-AAEB2B9E0FC7",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "c575e3bf-e156-4ff9-964f-b6e05c600475",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:49:10.031666",
+      "decided_at": "2026-04-25T09:49:13.957652",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "c575e3bf-e156-4ff9-964f-b6e05c600475",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:49:14.139979",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:00.832053",
+      "executed_at": "2026-04-25T09:54:01.277975",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:01.450670"
+    },
+    {
+      "request_id": "APR-0E58E9868118",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "3249174d-cf1b-40fd-bdca-b8a54e42ec3c",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:49:22.113104",
+      "decided_at": "2026-04-25T09:53:02.631571",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "3249174d-cf1b-40fd-bdca-b8a54e42ec3c",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:53:02.812252",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:04.921147",
+      "executed_at": "2026-04-25T09:54:05.356174",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:05.530159"
+    },
+    {
+      "request_id": "APR-7035B9494A1F",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "6f83ae60-9ffb-4843-9544-43633838bf06",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:49:59.924604",
+      "decided_at": "2026-04-25T09:50:03.348147",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "6f83ae60-9ffb-4843-9544-43633838bf06",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:50:03.521712",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:01.672658",
+      "executed_at": "2026-04-25T09:54:02.086884",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:02.263627"
+    },
+    {
+      "request_id": "APR-D5F20F6FE8BD",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "d11334cb-7e1a-481c-8c3e-6621407c32c2",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: low_confidence_with_failure_history"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:50:09.936330",
+      "decided_at": "2026-04-25T09:50:56.061587",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "d11334cb-7e1a-481c-8c3e-6621407c32c2",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: low_confidence_with_failure_history"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:50:56.233632",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:02.467728",
+      "executed_at": "2026-04-25T09:54:02.892797",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:03.059836"
+    },
+    {
+      "request_id": "APR-52B2B099DB2E",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "6d279d58-7bf0-42f5-bd4f-d41caa788429",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:51:36.683148",
+      "decided_at": "2026-04-25T09:51:39.894376",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "6d279d58-7bf0-42f5-bd4f-d41caa788429",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:51:40.119787",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:03.282669",
+      "executed_at": "2026-04-25T09:54:03.707983",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:03.882407"
+    },
+    {
+      "request_id": "APR-028E8D9FC4B4",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "ad413549-60f7-413a-bb09-af94d3f29bba",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.05,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:52:21.017831",
+      "decided_at": "2026-04-25T09:52:24.396156",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "ad413549-60f7-413a-bb09-af94d3f29bba",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.05,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:52:24.574748",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:04.107852",
+      "executed_at": "2026-04-25T09:54:04.525463",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:04.710438"
+    },
+    {
+      "request_id": "APR-BCA30E2C5F6B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "37700754-4dc2-4678-86e0-6bf0404ea65a",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:53:47.980728",
+      "decided_at": "2026-04-25T09:53:50.798681",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "37700754-4dc2-4678-86e0-6bf0404ea65a",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:53:50.987276",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T09:54:05.754289",
+      "executed_at": "2026-04-25T09:54:06.172152",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T09:54:06.352603"
+    },
+    {
+      "request_id": "APR-540A7961600E",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "1f1e4b68-221e-433b-822f-5de508810646",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:53:57.030180",
+      "decided_at": "2026-04-25T09:59:05.832932",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "1f1e4b68-221e-433b-822f-5de508810646",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:59:06.008809",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:06.206363",
+      "executed_at": "2026-04-25T10:04:06.659023",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:06.841244"
+    },
+    {
+      "request_id": "APR-962AA2CBF76B",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "a49d7b68-e488-4335-bc1e-e516577182e6",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.63,
+        "final_decision": "REJECT",
+        "why": "REJECT: Direct Approval"
+      },
+      "payload": {
+        "decision": "REJECT",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "9742f8c446afd54fa7d5888badf59713d09b943f2f170a85f32c3a2e961ad3e7",
+      "fingerprint": "0f59dc0189bd7badaa00557c7e5e635779a0dfd0274032996a671ebc98cad3e2",
+      "created_at": "2026-04-25T09:59:12.351406",
+      "decided_at": "2026-04-25T10:02:27.860776",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "REJECT",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "a49d7b68-e488-4335-bc1e-e516577182e6",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.63,
+          "final_decision": "REJECT",
+          "why": "REJECT: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T10:02:28.037868",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:09.508659",
+      "executed_at": "2026-04-25T10:04:09.923911",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:10.103323"
+    },
+    {
+      "request_id": "APR-98608362C639",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "93654df8-2f8b-4b8c-90eb-312409256380",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T09:59:50.972290",
+      "decided_at": "2026-04-25T09:59:54.364100",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "93654df8-2f8b-4b8c-90eb-312409256380",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T09:59:54.539738",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:07.058517",
+      "executed_at": "2026-04-25T10:04:07.487262",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:07.658882"
+    },
+    {
+      "request_id": "APR-DC218E778AB8",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "bdf3dbc2-dcb4-4fb4-b177-f8fb3b8eab17",
+      "summary": "",
+      "metadata": {
+        "scenario": "variation",
+        "risk_score": 0.24,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T10:00:00.639437",
+      "decided_at": "2026-04-25T10:00:52.992528",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "bdf3dbc2-dcb4-4fb4-b177-f8fb3b8eab17",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "variation",
+          "risk_score": 0.24,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T10:00:53.179183",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:07.877184",
+      "executed_at": "2026-04-25T10:04:08.303302",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:08.479799"
+    },
+    {
+      "request_id": "APR-584505E9F5CD",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "8925004a-eccf-434b-8dae-ff296023ee2c",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T10:01:44.503859",
+      "decided_at": "2026-04-25T10:01:47.493829",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "8925004a-eccf-434b-8dae-ff296023ee2c",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T10:01:47.668391",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:08.689633",
+      "executed_at": "2026-04-25T10:04:09.132062",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:09.301427"
+    },
+    {
+      "request_id": "APR-2E25A5F461E4",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "c3301c55-d9e4-42b9-aec5-2b8f7f2f02a9",
+      "summary": "",
+      "metadata": {
+        "scenario": "site_issue",
+        "risk_score": 0.0,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T10:03:07.388550",
+      "decided_at": "2026-04-25T10:03:10.961652",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "c3301c55-d9e4-42b9-aec5-2b8f7f2f02a9",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "site_issue",
+          "risk_score": 0.0,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T10:03:11.132025",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:10.311589",
+      "executed_at": "2026-04-25T10:04:10.747343",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:10.922288"
+    },
+    {
+      "request_id": "APR-47BD8C0268B3",
+      "status": "executed",
+      "execution_status": "completed",
+      "outcome": "success",
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "ecaba71c-935a-4578-9c30-ce7051ca6c1d",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T10:03:52.346282",
+      "decided_at": "2026-04-25T10:03:56.381451",
+      "decided_by": "gatekeeper",
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "ecaba71c-935a-4578-9c30-ce7051ca6c1d",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
+        }
+      },
+      "execution_queued_at": "2026-04-25T10:03:56.550714",
+      "execution_source": "approval_server",
+      "dry_run": false,
+      "execution_started_at": "2026-04-25T10:04:11.151404",
+      "executed_at": "2026-04-25T10:04:11.579123",
+      "outcome_error": null,
+      "outcome_finalized_at": "2026-04-25T10:04:11.760307"
+    },
+    {
+      "request_id": "APR-709112835AC2",
+      "status": "pending",
+      "execution_status": null,
+      "outcome": null,
+      "action": "operator_bundle",
+      "agent_id": "system",
+      "trace_id": "eb43ef23-0cab-473e-ac93-d166eb9c0b63",
+      "summary": "",
+      "metadata": {
+        "scenario": "delay",
+        "risk_score": 0.5,
+        "final_decision": "ESCALATE",
+        "why": "ESCALATE: Direct Approval"
+      },
+      "payload": {
+        "decision": "ESCALATE",
+        "confidence": 0.0,
+        "actions": [
+          {
+            "type": "audit_log",
+            "reason": "record escalation"
+          }
+        ]
+      },
+      "payload_hash": "8f572bd9df04cc768f78d54d256c004741f7e6f99e7d0b03d7bb7f8186fe6de1",
+      "fingerprint": "a3405cb1275768322bd4042278a81c8f0e577a22429ff979bdccbde9d564ee01",
+      "created_at": "2026-04-25T10:04:03.031435",
+      "decided_at": null,
+      "decided_by": null,
+      "decision_reason": "",
+      "original_action_intent": {
+        "action": "operator_bundle",
+        "agent_id": "system",
+        "parameters": {
+          "decision": "ESCALATE",
+          "confidence": 0.0,
+          "actions": [
+            {
+              "type": "audit_log",
+              "reason": "record escalation"
+            }
+          ]
+        },
+        "trace_id": "eb43ef23-0cab-473e-ac93-d166eb9c0b63",
+        "requires_approval": true,
+        "status": "pending",
+        "metadata": {
+          "scenario": "delay",
+          "risk_score": 0.5,
+          "final_decision": "ESCALATE",
+          "why": "ESCALATE: Direct Approval"
         }
       }
     }

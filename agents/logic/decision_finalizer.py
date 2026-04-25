@@ -175,6 +175,7 @@ def finalize_decision(
     memory_count: int,
     trace_id: str,
     scenario_type: str,
+    momentum_signal: Dict[str, Any],
     outcome_score: Optional[int] = None,
 ) -> FinalizedDecision:
     """
@@ -323,5 +324,6 @@ def finalize_decision(
         confidence_threshold=threshold,
         drift_pressure_index=dpi,
         why=why,
-        distrust_level=distrust_label
+        distrust_level=distrust_label,
+        momentum_signal=momentum_signal
     )

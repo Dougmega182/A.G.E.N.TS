@@ -57,6 +57,24 @@ _DISPATCH_TEMPLATES = {
     }
 }
 
+# Phase 2.4: Stakeholder Mapping
+_RECIPIENT_MAP = {
+    "ops_manager": "ops@agents.ai",
+    "foreman": "site.foreman@agents.ai",
+    "scheduler": "planning@agents.ai",
+    "executive": "dalepsaila@gmail.com", # Final Authority
+    "internal": None # No external dispatch
+}
+
+# Domain to Recipient Override
+_DOMAIN_ROUTING = {
+    "ENVIRONMENTAL": "internal",
+    "LOGISTICS": "scheduler",
+    "MATERIAL": "foreman",
+    "LABOUR": "foreman",
+    "FINANCIAL": "ops_manager"
+}
+
 # Phase 2.6: Conflict Resolution Patterns
 _ENTITIES = ["steel", "labour", "crew", "concrete", "power", "tiles", "paint", "crane", "equipment"]
 _DELAY_KEYWORDS = {"late", "delay", "postpone", "shortage", "behind", "miss", "fail"}

@@ -308,7 +308,7 @@ class Orchestrator:
             yield self._format_sse("ARIA:", decision_raw); yield f"data: [ARIA] END\n\n"
 
             decision_data = OutputContract()._parse_json_object(decision_raw)
-            finalized = finalize_decision(decision_data=decision_data or {}, decision_valid=decision_valid, decision_error_reason=decision_error_reason, risk_score=risk_score, governance_flags=governance_flags, critique_data=OutputContract()._parse_json_object(critique_raw), memory_count=memory["count"], trace_id=trace_id, scenario_type=scenario_type, outcome_score=0)
+            finalized = finalize_decision(decision_data=decision_data or {}, decision_valid=decision_valid, decision_error_reason=decision_error_reason, risk_score=risk_score, governance_flags=governance_flags, critique_data=OutputContract()._parse_json_object(critique_raw), memory_count=memory["count"], trace_id=trace_id, scenario_type=scenario_type, momentum_signal=_momentum_signal, outcome_score=0)
             decision_cache.cache_put(_cache_context, finalized, trace_id=trace_id, scenario_type=scenario_type)
 
         yield f"data: [JENNY] START\n\n"
