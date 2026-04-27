@@ -6,22 +6,14 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from .leases import MissionLease, generate_intent_hash
-from agents.contracts import validate_action_intent, ContractValidationResult
+from agents.contracts import validate_action_intent
 
-# Setup high-fidelity firewall audit log
+# Setup high-fidelity preflight logs
 LOG_ROOT = Path("Agent logs")
 LOG_ROOT.mkdir(parents=True, exist_ok=True)
 
-FIREWALL_LOG = LOG_ROOT / "firewall.jsonl"
 PREFLIGHT_STORE = Path(os.getenv("AGENTS_PREFLIGHT_STORE", str(LOG_ROOT / "preflight_approvals.json")))
 PREFLIGHT_DRAFT_STORE = Path(os.getenv("AGENTS_PREFLIGHT_DRAFT_STORE", str(LOG_ROOT / "preflight_drafts.json")))
-
-class FirewallViolation(Exception):
-    def __init__(self, reason: str, details: dict):
-        self.reason = reason
-        self.details = details
-        super().__init__(reason)
 
 class PreflightApprovalError(Exception):
     def __init__(self, reason: str, details: Optional[dict] = None):
@@ -195,6 +187,14 @@ class PreflightApprovalEngine:
                 return request
         return None
 
+    def get_request_by_trace_id(self, trace_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve the latest approval request associated with a specific trace ID."""
+        store = self._load_store()
+        for request in reversed(store["requests"]):
+            if request.get("trace_id") == trace_id:
+                return request
+        return None
+
     def decide_request(
         self,
         request_id: str,
@@ -321,16 +321,7 @@ class PreflightApprovalEngine:
                 "target": action
             })
 
-        # If no approved or rejected request, or if pending, create a new request if needed
-        # Note: create_or_get_request now expects an action_intent dict.
-        # We need to construct a basic action_intent to create a new approval request.
-        # This will be handled by the operator calling this method, passing a full action_intent.
-        # For now, let's assume the calling context provides a complete action_intent.
-        # This part of `ensure_approved` needs to be carefully integrated with how operators call it.
-
-        # For the purpose of ensure_approved, if no approved or rejected intent is found,
-        # it means the action requires approval.
-        # We need to create a placeholder action_intent to request approval for.
+        # Placeholder action intent for auto-generated requests
         placeholder_action_intent = {
             "action": action,
             "agent_id": agent_id,
@@ -438,7 +429,6 @@ class PreflightApprovalEngine:
         
         base_type = scenario_type.replace("construction_", "")
         
-        # Build the executor task payload based on the decision
         tool_calls = []
         if decision_text == "APPROVE":
             tool_calls.append({
@@ -467,7 +457,6 @@ class PreflightApprovalEngine:
                 }
             })
 
-        # Add any file_write calls from the implementation plan
         impl_plan = parameters.get("implementation_plan", {})
         if "tool_calls" in impl_plan and isinstance(impl_plan["tool_calls"], list):
             for call in impl_plan["tool_calls"]:
@@ -570,6 +559,9 @@ def list_requests(status: Optional[str] = None, limit: int = 100) -> List[Dict[s
 def get_request(request_id: str) -> Optional[Dict[str, Any]]:
     return DEFAULT_ENGINE.get_request(request_id)
 
+def get_request_by_trace_id(trace_id: str) -> Optional[Dict[str, Any]]:
+    return DEFAULT_ENGINE.get_request_by_trace_id(trace_id)
+
 def decide_request(request_id: str, decision: str, decided_by: str = "gatekeeper", reason: str = "", trace_id: str = "N/A") -> Dict[str, Any]:
     return DEFAULT_ENGINE.decide_request(request_id, decision, decided_by, reason, trace_id)
 
@@ -590,84 +582,3 @@ def get_draft(draft_id: str) -> Optional[Dict[str, Any]]:
 
 def update_draft_summary(draft_id: str, summary: str) -> Dict[str, Any]:
     return DEFAULT_ENGINE.update_draft_summary(draft_id, summary)
-
-
-class ToolFirewall:
-    """
-    The Elite Enforcement Layer.
-    Intercepts every tool request and validates it against the Mission Lease,
-    Domain boundaries, and Payload integrity.
-    """
-
-    @staticmethod
-    def audit_event(agent_id: str, tool: str, target: str, result: str, 
-                    reason: Optional[str] = None, lease_id: Optional[str] = None):
-        """Permanent record of every firewall decision."""
-        entry = {
-            "timestamp": datetime.utcnow().isoformat(),
-            "agent_id": agent_id,
-            "lease_id": lease_id,
-            "tool": tool,
-            "target": target,
-            "result": result,
-            "reason": reason
-        }
-        with open(FIREWALL_LOG, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry) + "\n")
-
-    @classmethod
-    def validate(cls, agent_id: str, agent_domain: str, lease: Optional[MissionLease], 
-                 tool: str, target: str, action: str, payload: bytes = b"", 
-                 current_execution_id: str = ""):
-        """
-        The Zero-Trust Checkpoint.
-        """
-        details = {
-            "agent_id": agent_id,
-            "tool": tool,
-            "target": target,
-            "lease_id": lease.lease_id if lease else None
-        }
-
-        # 1. Lease Presence Check
-        if not lease:
-            cls.audit_event(agent_id, tool, target, "DENIED", "no_active_lease")
-            raise FirewallViolation("Access Denied: No active mission lease.", details)
-
-        # 2. Execution Context Check
-        if lease.execution_id != current_execution_id:
-            cls.audit_event(agent_id, tool, target, "DENIED", "execution_id_mismatch", lease.lease_id)
-            raise FirewallViolation("Access Denied: Lease is not valid for this execution context.", details)
-
-        # 3. Domain Isolation Check (G9)
-        # Executive agents (v2.0 CEO) have cross-domain coordination authority
-        if agent_domain.lower() != "executive" and agent_domain.lower() != lease.domain.lower():
-            cls.audit_event(agent_id, tool, target, "DENIED", "domain_violation", lease.lease_id)
-            raise FirewallViolation(f"Access Denied: Agent domain {agent_domain} does not match mission domain {lease.domain}.", details)
-
-        # 4. Path Canonicalization (Anti-Traversal/Symlink)
-        # Note: For shell tools, 'target' might not be a path, so we handle accordingly
-        real_target = target
-        if tool.startswith("file_") or tool == "list_files":
-            try:
-                # Resolve the path to its physical location
-                path_obj = Path(target).resolve()
-                real_target = str(path_obj)
-                
-                # Enforce workspace boundary (cannot escape PROJECT root)
-                root = Path(".").resolve()
-                if not str(path_obj).startswith(str(root)):
-                    cls.audit_event(agent_id, tool, target, "DENIED", "path_escape", lease.lease_id)
-                    raise FirewallViolation("Access Denied: Target path escapes workspace boundary.", details)
-            except Exception as e:
-                cls.audit_event(agent_id, tool, target, "DENIED", f"path_resolution_error: {str(e)}", lease.lease_id)
-                raise FirewallViolation(f"Access Denied: Could not resolve target path: {str(e)}", details)
-
-        # 5. Intent Locking & Content Fingerprinting
-        if not lease.check_permission(tool, target, action, payload):
-            cls.audit_event(agent_id, tool, target, "DENIED", "intent_hash_mismatch", lease.lease_id)
-            raise FirewallViolation("Access Denied: Intent hash mismatch. Target or Payload not approved in proposal.", details)
-
-        # 6. Audit Success
-        cls.audit_event(agent_id, tool, target, "ALLOWED", lease_id=lease.lease_id)
-        return True

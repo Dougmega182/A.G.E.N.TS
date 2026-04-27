@@ -13,74 +13,23 @@ logger = logging.getLogger("agents.task_queue")
 # Shared state
 PENDING_LOGISTICS_TASKS: List[Dict[str, Any]] = []
 
-# Phase 2.6: Concept Normalization (Clustering)
-_CONCEPT_MAP = {
-    "rain": "WEATHER_BLOCK",
-    "wet": "WEATHER_BLOCK",
-    "storm": "WEATHER_BLOCK",
-    "weather": "WEATHER_BLOCK",
-    "steel": "MATERIAL_FLOW",
-    "concrete": "MATERIAL_FLOW",
-    "crew": "LABOUR_FLOW",
-    "labour": "LABOUR_FLOW",
-}
-
 def _get_concept(issue_key: str) -> str:
     """Map abstracted tokens to higher-level operational concepts."""
     tokens = set(issue_key.split())
-    for token, concept in _CONCEPT_MAP.items():
-        if token in tokens:
-            return concept
+    # Concepts now have suffixes (e.g. WEATHER_BLOCK_rain)
+    known_prefixes = ["WEATHER_BLOCK", "MATERIAL_FLOW", "LABOUR_FLOW", "RFI_CLASH", "BURIED_SERVICE", "EQUIPMENT_FAULT"]
+    
+    for token in tokens:
+        for prefix in known_prefixes:
+            if token.startswith(prefix):
+                return prefix
     return "GENERAL_ISSUE"
-
-def enqueue_logistics_task(task: Dict[str, Any]):
-    """
-    Adds a new logistics intent to the pending queue. 
-    Enforces Phase 2.6 Conflict Resolver and Recency Rule.
-    """
-    global PENDING_LOGISTICS_TASKS
-    
-    entity = task.get("entity", "general")
-    domain = task["dispatch"].get("domain", "LOGISTICS")
-    polarity = task.get("polarity", "NEUTRAL")
-    concept = _get_concept(task.get("signal_trace", ""))
-    
-    task["concept"] = concept
-    task["lifecycle"] = "ACTIVE"
-
-    # 1. Conflict Resolver (Entity + Domain match)
-    # Rule: Fresh update supersedes older conflicting or duplicate active intents.
-    existing_active = [
-        t for t in PENDING_LOGISTICS_TASKS 
-        if t.get("entity") == entity 
-        and t["dispatch"].get("domain") == domain
-        and t.get("lifecycle") == "ACTIVE"
-    ]
-
-    for existing in existing_active:
-        # Check for polarity opposition
-        if existing.get("polarity") != polarity:
-            task["status"] = "CONFLICT_RESOLVED_NEWER"
-            logger.info(f"Conflict detected for {entity}. Newer {polarity} signal supersedes {existing.get('polarity')}.")
-        
-        # Recency Rule: Mark the old intent as SUPERSEDED
-        existing["lifecycle"] = "SUPERSEDED"
-
-    task_id = f"TSK-{uuid.uuid4().hex[:8].upper()}"
-    task["id"] = task_id
-    
-    # Standardize status if not already set by resolver
-    if "status" not in task:
-        task["status"] = "READY"
-        
-    task["created_at"] = datetime.utcnow().isoformat()
-    PENDING_LOGISTICS_TASKS.append(task)
-    return task_id
 
 def list_logistics_tasks():
     """Returns pending tasks sorted by Impact Score (DESC) then Recency (DESC)."""
-    # Filter for only ACTIVE or pending tasks for the primary display
-    active_tasks = [t for t in PENDING_LOGISTICS_TASKS if t.get("lifecycle") in {None, "ACTIVE", "pending"}]
+    # Return all tasks for auditing, but the UI should filter ACTIVE if it wants.
+    # For now, let's return ACTIVE tasks only for the primary operator flow.
+    active_tasks = [t for t in PENDING_LOGISTICS_TASKS if t.get("lifecycle") == "ACTIVE"]
     
     return sorted(
         active_tasks,
@@ -90,6 +39,60 @@ def list_logistics_tasks():
         ),
         reverse=True
     )
+
+def enqueue_logistics_task(task: Dict[str, Any]):
+    """
+    Adds a new logistics intent to the pending queue. 
+    Enforces Phase 2.6 Conflict Resolver and Recency Rule.
+    """
+    global PENDING_LOGISTICS_TASKS
+    
+    entity = task.get("entity", "GENERAL_SITE")
+    domain = task["dispatch"].get("domain", "LOGISTICS")
+    role = task["dispatch"].get("to", "unknown")
+    polarity = task.get("polarity", "NEUTRAL")
+    concept = _get_concept(task.get("signal_trace", ""))
+    
+    task["concept"] = concept
+    task["lifecycle"] = "ACTIVE"
+
+    # 1. Conflict Resolver (Entity + Role match)
+    # Rule: Fresh update supersedes older conflicting intents for the same role/entity.
+    # CRITICAL: For concepts like WEATHER_BLOCK, we allow coexistence UNLESS:
+    #   - The signal_trace is an exact duplicate
+    #   - The polarity is a direct conflict (DELAY vs RESOLVED)
+    existing_active = [
+        t for t in PENDING_LOGISTICS_TASKS 
+        if t.get("entity") == entity 
+        and t["dispatch"].get("to") == role
+        and t.get("lifecycle") == "ACTIVE"
+    ]
+
+    for existing in existing_active:
+        # Check if the signal trace is effectively the same (duplicate)
+        is_exact_duplicate = existing.get("signal_trace") == task.get("signal_trace")
+        
+        # Phase 3.1: Only trigger conflict if polarities are directly OPPOSITE (DELAY vs RESOLVED)
+        e_pol = existing.get("polarity", "NEUTRAL")
+        is_polarity_conflict = (
+            (e_pol == "DELAY" and polarity == "RESOLVED") or 
+            (e_pol == "RESOLVED" and polarity == "DELAY")
+        )
+        
+        if is_exact_duplicate or is_polarity_conflict:
+            if is_polarity_conflict:
+                task["status"] = "CONFLICT_RESOLVED_NEWER"
+            existing["lifecycle"] = "SUPERSEDED"
+
+    task_id = f"TSK-{uuid.uuid4().hex[:8].upper()}"
+    task["id"] = task_id
+    
+    if "status" not in task:
+        task["status"] = "READY"
+        
+    task["created_at"] = datetime.utcnow().isoformat()
+    PENDING_LOGISTICS_TASKS.append(task)
+    return task_id
 
 def get_logistics_task(task_id: str):
     """Retrieves a specific task."""
@@ -102,7 +105,3 @@ def resolve_logistics_task(task_id: str, lifecycle_state: str = "RESOLVED"):
     if task:
         task["lifecycle"] = lifecycle_state
         task["resolved_at"] = datetime.utcnow().isoformat()
-    
-    # For Phase 2.3 parity, we actually remove from active list if it's no longer pending
-    # but we'll keep the record in memory for now. 
-    # To keep list_logistics_tasks clean, we use the filter above.

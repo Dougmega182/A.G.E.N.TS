@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from agents.state import AGENTSState
 from agents.core import GovernanceEngine
-from agents.firewall import ToolFirewall, FirewallViolation
+from agents.gatekeeper import ToolFirewall, FirewallViolation
 from agents.tools import safe_file_write, safe_file_read, safe_list_files, safe_shell_command
 from agents.llm import LLMProvider
 

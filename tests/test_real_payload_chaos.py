@@ -20,7 +20,7 @@ class TestRealPayloadChaos(unittest.TestCase):
         if Path(temp_db).exists(): os.remove(temp_db)
         
         # We don't need real Auth for chaos testing since validation happens before side-effects
-        from agents.firewall import PreflightApprovalEngine
+        from agents.preflight_validator import PreflightApprovalEngine
         from unittest.mock import MagicMock, patch
         
         from agents.logic import memory_db

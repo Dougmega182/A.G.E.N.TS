@@ -229,6 +229,110 @@
             .row { grid-template-columns: 1fr; }
             .feed { min-height: 360px; max-height: none; }
         }
+        /* Phase 2.7 Dispatch Card Styles */
+        .dispatch-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .dispatch-card.high-risk {
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            background: rgba(231, 76, 60, 0.05);
+        }
+
+        .dispatch-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recipient-tier {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--border);
+        }
+
+        .recipient-tier.primary { border-left-color: var(--accent); }
+        .recipient-tier.secondary { border-left-color: var(--warning); }
+        
+        .recipient-tier.highlight-external {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px dashed rgba(231, 76, 60, 0.3);
+        }
+
+        .message-preview {
+            background: #000;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #a0aec0;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .dedup-alert {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin: 12px;
+            color: #93c5fd;
+        }
+
+        .btn-approve.confirming {
+            background: var(--danger) !important;
+            animation: pulse 2s infinite;
+        }
+
+        /* Bulk Action Bar */
+        .bulk-action-bar {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .group-header {
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
     </style>
 </head>
 <body>
@@ -443,51 +547,160 @@ async function loadLogisticsTasks() {
             return;
         }
 
+        // Group tasks by concept
+        const groups = {};
         data.items.forEach(task => {
-            const div = document.createElement('div');
-            div.className = 'card';
-            const severityColor = task.momentum_signal.severity === 'CRITICAL' ? '#e74c3c' : 
-                                 task.momentum_signal.severity === 'HIGH' ? '#e67e22' : '#2ecc71';
+            const c = task.concept || 'GENERAL_ISSUE';
+            if (!groups[c]) groups[c] = [];
+            groups[c].push(task);
+        });
 
-            div.innerHTML = `
-                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>${task.strategy} - ${task.dispatch.domain}</span>
-                    <span class="chip" style="background: ${severityColor}; color: white; font-size: 0.75em; padding: 2px 6px;">${task.momentum_signal.severity}</span>
-                </div>
-                <div class="meta">Target: ${task.dispatch.to} | Impact: <strong>${task.momentum_signal.impact_score}</strong></div>
-                <div class="meta">Priority: ${task.execution_priority} | Conf: ${task.meta.confidence}</div>
+        Object.keys(groups).forEach(concept => {
+            const tasks = groups[concept];
+            const isGroup = tasks.length > 1;
+
+            if (isGroup) {
+                // Check safety rules for bulk approve
+                const firstRecipients = JSON.stringify(tasks[0].dispatch_plan.recipients);
+                const allSameRecipients = tasks.every(t => JSON.stringify(t.dispatch_plan.recipients) === firstRecipients);
+                const allSameRisk = tasks.every(t => t.status === tasks[0].status);
+                const canBulkApprove = allSameRecipients && allSameRisk;
+
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'group-header';
+                groupHeader.innerHTML = `
+                    <span class="group-badge">${tasks.length} Related Intents</span>
+                    <span style="font-weight:bold;">${concept}</span>
+                `;
+                list.appendChild(groupHeader);
+
+                if (canBulkApprove) {
+                    const bar = document.createElement('div');
+                    bar.className = 'bulk-action-bar';
+                    const isHighRisk = tasks[0].status === 'HIGH-RISK';
+                    
+                    bar.innerHTML = `
+                        <div style="font-size:0.9em; color:#93c5fd;">Safe Bulk Action Available (Identical Stakeholders)</div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-approve" id="bulk-approve-${concept}"
+                                    style="background: #27ae60; color: white; padding: 6px 12px;" 
+                                    onclick="handleBulkDecision('${concept}', '${tasks.map(t => t.id).join(',')}', 'approve', ${isHighRisk})">
+                                ${isHighRisk ? '⚠️ Bulk Approve High-Risk' : 'Approve All'}
+                            </button>
+                            <button class="btn-reject" style="background: transparent; border: 1px solid var(--border); color: var(--text-subtle);" 
+                                    onclick="handleBulkDecision('${concept}', '${tasks.map(t => t.id).join(',')}', 'reject', false)">Reject All</button>
+                        </div>
+                    `;
+                    list.appendChild(bar);
+                }
+            }
+
+            tasks.forEach((task, idx) => {
+                const div = document.createElement('div');
+                const isHighRisk = task.status === 'HIGH-RISK';
                 
-                <details style="margin-top: 8px;">
-                    <summary class="subtle" style="cursor: pointer; font-size: 0.9em;">🔍 View Signal Trace</summary>
-                    <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.85em; margin-top: 4px; border-left: 2px solid var(--accent);">
-                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Abstracted Key:</strong> ${task.signal_trace}</div>
-                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Velocity Impact:</strong> ${task.momentum_signal.velocity_impact}</div>
-                        <div style="margin-bottom: 4px;"><strong style="color: var(--accent);">Trend:</strong> ${task.momentum_signal.trend_direction}</div>
-                        <div><strong style="color: var(--accent);">Justification:</strong> ${task.momentum_signal.justification}</div>
-                    </div>
-                </details>
+                // Compression: only show 1 full card if grouped, others collapsed
+                const isCollapsed = isGroup && idx > 0;
+                
+                div.className = `dispatch-card ${isHighRisk ? 'high-risk' : ''}`;
+                if (isCollapsed) div.style.opacity = '0.7';
 
-                <div class="run-row" style="margin-top: 12px; gap: 8px;">
-                    <button class="approve-btn" style="background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1;" onclick="decideTask('${task.id}', 'approve')">Approve Dispatch</button>
-                    <button class="reject-btn" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1;" onclick="decideTask('${task.id}', 'reject')">Reject</button>
-                </div>
-            `;
-            list.appendChild(div);
+                const severityColor = task.momentum_signal.severity === 'CRITICAL' ? '#e74c3c' : 
+                                     task.momentum_signal.severity === 'HIGH' ? '#e67e22' : '#2ecc71';
+                
+                const statusColor = isHighRisk ? '#f1c40f' :
+                                   task.status === 'BLOCKED_MISSING_RECIPIENT' ? '#e74c3c' :
+                                   task.status === 'READY' ? '#2ecc71' : '#95a5a6';
+
+                const recipientsHtml = task.dispatch_plan.recipients.map(r => `
+                    <div class="recipient-tier ${r.tier.toLowerCase()} ${r.role !== 'internal' ? 'highlight-external' : ''}">
+                        <div class="tier-label">${r.tier} ${r.tier === 'Primary' ? '(Action Required)' : '(Awareness Only)'}</div>
+                        <div class="recipient-item">
+                            <span class="recipient-role">${r.role}</span>
+                            <span class="recipient-email">${r.email || 'INTERNAL_ONLY'}</span>
+                        </div>
+                        ${task.gmail_draft ? `
+                        <details>
+                            <summary class="subtle" style="cursor: pointer; font-size: 0.85em; color: var(--accent); margin-top: 4px;">Show Draft Preview</summary>
+                            <div class="message-preview">Subject: ${task.gmail_draft.subject}\n\n${task.gmail_draft.body}</div>
+                        </details>` : ''}
+                    </div>
+                `).join('');
+
+                const dedupHtml = task.status === 'CONFLICT_RESOLVED_NEWER' ? `
+                    <div class="dedup-alert">
+                        <span>🔄</span>
+                        <div><strong>Supersedes:</strong> Previous signals detected</div>
+                    </div>` : '';
+
+                div.innerHTML = `
+                    <div class="dispatch-header">
+                        <div>
+                            <div class="header-title" style="font-weight:bold;">${task.strategy} - ${task.dispatch.domain}</div>
+                            <div class="header-summary" style="font-size:0.85em; color:var(--text-subtle);">${task.signal_trace}</div>
+                        </div>
+                        <div style="display: flex; gap: 4px; align-items: flex-end; flex-direction: column;">
+                             ${isHighRisk ? '<span class="chip" style="background:#f1c40f; color:#000; font-size:0.7em;">⚠️ HIGH RISK</span>' : ''}
+                            <span class="chip" style="background: ${severityColor}; color: white; font-size: 0.7em;">${task.momentum_signal.severity}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 16px; ${isCollapsed ? 'display:none;' : ''}" id="task-body-${task.id}">
+                        ${dedupHtml}
+                        <div style="margin-bottom: 16px;">
+                            <div class="section-title" style="font-size:0.75em; text-transform:uppercase; color:var(--text-subtle); margin-bottom:8px;">Recipients & Dispatch Plan</div>
+                            ${recipientsHtml}
+                        </div>
+                        <div class="meta" style="font-size:0.85em; border-top: 1px solid rgba(255,255,255,0.05); padding-top:12px;">
+                            Impact: <strong>${task.momentum_signal.impact_score}</strong> | Priority: ${task.execution_priority}
+                        </div>
+                    </div>
+
+                    ${isCollapsed ? `
+                        <div style="padding: 8px 16px; font-size:0.85em; cursor:pointer; color:var(--accent);" onclick="document.getElementById('task-body-${task.id}').style.display='block'; this.style.display='none'">
+                            + Expand Similar Intent
+                        </div>
+                    ` : ''}
+
+                    <div class="card-actions" style="padding: 12px 16px; background: rgba(0,0,0,0.1); display:flex; gap:8px;">
+                        <button class="btn-approve" id="btn-approve-${task.id}" 
+                                style="background: #27ae60; color: white; flex: 2; padding: 10px; border-radius:4px; border:none; font-weight:bold; cursor:pointer;" 
+                                onclick="handleDispatchDecision('${task.id}', 'approve', ${isHighRisk})">
+                            ${isHighRisk ? '⚠️ Confirm High-Risk' : 'Approve & Send'}
+                        </button>
+                        <button class="btn-reject" style="background: transparent; border: 1px solid var(--border); color: var(--text-subtle); flex: 1; padding: 10px; border-radius:4px; cursor:pointer;" 
+                                onclick="handleDispatchDecision('${task.id}', 'reject')">Reject</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         });
     } catch (err) {
         logTerm(`[ERROR] Failed to load logistics tasks: ${err.message}`);
     }
 }
 
-async function decideTask(taskId, decision) {
+async function handleBulkDecision(concept, taskIdsCsv, decision, isHighRisk) {
+    const btn = document.getElementById(`bulk-approve-${concept}`);
+    if (decision === 'approve' && isHighRisk && btn && !btn.classList.contains('confirming')) {
+        btn.classList.add('confirming');
+        btn.innerText = '✅ Click Again to Bulk Authorize';
+        return;
+    }
+
     try {
-        const res = await fetch(`/logistics/tasks/${taskId}/decide?decision=${decision}`, { method: 'POST' });
+        const ids = taskIdsCsv.split(',');
+        const res = await fetch('/logistics/tasks/bulk-decide', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_ids: ids, decision: decision })
+        });
         if (res.ok) {
-            logTerm(`[SYSTEM] Task ${taskId} ${decision}d.`);
+            logTerm(`[SYSTEM] Bulk ${decision} for ${concept} successful.`);
             loadLogisticsTasks();
         }
     } catch (err) {
-        logTerm(`[ERROR] Task decision failed: ${err.message}`);
+        logTerm(`[ERROR] Bulk decision failed: ${err.message}`);
     }
 }
 

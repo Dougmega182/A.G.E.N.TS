@@ -10,7 +10,7 @@ import os
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.contracts import validate_action_intent, ContractValidationResult
-from agents.firewall import PreflightApprovalEngine, PreflightApprovalError
+from agents.preflight_validator import PreflightApprovalEngine, PreflightApprovalError
 from agents.google_operator import GmailOperator, CalendarOperator
 from agents.orchestrator import Orchestrator
 from agents.logic import event_bus

@@ -20,7 +20,7 @@ temp_db = tempfile.mktemp(suffix=".db")
 os.environ["AGENTS_DB_PATH"] = temp_db
 
 from agents.logic.external_gateway import ExternalGateway, GatewayError
-from agents import firewall
+from agents import preflight_validator as firewall
 
 class TestExecutionIdempotency(unittest.TestCase):
 

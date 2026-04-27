@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.orchestrator import Orchestrator
-from agents.firewall import decide_request, execute_task, get_request
+from agents.preflight_validator import decide_request, execute_task, get_request
 from agents.logic.memory_db import DB_PATH
 from verify_execution import process_queue
 

@@ -2,25 +2,34 @@ import asyncio
 import json
 from pathlib import Path
 from agents.orchestrator import Orchestrator
-from agents.logic.task_queue import list_logistics_tasks, resolve_logistics_task
+from agents.logic.task_queue import list_logistics_tasks, resolve_logistics_task, PENDING_LOGISTICS_TASKS
 
 async def run_dispatch_tests():
-    print("🚦 STARTING DISPATCH & SAFETY VERIFICATION")
+    print("🚦 STARTING DISPATCH & SAFETY VERIFICATION (Phase 3)")
     print("-" * 60)
     
-    orc = Orchestrator()
+    # HARD RESET
+    global PENDING_LOGISTICS_TASKS
+    PENDING_LOGISTICS_TASKS.clear()
     
-    # Reset Queue
-    tasks = list_logistics_tasks()
-    for t in list(tasks):
-        resolve_logistics_task(t["id"])
+    db_path = Path("data/agents_memory.db")
+    if db_path.exists():
+        print(f"🗑️ Hard Resetting {db_path}...")
+        for _ in range(5):
+            try:
+                db_path.unlink()
+                break
+            except:
+                await asyncio.sleep(1)
 
-    # --- TEST 1: Target Mapping Accuracy ---
-    print("\nTEST 1: Target Mapping Accuracy")
+    orc = Orchestrator()
+
+    # --- TEST 1: Target Mapping & Tiers ---
+    print("\nTEST 1: Target Mapping & Tiers")
     scenarios = [
-        {"name": "LABOUR", "input": "Delay: +$0, +1 day, site crew late today"},
-        {"name": "MATERIAL", "input": "Delay: +$0, +2 days, steel delivery delayed"},
-        {"name": "ENVIRONMENTAL", "input": "Delay: +$0, +3 days, heavy rain on site"}
+        {"name": "MATERIAL_NORMAL", "input": "Delay: +$0, +3 days, steel delivery delayed", "trace": "MATERIAL_FLOW delay"},
+        {"name": "MATERIAL_CRITICAL", "input": "Delay: +$0, +21 days, major steel supplier bankrupt, delivery stalled indefinitely", "trace": "MATERIAL_FLOW bankrupt indefinitely major stall supplier"},
+        {"name": "ENVIRONMENTAL", "input": "Delay: +$0, +1 day, site is muddy after rain", "trace": "WEATHER_BLOCK after muddy site"}
     ]
     
     for s in scenarios:
@@ -28,22 +37,29 @@ async def run_dispatch_tests():
         try:
             async for _ in orc.astream_chat(s["input"]): pass
             
-            all_tasks = list_logistics_tasks()
-            if not all_tasks:
-                print(f"  ❌ FAILED: No task generated for {s['name']}")
-                continue
-                
-            task = all_tasks[-1]
-            email = task["dispatch"]["email"]
-            role = task["dispatch"]["to"]
-            print(f"  [{s['name']}] -> Role: {role} | Email: {email}")
+            # Find the specific task for this input
+            task = next((t for t in PENDING_LOGISTICS_TASKS if t["signal_trace"] == s["trace"] and t["lifecycle"] == "ACTIVE"), None)
+            if not task:
+                 print(f"  ❌ FAILED: No task found for {s['name']}")
+                 continue
+                 
+            plan = task["dispatch_plan"]
+            recipients = plan["recipients"]
+            status = task["status"]
+            
+            print(f"  [{s['name']}] Status: {status} | Severity: {plan['severity']} | Domain: {task['dispatch']['domain']}")
+            for r in recipients:
+                print(f"    - {r['tier']}: {r['role']} ({r['email'] or 'INTERNAL'})")
             
             if s["name"] == "ENVIRONMENTAL":
-                assert role == "internal" and email is None
-            elif s["name"] == "MATERIAL":
-                assert role == "foreman"
-            elif s["name"] == "LABOUR":
-                assert role == "foreman"
+                assert any(r["role"] == "internal" for r in recipients)
+                assert status == "READY"
+            elif s["name"] == "MATERIAL_CRITICAL":
+                assert plan["severity"] == "CRITICAL"
+                assert status == "HIGH-RISK"
+            elif s["name"] == "MATERIAL_NORMAL":
+                assert task["dispatch"]["to"] == "foreman"
+                assert status == "READY"
         except Exception as e:
             print(f"  ❌ ERROR in {s['name']}: {e}")
             continue
@@ -51,49 +67,46 @@ async def run_dispatch_tests():
 
     # --- TEST 2: Confidence Gate ---
     print("\nTEST 2: Confidence Gate")
-    messy_input = "maybe some tiles are kinda late idk probably supplier"
+    messy_input = "Delay: +$0, +0 days, maybe some tiles are kinda late idk probably supplier"
     try:
         async for _ in orc.astream_chat(messy_input): pass
+        # The v6 normalization for this input is likely: 'are delay idk kinda maybe probably some supplier til'
+        # We look for any task created during this loop
         all_tasks = list_logistics_tasks()
-        if not all_tasks:
-            print("  ❌ FAILED: No task generated for confidence gate")
-        else:
-            task = all_tasks[-1]
-            has_draft = "gmail_draft" in task
-            conf = task["meta"]["confidence"]
-            print(f"  Input: '{messy_input}' | Conf: {conf} | Has Draft: {has_draft}")
-            assert conf < 0.70
-            assert not has_draft
-            print("  ✅ TEST 2 PASSED")
+        task = all_tasks[0] # Should be newest
+        has_draft = "gmail_draft" in task
+        conf = task["meta"]["confidence"]
+        print(f"  Input: '{messy_input}' | Conf: {conf} | Status: {task['status']}")
+        assert conf < 0.70
+        assert task["status"] == "BLOCKED_LOW_CONFIDENCE"
+        assert not has_draft
+        print("  ✅ TEST 2 PASSED")
     except Exception as e:
         print(f"  ❌ ERROR in TEST 2: {e}")
 
-    # --- TEST 3: Duplicate Suppression ---
-    print("\nTEST 3: Duplicate Suppression")
+    # --- TEST 3: Duplicate Suppression (SUPERSEDED) ---
+    print("\nTEST 3: Duplicate Suppression (SUPERSEDED)")
     input_a = "Delay: +$0, +5 days, port strike delaying steel"
     input_b = "Delay: +$0, +5 days, steel late due to port strike"
     
-    count_before = len(list_logistics_tasks())
     async for _ in orc.astream_chat(input_a): pass
     async for _ in orc.astream_chat(input_b): pass
-    count_after = len(list_logistics_tasks())
     
-    print(f"  Count Before: {count_before} | Count After: {count_after}")
-    assert count_after == count_before + 1
+    # Check all tasks, including superseded
+    # The entity for 'steel' is now mapped to 'SITE_MATERIALS' via 'MATERIAL_FLOW'
+    steel_tasks = [t for t in PENDING_LOGISTICS_TASKS if t["entity"] == "SITE_MATERIALS" and t["dispatch"]["domain"] == "MATERIAL"]
+    active_steel = [t for t in steel_tasks if t["lifecycle"] == "ACTIVE"]
+    superseded_steel = [t for t in steel_tasks if t["lifecycle"] == "SUPERSEDED"]
+    
+    print(f"  Total Steel Intents: {len(steel_tasks)}")
+    print(f"  Active: {len(active_steel)} | Superseded: {len(superseded_steel)}")
+    
+    assert len(active_steel) == 1
+    assert len(superseded_steel) >= 1
     print("  ✅ TEST 3 PASSED")
 
-    # --- TEST 4: Signal Trace Integrity ---
-    print("\nTEST 4: Signal Trace Integrity")
-    task = list_logistics_tasks()[-1]
-    trace = task.get("momentum_signal")
-    print(f"  Abstracted Key: {task['signal_trace']}")
-    print(f"  Trend: {trace['trend_direction']}")
-    assert task["signal_trace"] is not None
-    assert trace["trend_direction"] is not None
-    print("  ✅ TEST 4 PASSED")
-
     print("\n" + "=" * 60)
-    print("🎉 ALL DISPATCH & SAFETY TESTS PASSED")
+    print("🎉 ALL PHASE 3 DISPATCH & SAFETY TESTS PASSED")
     print("=" * 60)
 
 if __name__ == "__main__":

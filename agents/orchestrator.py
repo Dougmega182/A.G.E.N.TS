@@ -194,19 +194,21 @@ class Orchestrator:
         print(f"[ORCHESTRATOR] Routing message: {message[:50]}...")
         msg_lower = message.lower()
         trace_id = generate_trace_id()
-        if msg_lower.startswith("variation:"):
+        
+        # Phase 5.4: Expanded Triggers for construction loop
+        if msg_lower.startswith("variation:") or "variation" in msg_lower:
             async for chunk in self._run_generic_construction_loop("variation", message, trace_id):
                 yield chunk
             return
-        elif msg_lower.startswith("rfi:"):
+        elif msg_lower.startswith("rfi:") or "rfi" in msg_lower:
             async for chunk in self._run_generic_construction_loop("rfi", message, trace_id):
                 yield chunk
             return
-        elif msg_lower.startswith("delay:"):
+        elif msg_lower.startswith("delay:") or any(k in msg_lower for k in ["delay", "late", "behind"]):
             async for chunk in self._run_generic_construction_loop("delay", message, trace_id):
                 yield chunk
             return
-        elif msg_lower.startswith("defect:") or msg_lower.startswith("site issue:"):
+        elif any(k in msg_lower for k in ["defect:", "site issue:", "shortage", "short", "broken", "fail"]):
             async for chunk in self._run_generic_construction_loop("site_issue", message, trace_id):
                 yield chunk
             return
@@ -271,7 +273,7 @@ class Orchestrator:
         from .logic.momentum_engine import analyze_momentum
         from .logic.eli_adapter_v1 import transform_signal_to_actions
         from .logic.task_queue import enqueue_logistics_task
-        _momentum_signal = analyze_momentum(_cache_context)
+        _momentum_signal = analyze_momentum(_cache_context, trace_id=trace_id)
         _logistics_actions = transform_signal_to_actions(_momentum_signal)
         _logistics_actions["trace_id"] = trace_id
         _logistics_actions["momentum_signal"] = _momentum_signal
@@ -308,7 +310,7 @@ class Orchestrator:
             yield self._format_sse("ARIA:", decision_raw); yield f"data: [ARIA] END\n\n"
 
             decision_data = OutputContract()._parse_json_object(decision_raw)
-            finalized = finalize_decision(decision_data=decision_data or {}, decision_valid=decision_valid, decision_error_reason=decision_error_reason, risk_score=risk_score, governance_flags=governance_flags, critique_data=OutputContract()._parse_json_object(critique_raw), memory_count=memory["count"], trace_id=trace_id, scenario_type=scenario_type, momentum_signal=_momentum_signal, outcome_score=0)
+            finalized = finalize_decision(decision_data=decision_data or {}, decision_valid=decision_valid, decision_error_reason=decision_error_reason, risk_score=risk_score, governance_flags=governance_flags, critique_data=OutputContract()._parse_json_object(critique_raw), memory_count=memory["count"], trace_id=trace_id, scenario_type=scenario_type, momentum_signal=_momentum_signal, outcome_score=0, user_input=user_input)
             decision_cache.cache_put(_cache_context, finalized, trace_id=trace_id, scenario_type=scenario_type)
 
         yield f"data: [JENNY] START\n\n"
@@ -318,12 +320,40 @@ class Orchestrator:
         email_data = OutputContract()._parse_json_object(email_raw) or {}
         actions_array = [{"type": "gmail_draft", "priority": "high", "payload": email_data}] if finalized.final_decision == "APPROVE" else [{"type": "audit_log", "reason": "record escalation"}]
         
+        # === CONFIDENCE & SATURATION GATE ENFORCEMENT ===
+        if finalized.gate_action == "SUPPRESS":
+            reason = "saturation_limit" if finalized.saturation_status != "PASS" else "low_confidence"
+            yield f"data: [SYSTEM] 🛑 ACTION SUPPRESSED: {reason.replace('_', ' ').title()} ({finalized.confidence_adjusted:.2f}). No proposal created.\n\n"
+            event_bus.emit_event("ACTION_SUPPRESSED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={"reason": reason, "confidence": finalized.confidence_adjusted, "saturation_status": finalized.saturation_status})
+            return
+
+        requires_approval = True
+        shadow_mode_active = os.getenv("AGENTS_SHADOW_MODE", "true").lower() == "true"
+        
+        if finalized.gate_action == "AUTO_ACT":
+            if shadow_mode_active:
+                yield f"data: [SYSTEM] 🛡️ SHADOW MODE: Decision is AUTO-ELIGIBLE ({finalized.confidence_adjusted:.2f}) but human approval forced for validation.\n\n"
+                requires_approval = True
+            else:
+                yield f"data: [SYSTEM] ⚡ AUTO-ACT: High confidence decision ({finalized.confidence_adjusted:.2f}). Proceeding to preflight.\n\n"
+                requires_approval = False
+
         action_intent = {
             "action": "operator_bundle", "agent_id": "system", "parameters": {"decision": finalized.final_decision, "confidence": finalized.confidence_score, "actions": actions_array},
-            "trace_id": trace_id, "requires_approval": True, "status": "pending",
-            "metadata": {"scenario": scenario_type, "risk_score": risk_score, "final_decision": finalized.final_decision, "why": finalized.why}
+            "trace_id": trace_id, "requires_approval": requires_approval, "status": "pending",
+            "metadata": {
+                "scenario": scenario_type, 
+                "risk_score": risk_score, 
+                "final_decision": finalized.final_decision, 
+                "final_justification": finalized.final_justification,
+                "governance_flags": finalized.governance_flags,
+                "owen_briefing": owen_briefing,
+                "why": finalized.why,
+                "shadow_mode": shadow_mode_active,
+                "auto_eligible": finalized.gate_action == "AUTO_ACT"
+            }
         }
-        from . import firewall
+        from . import preflight_validator as firewall
         request = firewall.create_or_get_request(action_intent=action_intent)
         yield f"data: [SYSTEM] PROPOSAL CREATED. Request ID: {request['request_id']}\n\n"
 

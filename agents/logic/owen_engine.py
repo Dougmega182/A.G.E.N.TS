@@ -3,203 +3,118 @@ Owen Intelligence Engine — The System's Intelligence Synthesizer.
 
 This engine implements Owen's new role as the "Memory Intelligence Layer".
 It is RESPONSIBLE for:
-    1. Extracting patterns and lessons from the decisions database.
-    2. Generating deterministic Intelligence Briefings for the decision loop.
-    3. Updating the owen_insights table with new findings.
-
-It is NOT PERMITTED to:
-    1. Make decisions or influence governance.
-    2. Affect the reasoning of other agents beyond providing context data.
-    3. Use LLM calls in the real-time execution path (deterministic only).
+    1. Extracting patterns and lessons from the decision log
+    2. Maintaining "Strategic Dos and Don'ts"
+    3. Detecting Drift Pressure (performance degradation over time)
+    4. Providing pre-briefings to agents based on history
 """
 
 from __future__ import annotations
 
-import json
 import logging
+import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional
-
-from .memory_contract import (
-    MemoryDomain,
-    OWEN_BOUNDARY,
-    check_owen_boundary,
-    assert_write_permission,
-    assert_read_permission,
-)
+from typing import Dict, Any, List, Optional
+from .event_bus import emit_event
 from .memory_db import (
-    read_decisions,
-    read_owen_insights,
-    write_owen_insight,
+    write_owen_insight, 
+    read_owen_insights, 
     validate_owen_insight,
+    read_decisions
 )
-from .memory_cache import cache_owen_briefing, get_owen_briefing
-from . import event_bus
+from .memory_contract import MemoryDomain, assert_read_permission, assert_write_permission
 
 logger = logging.getLogger("agents.owen_engine")
 
 COMPONENT_NAME = "owen_engine"
 
-
 class OwenEngine:
-    """Owen's intelligence core for pattern extraction and synthesis."""
-
-    def __init__(self):
-        if not check_owen_boundary("initialize"):
-             raise RuntimeError("Owen boundary check failed during initialization")
+    """
+    Owen (AGT-014) — Memory & Consequence Engine.
+    Operates strictly in the 'Learn' step of the A.G.E.N.T.S control loop.
+    """
 
     def generate_intelligence_briefing(self, scenario_type: str, query_text: Optional[str] = None) -> Dict[str, Any]:
         """
-        Produce a deterministic intelligence briefing for the current scenario.
-        Checks cache first, then synthesizes from SQLite.
+        Synthesize history into an advisory briefing for the current scenario.
+        Used by the 'Decide' step to inform agents of past outcomes.
         """
         assert_read_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
-
-        # 0. Performance: Keyword Gate (Short-circuit for low-priority scenarios)
-        # Check both scenario_type AND the actual query_text for core keywords.
-        CORE_KEYWORDS = {"delay", "rain", "weather", "cost", "budget", "safety", "concrete", "pour", "incident", "issue"}
-        combined_text = f"{scenario_type} {query_text or ''}".lower()
-        if not any(kw in combined_text for kw in CORE_KEYWORDS):
-             return {
-                 "scenario": scenario_type,
-                 "metrics": {"sample_size": 0, "failure_rate": 0, "override_rate": 0, "net_outcome_score": 0},
-                 "lessons_learned": [],
-                 "patterns": {"dos": [], "donts": [], "risk_patterns": []},
-                 "timestamp": datetime.utcnow().isoformat(),
-                 "note": "Short-circuited (no core keywords detected)"
-             }
-
-        # 1. Check Cache
-        cached = get_owen_briefing(COMPONENT_NAME, scenario_type)
-        if cached:
-            return cached
-
-        # 2. Synthesize from DB
-        recent_decisions = read_decisions(COMPONENT_NAME, scenario=scenario_type, limit=20)
-        existing_insights = read_owen_insights(COMPONENT_NAME, scenario_type=scenario_type, limit=5)
-
-        # 3. Calculate Deterministic Metrics
-        total_recent = len(recent_decisions)
-        overrides = [d for d in recent_decisions if d.get("was_overridden")]
-        failures = [d for d in recent_decisions if d.get("outcome_score", 0) < 0]
         
-        failure_rate = (len(failures) / total_recent) if total_recent > 0 else 0
-        override_rate = (len(overrides) / total_recent) if total_recent > 0 else 0
-
-        # 4. Filter Insights by Type
-        lessons = [i["summary"] for i in existing_insights if i["insight_type"] == "lesson_learned"]
-        dos = [i["summary"] for i in existing_insights if i["insight_type"] == "do"]
-        donts = [i["summary"] for i in existing_insights if i["insight_type"] == "dont_do"]
-        risk_patterns = [i["summary"] for i in existing_insights if i["insight_type"] == "risk_pattern"]
-
-        # 5. Build Briefing
+        # 1. Fetch historical decisions
+        decisions = read_decisions(COMPONENT_NAME, scenario=scenario_type, limit=50)
+        
+        # 2. Fetch curated insights
+        insights = read_owen_insights(COMPONENT_NAME, scenario_type=scenario_type, limit=20)
+        
+        # 3. Aggregate metrics
+        success_count = sum(1 for d in decisions if d.get("outcome_score", 0) > 0)
+        total_count = len(decisions)
+        
+        # 4. Extract "Lessons Learned" from metadata of historical decisions
+        lessons = []
+        for d in decisions:
+            # Decisions table has a 'justification' field we can parse
+            if d.get("was_overridden"):
+                lessons.append(f"PREVIOUS OVERRIDE: {d.get('primary_override_reason')} (Impact: {d.get('cost')})")
+        
+        # 5. Build structured briefing
         briefing = {
             "scenario": scenario_type,
             "metrics": {
-                "sample_size": total_recent,
-                "failure_rate": round(failure_rate, 2),
-                "override_rate": round(override_rate, 2),
-                "net_outcome_score": sum(d.get("outcome_score", 0) for d in recent_decisions)
+                "sample_size": total_count,
+                "net_outcome_score": success_count,
             },
-            "lessons_learned": lessons,
+            "lessons_learned": lessons[:5],
             "patterns": {
-                "dos": dos,
-                "donts": donts,
-                "risk_patterns": risk_patterns
-            },
-            "timestamp": datetime.utcnow().isoformat()
+                "dos": [i["summary"] for i in insights if i["insight_type"] == "do"],
+                "donts": [i["summary"] for i in insights if i["insight_type"] == "dont_do"]
+            }
         }
-
-        # 6. Cache and Return
-        cache_owen_briefing(COMPONENT_NAME, scenario_type, briefing)
+        
         return briefing
 
-    def extract_lesson_from_decision(self, finalized_decision: Dict[str, Any]) -> Optional[int]:
+    def extract_lesson_from_decision(self, event_id: str, trace_id: str, scenario: str, metadata: Dict[str, Any]) -> Optional[int]:
         """
-        Post-decision turn: Analyze the finalized decision and store any obvious lessons.
-        Always deterministic logic.
+        Closed-loop learning: Convert a finalized decision into a strategic insight.
         """
         assert_write_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
-
-        meta = finalized_decision.get("metadata", {})
-        scenario = finalized_decision.get("scenario", "unknown")
-        trace_id = finalized_decision.get("trace_id", "unknown")
         
-        was_overridden = meta.get("was_overridden", False)
-        outcome_score = meta.get("outcome_score", 0)
-        final_decision = meta.get("final_decision", "UNKNOWN")
-        
-        insight_id = None
-
-        # Logic A: If it was overridden, it's a "Don't Do" or a "Lesson"
-        if was_overridden:
-            original = meta.get("original_decision", "UNKNOWN")
-            reason = meta.get("primary_override_reason", "policy_alignment")
+        # We only care about overriden decisions for "don'ts"
+        if metadata.get("was_overridden"):
+            reason = metadata.get("primary_override_reason", "unknown_override")
+            summary = f"AVOID: {reason} in {scenario}. Aria attempted {metadata.get('original_decision')} but system forced ESCALATE."
             
-            summary = f"Variation intent '{original}' was overridden by orchestrator ({reason}). Ensure alignment with governance before proposing."
-            
-            det_key = self._generate_deterministic_key(summary, scenario)
-            insight_id = write_owen_insight(
-                COMPONENT_NAME,
-                insight_type="dont_do",
-                summary=summary,
-                scenario_type=scenario,
-                evidence=[trace_id],
-                confidence=0.8,
-                deterministic_key=det_key
-            )
-            
-            # Emit event to support Cold Start Rebuild
-            event_bus.emit_event(
-                "OWEN_INSIGHT_EXTRACTED", 
-                trace_id, 
-                agent_id=COMPONENT_NAME, 
-                scenario=scenario, 
-                metadata={
-                    "insight_id": insight_id,
-                    "insight_type": "dont_do",
-                    "summary": summary,
-                    "evidence": [trace_id],
-                    "confidence": 0.8,
-                    "deterministic_key": det_key
-                }
-            )
-            logger.info(f"[OWEN] Extracted negative lesson from trace {trace_id}")
-
-        # Logic B: If it succeeded (stable), it's a "Do" or "Pattern"
-        elif outcome_score > 0 and final_decision != "ESCALATE":
-            summary = f"Strategy '{final_decision}' resulted in a stable outcome for {scenario}."
-            # Check if similar insight exists to validate instead of creating new
-            existing = read_owen_insights(COMPONENT_NAME, scenario_type=scenario, insight_type="do", limit=1)
-            
-            if not existing:
+            # Check for duplicates before writing
+            existing = read_owen_insights(COMPONENT_NAME, scenario_type=scenario, limit=100)
+            if not any(i["summary"] == summary for i in existing):
                 insight_id = write_owen_insight(
                     COMPONENT_NAME,
-                    insight_type="do",
+                    insight_type="dont_do",
                     summary=summary,
                     scenario_type=scenario,
-                    evidence=[trace_id],
-                    confidence=0.6
+                    evidence=[event_id],
+                    confidence=0.8,
+                    deterministic_key=self._generate_deterministic_key(summary, scenario)
                 )
-                # Emit event to support Cold Start Rebuild
-                event_bus.emit_event(
+                
+                emit_event(
                     "OWEN_INSIGHT_EXTRACTED", 
                     trace_id, 
                     agent_id=COMPONENT_NAME, 
                     scenario=scenario, 
                     metadata={
                         "insight_id": insight_id,
-                        "insight_type": "do",
+                        "insight_type": "dont_do",
                         "summary": summary,
-                        "evidence": [trace_id],
-                        "confidence": 0.6
+                        "evidence": [event_id],
+                        "confidence": 0.8,
+                        "deterministic_key": self._generate_deterministic_key(summary, scenario)
                     }
                 )
-                logger.info(f"[OWEN] Extracted positive pattern from trace {trace_id}")
-
             else:
                 validate_owen_insight(COMPONENT_NAME, existing[0]["id"])
-                event_bus.emit_event(
+                emit_event(
                     "OWEN_INSIGHT_VALIDATED", 
                     trace_id, 
                     agent_id=COMPONENT_NAME, 
@@ -210,22 +125,128 @@ class OwenEngine:
                     }
                 )
 
-        return insight_id
+        return None
+
+    def register_pending_evaluation(self, trace_id: str, action_type: str):
+        """Mark a trace as awaiting evaluation to prevent premature learning."""
+        emit_event(
+            "EVALUATION_PENDING", 
+            trace_id, 
+            agent_id=COMPONENT_NAME,
+            metadata={"action_type": action_type, "evaluation_integrity": "PENDING"}
+        )
 
     def extract_lesson_from_feedback(self, trace_id: str, outcome: str, notes: str) -> Optional[int]:
         """
         Ingest real-world execution feedback to close the loop on intelligence.
+        DISTINGUISHES: SUCCESS, FAILURE, OVERRIDDEN, CONFLICT_RESOLVED, and MISSING.
+        Tracks Shadow Accuracy for AUTO-ACT validation.
         """
         assert_write_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
         
+        outcome_norm = str(outcome).strip().upper()
+        
+        # 1. Handle Broken Feedback Loop (DEFERRED LEARNING)
+        if outcome_norm in {"MISSING", "TIMEOUT", "EVALUATION_TIMEOUT", "EVALUATION_MISSING"}:
+            emit_event(
+                "LEARNING_DEFERRED", 
+                trace_id, 
+                agent_id=COMPONENT_NAME,
+                metadata={
+                    "reason": f"Feedback {outcome_norm}", 
+                    "evaluation_integrity": "DEGRADED",
+                    "status": "AWAITING_RETRY_OR_ESCALATION"
+                }
+            )
+            return None # Owen waits. No assumptions.
+
+        # 2. Shadow Accuracy Tracking
+        from ..preflight_validator import get_request_by_trace_id
+        request = get_request_by_trace_id(trace_id)
+        is_shadow = False
+        if request:
+            is_shadow = request.get("metadata", {}).get("shadow_mode", False)
+            auto_eligible = request.get("metadata", {}).get("auto_eligible", False)
+            
+            if is_shadow and auto_eligible:
+                # Operator AGREES if they approved the shadow proposal
+                agreed = (outcome_norm == "SUCCESS")
+                
+                # Fetch recent shadow events to calculate rolling accuracy
+                from .event_bus import EVENTS_LOG_PATH
+                total_shadow = 1
+                agrees = 1 if agreed else 0
+                
+                if EVENTS_LOG_PATH.exists():
+                    try:
+                        with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+                            # Read last 500 lines to find recent shadow feedback
+                            lines = f.readlines()[-500:]
+                            for line in lines:
+                                try:
+                                    evt = json.loads(line)
+                                    if evt.get("type") == "OWEN_INSIGHT_EXTRACTED":
+                                        meta = evt.get("metadata", {})
+                                        if meta.get("is_shadow"):
+                                            total_shadow += 1
+                                            if meta.get("outcome") == "SUCCESS":
+                                                agrees += 1
+                                except Exception: continue
+                    except Exception as e:
+                        logger.error(f"Error calculating shadow accuracy: {e}")
+
+                accuracy = (agrees / total_shadow) if total_shadow > 0 else 0
+                emit_event(
+                    "SHADOW_ACCURACY_METRIC",
+                    trace_id,
+                    agent_id=COMPONENT_NAME,
+                    metadata={
+                        "accuracy": round(accuracy, 3),
+                        "total_samples": total_shadow,
+                        "agrees": agrees,
+                        "current_agreement": agreed
+                    }
+                )
+                # Attach to metadata for extraction event below
+                is_shadow_meta = {"is_shadow": True, "shadow_accuracy": accuracy}
+            else:
+                is_shadow_meta = {"is_shadow": False}
+        else:
+            is_shadow_meta = {}
+
         scenario = "post_execution"  # Generally applies cross-scenario or mapped via trace
         summary = f"Real-world feedback ({outcome.upper()}): {notes}"
-        insight_type = "lesson_learned"
         
-        if outcome == "failure":
+        # Outcome classification logic
+        override_class = None
+        if outcome_norm == "FAILURE":
             insight_type = "dont_do"
-        elif outcome == "success":
+            confidence = 0.9
+        elif outcome_norm == "SUCCESS":
             insight_type = "do"
+            confidence = 0.9
+        elif outcome_norm == "OVERRIDDEN":
+            # 3. Override Reason Classification (Heuristic)
+            notes_lower = notes.lower()
+            if any(k in notes_lower for k in ["wording", "typo", "format", "tone", "grammar", "style"]):
+                override_class = "cosmetic"
+                confidence = 0.3 # Low penalty for style tweaks
+            elif any(k in notes_lower for k in ["dangerous", "wrong recipient", "critical", "security", "financial"]):
+                override_class = "critical_error"
+                confidence = 0.9 # Heavy penalty for safety/security misses
+            else:
+                override_class = "context_miss"
+                confidence = 0.6 # Medium penalty for general understanding failure
+            
+            insight_type = "lesson_learned"
+            summary = f"HUMAN OVERRIDE ({override_class.upper()}): {notes} (System was technically correct but operator preferred a different path)"
+        elif outcome_norm == "CONFLICT_RESOLVED":
+            insight_type = "lesson_learned"
+            confidence = 0.8
+            summary = f"CONFLICT RESOLVED: {notes} (Strategic dominance established in decision loop)"
+        else:
+            insight_type = "lesson_learned"
+            confidence = 0.5
             
         det_key = self._generate_deterministic_key(summary, trace_id)
         
@@ -235,25 +256,22 @@ class OwenEngine:
             summary=summary,
             scenario_type=scenario,
             evidence=[trace_id],
-            confidence=0.9, # Human feedback has very high confidence
+            confidence=confidence,
             deterministic_key=det_key
         )
         
-        event_bus.emit_event(
+        emit_event(
             "OWEN_INSIGHT_EXTRACTED", 
             trace_id, 
-            agent_id=COMPONENT_NAME, 
-            scenario=scenario, 
+            agent_id=COMPONENT_NAME,
             metadata={
-                "insight_id": insight_id,
-                "insight_type": insight_type,
-                "summary": summary,
-                "evidence": [trace_id],
-                "confidence": 0.9,
-                "deterministic_key": det_key
+                "insight_id": insight_id, 
+                "outcome": outcome_norm,
+                "evaluation_integrity": "VERIFIED",
+                "override_class": override_class,
+                **is_shadow_meta
             }
         )
-        logger.info(f"[OWEN] Ingested human operational feedback from trace {trace_id}")
         return insight_id
 
     def ingest_execution_failure(self, failure_data: Dict[str, Any]):

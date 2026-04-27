@@ -15,7 +15,7 @@ os.environ["AGENTS_PREFLIGHT_STORE"] = tempfile.mktemp(suffix=".json")
 sys.path.append(str(Path(__file__).parent.parent))
 
 from agents.logic.external_gateway import ExternalGateway, GatewayError
-from agents.firewall import PreflightApprovalEngine
+from agents.preflight_validator import PreflightApprovalEngine
 
 
 def _make_intent(trace_id):

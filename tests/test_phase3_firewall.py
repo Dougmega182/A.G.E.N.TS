@@ -1,7 +1,7 @@
 import pytest
 from datetime import datetime
 from agents.leases import MissionLease, generate_intent_hash
-from agents.firewall import ToolFirewall, FirewallViolation
+from agents.gatekeeper import ToolFirewall, FirewallViolation
 
 def test_firewall_unauthorized_target():
     """

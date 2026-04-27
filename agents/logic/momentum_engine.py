@@ -10,23 +10,15 @@ from ..contracts import validate_momentum_signal
 
 logger = logging.getLogger("agents.momentum_engine")
 
-# Initial Domain Mapping
+# Initial Domain Mapping (Ordered by priority: Specific -> General)
+_DOMAIN_ORDER = ["MATERIAL", "LABOUR", "ENVIRONMENTAL", "FINANCIAL", "LOGISTICS"]
 _DOMAIN_MAP = {
-    "rain": "ENVIRONMENTAL",
-    "slab_pour": "LOGISTICS",
-    "steel": "MATERIAL",
-    "material": "MATERIAL",
-    "supply": "MATERIAL",
-    "rfi": "LOGISTICS",
-    "mismatch": "MATERIAL",
-    "power": "LOGISTICS",
-    "power_outage": "LOGISTICS",
-    "equipment": "MATERIAL",
-    "site": "ENVIRONMENTAL",
-    "crew": "LABOUR",
-    "labour": "LABOUR",
-    "subbie": "LABOUR",
-    "contractor": "LABOUR",
+    "MATERIAL_FLOW": "MATERIAL",
+    "LABOUR_FLOW": "LABOUR",
+    "WEATHER_BLOCK": "ENVIRONMENTAL",
+    "BURIED_SERVICE": "ENVIRONMENTAL",
+    "EQUIPMENT_FAULT": "MATERIAL",
+    "RFI_CLASH": "LOGISTICS",
 }
 
 # Phase 2-Ext: Domain Weights
@@ -60,19 +52,27 @@ def _map_severity(score: float) -> str:
     if score >= 0.30: return "MEDIUM"
     return "LOW"
 
-def analyze_momentum(context: CacheContext) -> Dict[str, Any]:
+def analyze_momentum(context: CacheContext, trace_id: str = "N/A") -> Dict[str, Any]:
     """
     Map an abstracted CacheContext to a structured Momentum Signal.
-    Now includes Phase 2-Ext Impact Scoring.
+    Now includes Phase 2-Ext Impact Scoring and Trace ID propagation.
     """
     issue = context.normalized_issue
     tokens = set(issue.split())
     
-    # 1. Determine Domain
+    # 1. Determine Domain (Priority Based)
     domain = "LOGISTICS" # Default
-    for token, mapped_domain in _DOMAIN_MAP.items():
-        if token in tokens:
-            domain = mapped_domain
+    found_domains = set()
+    
+    # Prefix-based matching for concepts (v8)
+    for t in tokens:
+        for prefix, d in _DOMAIN_MAP.items():
+            if t.startswith(prefix):
+                found_domains.add(d)
+                
+    for d in _DOMAIN_ORDER:
+        if d in found_domains:
+            domain = d
             break
             
     # 2. Heuristic Velocity Impact
@@ -80,7 +80,7 @@ def analyze_momentum(context: CacheContext) -> Dict[str, Any]:
     if context.delay_bucket == "7-14d":
         velocity_impact = -0.4
     elif context.delay_bucket == "14d+":
-        velocity_impact = -0.7
+        velocity_impact = -0.8 # INCREASED for Phase 3
     if context.cost_bucket == "25-50k":
         velocity_impact -= 0.1
     elif context.cost_bucket == "50k+":
@@ -106,12 +106,16 @@ def analyze_momentum(context: CacheContext) -> Dict[str, Any]:
 
     # 6. Confidence Heuristic
     confidence = 0.6 # Base confidence
-    if any(token in tokens for token in _DOMAIN_MAP):
+    # Only boost if we have a specific physical/technical token match
+    specific_tokens = tokens - {"delay", "late", "behind", "shortage", "short", "fail"}
+    if any(token in specific_tokens for token in _DOMAIN_MAP):
         confidence = 0.85
+    
     if trend == "STALL" and not context.governance_flag_set:
         confidence -= 0.1 
 
     signal = {
+        "trace_id": trace_id,
         "abstracted_issue": issue,
         "velocity_impact": round(velocity_impact, 2),
         "confidence": round(confidence, 2),

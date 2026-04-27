@@ -5,7 +5,7 @@ import traceback
 from pathlib import Path
 from agents.orchestrator import Orchestrator
 from agents.logic.decision_cache import _normalize_issue
-from agents import firewall
+from agents import preflight_validator as firewall
 
 SCENARIOS = [
     "Delay: +$0, +3 days, Rain delay to slab pour",

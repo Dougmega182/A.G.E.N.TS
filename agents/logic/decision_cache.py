@@ -21,7 +21,7 @@ logger = logging.getLogger("agents.decision_cache")
 # Contract constants
 # -------------------------------------------------------------------
 
-POLICY_VERSION = "v7"
+POLICY_VERSION = "v8"
 
 DEFAULT_TTL_SECONDS = 48 * 3600
 MIN_CACHE_CONFIDENCE = 0.7
@@ -52,12 +52,12 @@ _DURATION_PATTERN = re.compile(r"\b\d+\s*(?:days?|hours?|hrs?|weeks?|wks?)\b", r
 _QUANTITY_PATTERN = re.compile(r"\b\d+\s*(?:pallets?|units?|loads?|trucks?)\b", re.IGNORECASE)
 
 _CONCEPT_MAP = {
-    "rain": "WEATHER_BLOCK", "raining": "WEATHER_BLOCK", "wet": "WEATHER_BLOCK", "storm": "WEATHER_BLOCK", "moisture": "WEATHER_BLOCK", "weather": "WEATHER_BLOCK",
-    "steel": "MATERIAL_FLOW", "concrete": "MATERIAL_FLOW", "tiles": "MATERIAL_FLOW", "paint": "MATERIAL_FLOW", "supply": "MATERIAL_FLOW", "delivery": "MATERIAL_FLOW",
-    "crew": "LABOUR_FLOW", "labour": "LABOUR_FLOW", "worker": "LABOUR_FLOW", "subbie": "LABOUR_FLOW", "contractor": "LABOUR_FLOW",
-    "buried": "BURIED_SERVICE", "unidentified": "BURIED_SERVICE", "service": "BURIED_SERVICE", "trenching": "BURIED_SERVICE",
-    "crane": "EQUIPMENT_FAULT", "generator": "EQUIPMENT_FAULT", "grind": "EQUIPMENT_FAULT", "noise": "EQUIPMENT_FAULT", "fault": "EQUIPMENT_FAULT", "broken": "EQUIPMENT_FAULT",
-    "drawing": "DRAWING_REF", "dwg": "DRAWING_REF", "mismatch": "RFI_CLASH", "gap": "RFI_CLASH", "conflict": "RFI_CLASH", "vs": "RFI_CLASH",
+    "rain": "WEATHER_BLOCK_rain", "raining": "WEATHER_BLOCK_rain", "wet": "WEATHER_BLOCK_wet", "storm": "WEATHER_BLOCK_storm", "moisture": "WEATHER_BLOCK_moisture", "weather": "WEATHER_BLOCK_general",
+    "steel": "MATERIAL_FLOW_steel", "concrete": "MATERIAL_FLOW_concrete", "tiles": "MATERIAL_FLOW_tiles", "paint": "MATERIAL_FLOW_paint", "supply": "MATERIAL_FLOW_supply", "delivery": "MATERIAL_FLOW_delivery",
+    "crew": "LABOUR_FLOW_crew", "labour": "LABOUR_FLOW_general", "worker": "LABOUR_FLOW_worker", "subbie": "LABOUR_FLOW_subbie", "contractor": "LABOUR_FLOW_contractor",
+    "buried": "BURIED_SERVICE_buried", "unidentified": "BURIED_SERVICE_unidentified", "service": "BURIED_SERVICE_service", "trenching": "BURIED_SERVICE_trenching",
+    "crane": "EQUIPMENT_FAULT_crane", "generator": "EQUIPMENT_FAULT_generator", "grind": "EQUIPMENT_FAULT_grind", "noise": "EQUIPMENT_FAULT_noise", "fault": "EQUIPMENT_FAULT_fault", "broken": "EQUIPMENT_FAULT_broken",
+    "drawing": "DRAWING_REF_dwg", "dwg": "DRAWING_REF_dwg", "mismatch": "RFI_CLASH_mismatch", "gap": "RFI_CLASH_gap", "conflict": "RFI_CLASH_conflict", "vs": "RFI_CLASH_vs",
 }
 
 _CONNECTOR_WORDS = frozenset({"on", "of", "the", "for", "to", "at", "in", "due", "from", "with", "by", "is", "a", "an", "and"})

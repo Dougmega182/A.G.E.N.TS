@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent))
 from agents.orchestrator import Orchestrator
 from agents.logic.external_gateway import ExternalGateway
 from agents.logic import event_bus
-from agents.firewall import PreflightApprovalEngine
+from agents.preflight_validator import PreflightApprovalEngine
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")

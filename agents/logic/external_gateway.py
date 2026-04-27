@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional, Set, List
 
 from . import event_bus
 from . import memory_db
-from .. import firewall
+from .. import preflight_validator as firewall
 from ..contracts import validate_action_intent
 
 logger = logging.getLogger("agents.external_gateway")

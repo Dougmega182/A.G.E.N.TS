@@ -15,7 +15,7 @@ os.environ["AGENTS_DB_PATH"] = tempfile.mktemp(suffix=".db")
 # Add project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from agents.firewall import PreflightApprovalEngine
+from agents.preflight_validator import PreflightApprovalEngine
 from agents.logic.external_gateway import ExternalGateway
 from agents.logic import event_bus
 

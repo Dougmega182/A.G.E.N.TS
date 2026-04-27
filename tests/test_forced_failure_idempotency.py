@@ -19,7 +19,7 @@ class TestForcedFailureIdempotency(unittest.TestCase):
     def setUp(self):
         if Path(temp_db).exists(): os.remove(temp_db)
         # We don't need real Auth for testing
-        from agents.firewall import PreflightApprovalEngine
+        from agents.preflight_validator import PreflightApprovalEngine
         from unittest.mock import MagicMock, patch
         
         self.approval_engine = PreflightApprovalEngine()

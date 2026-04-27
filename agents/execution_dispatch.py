@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime
 from typing import Any, Dict
 
-from . import firewall
+from . import preflight_validator as firewall
 from .logic.event_bus import emit_event
 from .logic import pattern_registry
 

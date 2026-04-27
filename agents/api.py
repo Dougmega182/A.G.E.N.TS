@@ -8,8 +8,8 @@ import json
 from .roster import AGENTS
 from .orchestrator import Orchestrator
 from .telemetry import TELEMETRY
-from . import firewall
-from .firewall import PreflightApprovalError
+from . import preflight_validator as firewall
+from .preflight_validator import PreflightApprovalError
 from .execution_dispatch import enqueue_execution
 from .logic.event_bus import EVENTS_LOG_PATH
 from .logic.event_bus import emit_event
@@ -281,6 +281,18 @@ async def get_logistics_tasks():
     tasks = list_logistics_tasks()
     return {"items": tasks, "count": len(tasks)}
 
+@app.post("/logistics/tasks/bulk-decide")
+async def decide_logistics_tasks_bulk(task_ids: List[str], decision: str):
+    """Approve or reject multiple logistics task intents at once."""
+    results = []
+    for task_id in task_ids:
+        try:
+            res = await decide_logistics_task(task_id, decision)
+            results.append(res)
+        except Exception as e:
+            results.append({"task_id": task_id, "status": "failed", "error": str(e)})
+    return {"status": "success", "results": results}
+
 @app.post("/logistics/tasks/{task_id}/decide")
 async def decide_logistics_task(task_id: str, decision: str):
     """Approve or reject a logistics task intent."""
@@ -296,14 +308,14 @@ async def decide_logistics_task(task_id: str, decision: str):
             exe_trace = f"EXE-ELI-{uuid.uuid4().hex[:8].upper()}"
             execute_gmail_draft(task["gmail_draft"], exe_trace)
         
-        task["status"] = "approved"
+        status = "RESOLVED_APPROVED"
         event_bus.emit_event("LOGISTICS_TASK_APPROVED", task["trace_id"], agent_id="gatekeeper", metadata={"task_id": task_id})
     else:
-        task["status"] = "rejected"
+        status = "RESOLVED_REJECTED"
         event_bus.emit_event("LOGISTICS_TASK_REJECTED", task["trace_id"], agent_id="gatekeeper", metadata={"task_id": task_id})
 
-    # Remove from pending queue
-    resolve_logistics_task(task_id)
+    # Update lifecycle
+    resolve_logistics_task(task_id, status)
     
     return {"status": "success", "task_id": task_id, "decision": decision}
 

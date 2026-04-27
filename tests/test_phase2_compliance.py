@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.orchestrator import Orchestrator
-from agents import firewall
+from agents import preflight_validator as firewall
 from agents.operators.construction_op import ConstructionOperator
 from agents.logic import event_bus
 
@@ -18,7 +18,7 @@ def setup_test_env(tmp_path):
     store_path = tmp_path / "preflight_approvals.json"
     engine = firewall.PreflightApprovalEngine(store_path=store_path)
     
-    with patch('agents.firewall.DEFAULT_ENGINE', engine):
+    with patch('agents.preflight_validator.DEFAULT_ENGINE', engine):
         ConstructionOperator.WORLD_STATE_PATH = tmp_path / "world_state.json"
         
         # Initialize mock world state

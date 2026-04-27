@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Card Mockup - Phase 2.7</title>
+    <style>
+        :root {
+            --bg-dark: #0f1115;
+            --bg-card: #161920;
+            --bg-card-hover: #1b1e26;
+            --text-main: #e2e8f0;
+            --text-subtle: #94a3b8;
+            --accent: #3b82f6;
+            --danger: #e74c3c;
+            --warning: #f59e0b;
+            --success: #2ecc71;
+            --border: #2d3748;
+            --high-risk-bg: rgba(231, 76, 60, 0.1);
+            --high-risk-border: rgba(231, 76, 60, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .dispatch-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .dispatch-card.high-risk {
+            border: 1px solid var(--high-risk-border);
+            background: var(--high-risk-bg);
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-summary {
+            font-size: 0.9em;
+            color: var(--text-subtle);
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .chip.critical { background: var(--danger); color: white; }
+        .chip.high-risk { background: var(--warning); color: #000; }
+        .chip.info { background: rgba(59, 130, 246, 0.2); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.4); }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .recipients-group {
+            margin-bottom: 16px;
+        }
+
+        .recipient-tier {
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--border);
+        }
+
+        .recipient-tier.primary { border-left-color: var(--accent); }
+        .recipient-tier.secondary { border-left-color: var(--warning); }
+        
+        .recipient-tier.highlight-external {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px dashed var(--danger);
+        }
+
+        .tier-label {
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--text-subtle);
+            margin-bottom: 4px;
+        }
+
+        .recipient-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+        
+        .recipient-item:last-child { margin-bottom: 0; }
+
+        .recipient-role { font-weight: 500; }
+        .recipient-email { color: var(--text-subtle); font-family: monospace; }
+
+        .message-preview {
+            background: #000;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85em;
+            color: #a0aec0;
+            white-space: pre-wrap;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .rationale-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 0.85em;
+            color: var(--text-subtle);
+            margin-bottom: 20px;
+        }
+
+        .rationale-list {
+            margin: 4px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .rationale-list li { margin-bottom: 4px; }
+        
+        .dedup-alert {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+            color: #93c5fd;
+        }
+
+        .card-actions {
+            padding: 16px 20px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-approve {
+            background: var(--success);
+            color: #fff;
+            flex: 2;
+        }
+        
+        .btn-approve:hover { background: #27ae60; }
+
+        .btn-approve.high-risk-confirm {
+            background: var(--danger);
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-approve.high-risk-confirm:hover { background: #c0392b; animation: none; }
+
+        .btn-edit {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            flex: 1;
+        }
+        
+        .btn-edit:hover { background: rgba(255,255,255,0.05); }
+
+        .btn-reject {
+            background: transparent;
+            color: var(--text-subtle);
+            flex: 1;
+        }
+        
+        .btn-reject:hover { color: var(--danger); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- MOCKUP: CRITICAL Multi-Recipient Dispatch -->
+    <div class="dispatch-card high-risk">
+        
+        <!-- Header: Intent + Summary -->
+        <div class="card-header">
+            <div>
+                <div class="header-title">ESCALATE - MATERIAL_FLOW</div>
+                <div class="header-summary">Major steel supplier bankrupt, delivery stalled indefinitely (Impact: 0.95)</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                <span class="chip high-risk">⚠️ HIGH RISK</span>
+                <span class="chip critical">CRITICAL</span>
+            </div>
+        </div>
+
+        <div class="card-body">
+            
+            <!-- Recency & Dedup (Visual Signal) -->
+            <div class="dedup-alert">
+                <span>🔄</span>
+                <div>
+                    <strong>Supersedes:</strong> 2 prior steel delay signals<br>
+                    <strong>Confidence:</strong> High (Concept match: MATERIAL_FLOW)
+                </div>
+            </div>
+
+            <!-- Dispatch Rationale -->
+            <div class="rationale-box">
+                <div class="section-title">Dispatch Rationale</div>
+                <ul class="rationale-list">
+                    <li>Domain classification: MATERIAL -> targets Foreman</li>
+                    <li>Severity CRITICAL -> Added PM for secondary awareness</li>
+                    <li style="color: var(--danger); font-weight: bold;">BLAST RADIUS ALERT: Multi-recipient external dispatch.</li>
+                </ul>
+            </div>
+
+            <!-- Recipients & Message Previews -->
+            <div class="recipients-group">
+                <div class="section-title">Recipients & Preview</div>
+                
+                <!-- Primary Tier -->
+                <div class="recipient-tier primary highlight-external">
+                    <div class="tier-label">Primary (Action Required)</div>
+                    <div class="recipient-item">
+                        <span class="recipient-role">Foreman</span>
+                        <span class="recipient-email">site.foreman@agents.ai</span>
+                    </div>
+                    <details>
+                        <summary class="subtle" style="cursor: pointer; font-size: 0.85em; color: var(--accent); margin-top: 4px;">Show Draft</summary>
+                        <div class="message-preview">Subject: CRITICAL: Project Escalation Required for MATERIAL Issue
+                        
+A positive momentum shift (STALL) has been detected in the MATERIAL domain. Velocity Impact: -0.95.
+
+Logistics Action: ESCALATE
+Target: foreman
+Required Checks: alternate_supplier_sourcing, critical_path_audit
+
+Please fast-track execution and assess critical path impact immediately.</div>
+                    </details>
+                </div>
+
+                <!-- Secondary Tier -->
+                <div class="recipient-tier secondary highlight-external">
+                    <div class="tier-label">Secondary (Awareness Only)</div>
+                    <div class="recipient-item">
+                        <span class="recipient-role">Project Manager</span>
+                        <span class="recipient-email">project.manager@agents.ai</span>
+                    </div>
+                    <details>
+                        <summary class="subtle" style="cursor: pointer; font-size: 0.85em; color: var(--accent); margin-top: 4px;">Show Draft</summary>
+                        <div class="message-preview">Subject: FYI: CRITICAL Escalation Initiated for MATERIAL Issue
+
+This is an automated awareness notification. A MATERIAL issue (STALL) has triggered a priority escalation to the foreman.
+
+Velocity Impact: -0.95
+No direct action is required from you at this time. Monitor schedule alignment.</div>
+                    </details>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Approval Actions -->
+        <div class="card-actions">
+            <!-- Force second confirmation click by changing text/state -->
+            <button class="btn-approve high-risk-confirm" id="btn-approve" onclick="confirmHighRisk()">
+                ⚠️ Confirm Multi-Recipient Dispatch
+            </button>
+            <button class="btn-edit">Edit</button>
+            <button class="btn-reject">Reject</button>
+        </div>
+
+    </div>
+
+    <script>
+        function confirmHighRisk() {
+            const btn = document.getElementById('btn-approve');
+            if (btn.innerText.includes('Confirm')) {
+                btn.innerText = '✅ Approve & Send Now';
+                btn.style.animation = 'none';
+                btn.style.background = '#2ecc71';
+            } else {
+                alert('Dispatch Sent!');
+                btn.innerText = 'Sent';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        }
+    </script>
+</body>
+</html>

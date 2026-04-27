@@ -12,7 +12,9 @@ The finalizer:
     2. Applies deterministic overrides (governance, safety)
     3. Detects conflicts (WALL-E vs Aria)
     4. Validates reasoning quality
-    5. Produces ONE canonical result
+    5. Enforces Saturation Control (Rate limits, Cooldowns)
+    6. Enforces Risk-Tiered Autonomy Gates
+    7. Produces ONE canonical result
 
 Rule: Only the orchestrator calls this. Nothing else changes decisions.
 """
@@ -42,13 +44,28 @@ class FinalizedDecision:
     override_chain: List[str] = field(default_factory=list)
     primary_override_reason: Optional[str] = None
 
+    # Confidence Gate (The Authority Check)
+    gate_action: str = "REQUIRE_APPROVAL"         # AUTO_ACT | REQUIRE_APPROVAL | SUPPRESS
+    gate_thresholds: Dict[str, float] = field(default_factory=lambda: {"AUTO": 0.9, "APPROVAL": 0.7})
+
+    # Saturation Control
+    saturation_status: str = "PASS"               # PASS | COOLDOWN_ACTIVE | RATE_LIMIT_EXCEEDED | BURST_DETECTED
+    saturation_metadata: Dict[str, Any] = field(default_factory=dict)
+    entity_id: Optional[str] = None
+
+    # Risk-Tiered Autonomy
+    risk_level: str = "CONTROLLED"                # SAFE | CONTROLLED | CRITICAL
+
     # Signals that fed into the decision
     risk_score: float = 0.0
     governance_flags: List[Dict[str, Any]] = field(default_factory=list)
     governance_flag_count: int = 0
     has_critical_governance: bool = False
-    conflict_detected: bool = False               # WALL-E vs Aria
+    conflict_detected: bool = False               # Signal or Agent conflict
     conflict_detail: str = ""
+    conflict_status: Optional[str] = None        # CONFLICT_RESOLVED | CONFLICT_ESCALATED
+    winning_signal_id: Optional[str] = None
+    dominance_reason: Optional[str] = None
 
     # Reasoning quality
     reasoning_quality_warnings: List[str] = field(default_factory=list)
@@ -70,6 +87,7 @@ class FinalizedDecision:
     why: str = ""
     distrust_level: str = "LOW"
     momentum_signal: Dict[str, Any] = field(default_factory=dict)
+    competing_signals: List[Dict[str, Any]] = field(default_factory=list)
 
     @classmethod
     def from_payload(cls, payload: Dict[str, Any]) -> FinalizedDecision:
@@ -81,12 +99,21 @@ class FinalizedDecision:
             original_justification=payload.get("original_justification", ""),
             override_chain=payload.get("override_chain", []),
             primary_override_reason=payload.get("primary_override_reason"),
+            gate_action=payload.get("gate_action", "REQUIRE_APPROVAL"),
+            gate_thresholds=payload.get("gate_thresholds", {"AUTO": 0.9, "APPROVAL": 0.7}),
+            saturation_status=payload.get("saturation_status", "PASS"),
+            saturation_metadata=payload.get("saturation_metadata", {}),
+            entity_id=payload.get("entity_id"),
+            risk_level=payload.get("risk_level", "CONTROLLED"),
             risk_score=payload.get("risk_score", 0.0),
             governance_flags=payload.get("governance_flags", []),
             governance_flag_count=payload.get("governance_flag_count", 0),
             has_critical_governance=payload.get("has_critical_governance", False),
             conflict_detected=payload.get("conflict_detected", False),
             conflict_detail=payload.get("conflict_detail", ""),
+            conflict_status=payload.get("conflict_status"),
+            winning_signal_id=payload.get("winning_signal_id"),
+            dominance_reason=payload.get("dominance_reason"),
             reasoning_quality_warnings=payload.get("reasoning_quality_warnings", []),
             was_overridden=payload.get("was_overridden", False),
             was_system_forced=payload.get("was_system_forced", False),
@@ -99,7 +126,8 @@ class FinalizedDecision:
             drift_pressure_index=payload.get("drift_pressure_index", 0.0),
             why=payload.get("why", ""),
             distrust_level=payload.get("distrust_level", "LOW"),
-            momentum_signal=payload.get("momentum_signal", {})
+            momentum_signal=payload.get("momentum_signal", {}),
+            competing_signals=payload.get("competing_signals", [])
         )
 
     def to_event_payload(self) -> Dict[str, Any]:
@@ -111,12 +139,21 @@ class FinalizedDecision:
             "original_justification": self.original_justification,
             "override_chain": self.override_chain,
             "primary_override_reason": self.primary_override_reason,
+            "gate_action": self.gate_action,
+            "gate_thresholds": self.gate_thresholds,
+            "saturation_status": self.saturation_status,
+            "saturation_metadata": self.saturation_metadata,
+            "entity_id": self.entity_id,
+            "risk_level": self.risk_level,
             "risk_score": self.risk_score,
             "governance_flags": self.governance_flags,
             "governance_flag_count": self.governance_flag_count,
             "has_critical_governance": self.has_critical_governance,
             "conflict_detected": self.conflict_detected,
             "conflict_detail": self.conflict_detail,
+            "conflict_status": self.conflict_status,
+            "winning_signal_id": self.winning_signal_id,
+            "dominance_reason": self.dominance_reason,
             "reasoning_quality_warnings": self.reasoning_quality_warnings,
             "was_overridden": self.was_overridden,
             "was_system_forced": self.was_system_forced,
@@ -129,7 +166,8 @@ class FinalizedDecision:
             "drift_pressure_index": self.drift_pressure_index,
             "why": self.why,
             "distrust_level": self.distrust_level,
-            "momentum_signal": self.momentum_signal
+            "momentum_signal": self.momentum_signal,
+            "competing_signals": self.competing_signals
         }
 
     def to_json(self) -> str:
@@ -176,7 +214,9 @@ def finalize_decision(
     trace_id: str,
     scenario_type: str,
     momentum_signal: Dict[str, Any],
+    competing_signals: Optional[List[Dict[str, Any]]] = None,
     outcome_score: Optional[int] = None,
+    user_input: str = ""
 ) -> FinalizedDecision:
     """
     The single decision canonicalization function.
@@ -189,6 +229,41 @@ def finalize_decision(
     warnings: List[str] = []
     conflict_detected = False
     conflict_detail = ""
+    conflict_status = None
+    winning_signal_id = None
+    dominance_reason = None
+
+    # 0. CONFLICT RESOLUTION: Signal Dominance (Priority-Weighted)
+    actual_signal = momentum_signal
+    all_signals = [momentum_signal] + (competing_signals or [])
+    if len(all_signals) > 1:
+        conflict_detected = True
+        # Scoring: (impact_score * 0.7) + (confidence * 0.3)
+        # We prioritize impact (real world cost) but weight it by our confidence
+        def score_signal(s):
+            impact = s.get("impact_score", 0.5)
+            conf = s.get("confidence", 0.5)
+            # Urgency CRITICAL adds a flat 0.2 bonus
+            bonus = 0.2 if s.get("urgency") == "CRITICAL" else 0.0
+            return (impact * 0.7) + (conf * 0.3) + bonus
+
+        # Determine winner
+        scored_signals = [(score_signal(s), s) for s in all_signals]
+        scored_signals.sort(key=lambda x: x[0], reverse=True)
+        
+        winner_score, winning_signal = scored_signals[0]
+        loser_score, losing_signal = scored_signals[1]
+        
+        actual_signal = winning_signal
+        winning_signal_id = winning_signal.get("signal_id", "PRIMARY")
+        conflict_status = "CONFLICT_RESOLVED"
+        
+        dominance_reason = (
+            f"Signal Dominance: Winner score {winner_score:.2f} vs Loser {loser_score:.2f}. "
+            f"Winner Urgency: {winning_signal.get('urgency')}, Impact: {winning_signal.get('impact_score')}. "
+            f"Loser Urgency: {losing_signal.get('urgency')}, Impact: {losing_signal.get('impact_score')}."
+        )
+        conflict_detail = f"Signal Conflict Resolved: {dominance_reason}"
 
     # Capture Aria's original intent before any override
     original_decision = str(decision_data.get("decision", "UNKNOWN")).upper()
@@ -294,9 +369,57 @@ def finalize_decision(
             if not has_mem_ref:
                 warnings.append("MISSING_MEMORY_REFERENCE")
 
-    # --- BUILD CANONICAL RESULT ---
+    # --- BUILD PRELIMINARY CANONICAL RESULT ---
     was_overridden = len(override_chain) > 0
     why = f"{final_decision}: {primary_reason}" if was_overridden else f"{final_decision}: Direct Approval"
+    if conflict_status:
+        why += f" | {conflict_status}"
+
+    # --- DETERMINE RISK LEVEL (Discipline Layer) ---
+    if risk_score < 0.4 and not has_critical_flag(governance_flags):
+        risk_level = "SAFE"
+    elif risk_score < 0.75:
+        risk_level = "CONTROLLED"
+    else:
+        risk_level = "CRITICAL"
+
+    # --- FINAL STEP: RISK-TIERED CONFIDENCE GATE (Pre-Act Enforcement) ---
+    gate_action = "REQUIRE_APPROVAL"
+    gate_thresholds = {"SAFE": 0.70, "CONTROLLED": 0.85, "CRITICAL": 1.0} # 1.0 ensures Critical never auto-execs
+    auto_act_threshold = gate_thresholds.get(risk_level, 0.85)
+
+    if adjusted_conf >= auto_act_threshold and risk_level != "CRITICAL":
+        gate_action = "AUTO_ACT"
+    elif adjusted_conf < 0.6: # Stricter than the escalation threshold to force suppression
+        gate_action = "SUPPRESS"
+    
+    # Force REQUIRE_APPROVAL for any overridden or escalated decision regardless of confidence
+    if was_overridden or final_decision == "ESCALATE":
+        gate_action = "REQUIRE_APPROVAL"
+
+    # --- SATURATION CONTROL (Control Layer) ---
+    from .saturation_control import SaturationControl
+    sat_status, sat_meta = SaturationControl.check_saturation(
+        scenario_type=scenario_type,
+        user_input=user_input,
+        intent_type=scenario_type, # Using scenario as intent for now
+        trace_id=trace_id
+    )
+    
+    entity_id = sat_meta.get("entity_id")
+    
+    if sat_status in {"COOLDOWN_ACTIVE", "RATE_LIMIT_EXCEEDED"}:
+        gate_action = "SUPPRESS"
+        final_justification = (
+            f"SATURATION OVERRIDE: {sat_status}. {sat_meta.get('reason')} "
+            f"Original decision: {final_decision}. {final_justification}"
+        )
+    elif sat_status == "BURST_DETECTED":
+        gate_action = "REQUIRE_APPROVAL" # Force review on bursts
+        final_justification = (
+            f"SATURATION OVERRIDE: BURST_DETECTED. {sat_meta.get('reason')} "
+            f"Forcing approval despite confidence."
+        )
 
     return FinalizedDecision(
         final_decision=final_decision,
@@ -305,12 +428,20 @@ def finalize_decision(
         original_justification=original_justification,
         override_chain=override_chain,
         primary_override_reason=primary_reason,
+        gate_action=gate_action,
+        saturation_status=sat_status,
+        saturation_metadata=sat_meta,
+        entity_id=entity_id,
+        risk_level=risk_level,
         risk_score=risk_score,
         governance_flags=[f.to_dict() for f in governance_flags],
         governance_flag_count=len(governance_flags),
         has_critical_governance=has_critical_flag(governance_flags),
         conflict_detected=conflict_detected,
         conflict_detail=conflict_detail,
+        conflict_status=conflict_status,
+        winning_signal_id=winning_signal_id,
+        dominance_reason=dominance_reason,
         reasoning_quality_warnings=warnings,
         was_overridden=was_overridden,
         was_system_forced=was_system_forced,
@@ -321,9 +452,10 @@ def finalize_decision(
         confidence_reason=confidence_reason,
         confidence_adjusted=adjusted_conf,
         confidence_penalty=penalty,
-        confidence_threshold=threshold,
+        confidence_threshold=auto_act_threshold,
         drift_pressure_index=dpi,
         why=why,
         distrust_level=distrust_label,
-        momentum_signal=momentum_signal
+        momentum_signal=actual_signal,
+        competing_signals=competing_signals or []
     )

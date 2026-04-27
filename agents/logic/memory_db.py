@@ -43,6 +43,7 @@ _SCHEMA = """
 CREATE TABLE IF NOT EXISTS decisions (
     id TEXT PRIMARY KEY,
     trace_id TEXT NOT NULL,
+    entity_id TEXT,
     scenario TEXT NOT NULL,
     final_decision TEXT NOT NULL,
     original_decision TEXT NOT NULL,
@@ -64,6 +65,7 @@ CREATE TABLE IF NOT EXISTS decisions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_decisions_trace_id ON decisions(trace_id);
+CREATE INDEX IF NOT EXISTS idx_decisions_entity_id ON decisions(entity_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_scenario ON decisions(scenario);
 CREATE INDEX IF NOT EXISTS idx_decisions_timestamp ON decisions(timestamp);
 CREATE INDEX IF NOT EXISTS idx_decisions_final_decision ON decisions(final_decision);
@@ -224,6 +226,14 @@ def _ensure_db() -> None:
             conn.execute("DROP TABLE owen_negative_patterns")
             conn.execute("ALTER TABLE owen_negative_patterns_v2 RENAME TO owen_negative_patterns")
 
+        # 4. Migration: Add entity_id to decisions if missing
+        try:
+            conn.execute("SELECT entity_id FROM decisions LIMIT 1")
+        except sqlite3.OperationalError:
+            logger.info("MIGRATION: Adding entity_id column to decisions...")
+            conn.execute("ALTER TABLE decisions ADD COLUMN entity_id TEXT")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_decisions_entity_id ON decisions(entity_id)")
+
 
 @contextmanager
 def _get_conn():
@@ -260,15 +270,16 @@ def write_decision(component: str, decision_event: Dict[str, Any]) -> None:
     with _get_conn() as conn:
         conn.execute(
             """INSERT OR REPLACE INTO decisions
-               (id, trace_id, scenario, final_decision, original_decision,
+               (id, trace_id, entity_id, scenario, final_decision, original_decision,
                 was_overridden, was_system_forced, risk_score, cost, days,
                 outcome_score, override_chain, primary_override_reason,
                 governance_flag_count, has_critical_governance, conflict_detected,
                 reasoning_quality_warnings, justification, timestamp, created_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 decision_event.get("event_id", ""),
                 meta.get("trace_id", decision_event.get("trace_id", "")),
+                meta.get("entity_id"),
                 decision_event.get("scenario", ""),
                 meta.get("final_decision", ""),
                 meta.get("original_decision", ""),

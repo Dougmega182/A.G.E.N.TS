@@ -15,7 +15,7 @@ if sys.stdout.encoding.lower() != "utf-8":
 sys.path.insert(0, str(Path(__file__).parent))
 
 from agents.orchestrator import Orchestrator
-from agents.firewall import decide_request, execute_task
+from agents.preflight_validator import decide_request, execute_task
 from agents.logic import pattern_registry
 
 USAGE_LOG_PATH = Path(__file__).parent / "Agent logs" / "usage_feedback.jsonl"
@@ -183,7 +183,7 @@ async def main():
         sys.exit(0)
         
     # Fetch the full request from firewall
-    from agents.firewall import get_request
+    from agents.preflight_validator import get_request
     request = get_request(request_id)
     if not request:
         print(f"[!] Critical Error: Request {request_id} not found in firewall registry.")

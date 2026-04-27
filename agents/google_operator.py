@@ -10,7 +10,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from .firewall import PreflightApprovalEngine, PreflightApprovalError
+from . import preflight_validator as firewall
+from .preflight_validator import PreflightApprovalEngine, PreflightApprovalError
 from .logic import event_bus
 from .contracts import ContractValidationResult # Import the new ContractValidationResult
 
