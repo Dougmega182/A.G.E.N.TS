@@ -140,7 +140,7 @@ class OwenEngine:
         """
         Ingest real-world execution feedback to close the loop on intelligence.
         DISTINGUISHES: SUCCESS, FAILURE, OVERRIDDEN, CONFLICT_RESOLVED, and MISSING.
-        Tracks Shadow Accuracy for AUTO-ACT validation.
+        Tracks Shadow Accuracy & Pressure Metrics for 48h Audit.
         """
         assert_write_permission(COMPONENT_NAME, MemoryDomain.OWEN_INSIGHTS)
         
@@ -160,65 +160,117 @@ class OwenEngine:
             )
             return None # Owen waits. No assumptions.
 
-        # 2. Shadow Accuracy Tracking
+        # 2. Shadow Accuracy & Pressure Metrics Tracking
         from ..preflight_validator import get_request_by_trace_id
         request = get_request_by_trace_id(trace_id)
         is_shadow = False
+        audit_meta = {}
+        
         if request:
-            is_shadow = request.get("metadata", {}).get("shadow_mode", False)
-            auto_eligible = request.get("metadata", {}).get("auto_eligible", False)
+            req_meta = request.get("metadata", {})
+            is_shadow = req_meta.get("shadow_mode", False)
+            auto_eligible = req_meta.get("auto_eligible", False)
+            risk_level = req_meta.get("risk_level", "CONTROLLED")
+            gate_action = req_meta.get("gate_action", "REQUIRE_APPROVAL")
             
-            if is_shadow and auto_eligible:
-                # Operator AGREES if they approved the shadow proposal
-                agreed = (outcome_norm == "SUCCESS")
-                
-                # Fetch recent shadow events to calculate rolling accuracy
-                from .event_bus import EVENTS_LOG_PATH
-                total_shadow = 1
-                agrees = 1 if agreed else 0
-                
-                if EVENTS_LOG_PATH.exists():
-                    try:
-                        with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
-                            # Read last 500 lines to find recent shadow feedback
-                            lines = f.readlines()[-500:]
-                            for line in lines:
-                                try:
-                                    evt = json.loads(line)
-                                    if evt.get("type") == "OWEN_INSIGHT_EXTRACTED":
-                                        meta = evt.get("metadata", {})
-                                        if meta.get("is_shadow"):
-                                            total_shadow += 1
-                                            if meta.get("outcome") == "SUCCESS":
-                                                agrees += 1
-                                except Exception: continue
-                    except Exception as e:
-                        logger.error(f"Error calculating shadow accuracy: {e}")
+            # --- OVERRIDE REASON CLASSIFICATION ---
+            override_class = None
+            if outcome_norm == "OVERRIDDEN":
+                notes_lower = notes.lower()
+                if any(k in notes_lower for k in ["wording", "typo", "format", "tone", "grammar", "style"]):
+                    override_class = "cosmetic"
+                elif any(k in notes_lower for k in ["dangerous", "wrong recipient", "critical", "security", "financial"]):
+                    override_class = "critical_error"
+                else:
+                    override_class = "context_miss"
 
-                accuracy = (agrees / total_shadow) if total_shadow > 0 else 0
-                emit_event(
-                    "SHADOW_ACCURACY_METRIC",
-                    trace_id,
-                    agent_id=COMPONENT_NAME,
-                    metadata={
-                        "accuracy": round(accuracy, 3),
-                        "total_samples": total_shadow,
-                        "agrees": agrees,
-                        "current_agreement": agreed
-                    }
-                )
-                # Attach to metadata for extraction event below
-                is_shadow_meta = {"is_shadow": True, "shadow_accuracy": accuracy}
-            else:
-                is_shadow_meta = {"is_shadow": False}
+            # --- AGGREGATE AUDIT METRICS ---
+            from .event_bus import EVENTS_LOG_PATH
+            if EVENTS_LOG_PATH.exists():
+                try:
+                    with open(EVENTS_LOG_PATH, "r", encoding="utf-8") as f:
+                        lines = f.readlines()[-500:] # Last 500 events
+                        
+                        # Initialize counters
+                        metrics = {
+                            "total": 0,
+                            "approvals": 0,
+                            "auto_act_eligible": {"SAFE": 0, "CONTROLLED": 0},
+                            "total_by_risk": {"SAFE": 0, "CONTROLLED": 0, "CRITICAL": 0},
+                            "overrides": {"cosmetic": 0, "context_miss": 0, "critical_error": 0},
+                            "shadow_agreements": 0,
+                            "shadow_total": 0
+                        }
+                        
+                        # Include CURRENT event in counters
+                        metrics["total"] = 1
+                        metrics["total_by_risk"][risk_level] = 1
+                        if gate_action == "REQUIRE_APPROVAL": metrics["approvals"] = 1
+                        if auto_eligible: metrics["auto_act_eligible"][risk_level] = 1
+                        if override_class: metrics["overrides"][override_class] = 1
+                        if is_shadow and auto_eligible:
+                            metrics["shadow_total"] = 1
+                            if outcome_norm == "SUCCESS": metrics["shadow_agreements"] = 1
+
+                        for line in lines:
+                            try:
+                                evt = json.loads(line)
+                                if evt.get("type") == "OWEN_INSIGHT_EXTRACTED":
+                                    m = evt.get("metadata", {})
+                                    metrics["total"] += 1
+                                    
+                                    rl = m.get("risk_level", "CONTROLLED")
+                                    metrics["total_by_risk"][rl] = metrics["total_by_risk"].get(rl, 0) + 1
+                                    
+                                    if m.get("gate_action") == "REQUIRE_APPROVAL": metrics["approvals"] += 1
+                                    if m.get("auto_eligible"): 
+                                        metrics["auto_act_eligible"][rl] = metrics["auto_act_eligible"].get(rl, 0) + 1
+                                    
+                                    oc = m.get("override_class")
+                                    if oc: metrics["overrides"][oc] = metrics["overrides"].get(oc, 0) + 1
+                                    
+                                    if m.get("is_shadow") and m.get("auto_eligible"):
+                                        metrics["shadow_total"] += 1
+                                        if m.get("outcome") == "SUCCESS": metrics["shadow_agreements"] += 1
+                            except Exception: continue
+
+                        # Calculate final pressure metrics
+                        audit_meta = {
+                            "shadow_accuracy": round(metrics["shadow_agreements"] / metrics["shadow_total"], 3) if metrics["shadow_total"] > 0 else 1.0,
+                            "approval_ratio": round(metrics["approvals"] / metrics["total"], 3),
+                            "auto_act_rate_by_risk": {
+                                k: round(metrics["auto_act_eligible"][k] / max(1, metrics["total_by_risk"][k]), 3)
+                                for k in ["SAFE", "CONTROLLED"]
+                            },
+                            "override_mix": metrics["overrides"],
+                            "audit_window_size": metrics["total"]
+                        }
+                        
+                        emit_event(
+                            "SHADOW_AUDIT_SUMMARY",
+                            trace_id,
+                            agent_id=COMPONENT_NAME,
+                            metadata=audit_meta
+                        )
+                except Exception as e:
+                    logger.error(f"Error calculating shadow audit metrics: {e}")
+
+            is_shadow_meta = {
+                "is_shadow": is_shadow, 
+                "auto_eligible": auto_eligible,
+                "risk_level": risk_level,
+                "gate_action": gate_action,
+                "override_class": override_class,
+                **audit_meta
+            }
         else:
             is_shadow_meta = {}
 
         scenario = "post_execution"  # Generally applies cross-scenario or mapped via trace
         summary = f"Real-world feedback ({outcome.upper()}): {notes}"
         
-        # Outcome classification logic
-        override_class = None
+        # Outcome classification logic (unchanged core decision-making)
+        override_class_internal = is_shadow_meta.get("override_class")
         if outcome_norm == "FAILURE":
             insight_type = "dont_do"
             confidence = 0.9
@@ -226,20 +278,16 @@ class OwenEngine:
             insight_type = "do"
             confidence = 0.9
         elif outcome_norm == "OVERRIDDEN":
-            # 3. Override Reason Classification (Heuristic)
-            notes_lower = notes.lower()
-            if any(k in notes_lower for k in ["wording", "typo", "format", "tone", "grammar", "style"]):
-                override_class = "cosmetic"
-                confidence = 0.3 # Low penalty for style tweaks
-            elif any(k in notes_lower for k in ["dangerous", "wrong recipient", "critical", "security", "financial"]):
-                override_class = "critical_error"
-                confidence = 0.9 # Heavy penalty for safety/security misses
+            # Set confidence based on classification
+            if override_class_internal == "cosmetic":
+                confidence = 0.3
+            elif override_class_internal == "critical_error":
+                confidence = 0.9
             else:
-                override_class = "context_miss"
-                confidence = 0.6 # Medium penalty for general understanding failure
-            
+                confidence = 0.6
+                
             insight_type = "lesson_learned"
-            summary = f"HUMAN OVERRIDE ({override_class.upper()}): {notes} (System was technically correct but operator preferred a different path)"
+            summary = f"HUMAN OVERRIDE ({str(override_class_internal).upper()}): {notes} (System was technically correct but operator preferred a different path)"
         elif outcome_norm == "CONFLICT_RESOLVED":
             insight_type = "lesson_learned"
             confidence = 0.8
@@ -268,7 +316,6 @@ class OwenEngine:
                 "insight_id": insight_id, 
                 "outcome": outcome_norm,
                 "evaluation_integrity": "VERIFIED",
-                "override_class": override_class,
                 **is_shadow_meta
             }
         )

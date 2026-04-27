@@ -350,7 +350,9 @@ class Orchestrator:
                 "owen_briefing": owen_briefing,
                 "why": finalized.why,
                 "shadow_mode": shadow_mode_active,
-                "auto_eligible": finalized.gate_action == "AUTO_ACT"
+                "auto_eligible": finalized.gate_action == "AUTO_ACT",
+                "risk_level": finalized.risk_level,
+                "gate_action": finalized.gate_action
             }
         }
         from . import preflight_validator as firewall
