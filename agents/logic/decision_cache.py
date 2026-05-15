@@ -60,7 +60,11 @@ _CONCEPT_MAP = {
     "drawing": "DRAWING_REF_dwg", "dwg": "DRAWING_REF_dwg", "mismatch": "RFI_CLASH_mismatch", "gap": "RFI_CLASH_gap", "conflict": "RFI_CLASH_conflict", "vs": "RFI_CLASH_vs",
 }
 
-_CONNECTOR_WORDS = frozenset({"on", "of", "the", "for", "to", "at", "in", "due", "from", "with", "by", "is", "a", "an", "and"})
+_CONNECTOR_WORDS = frozenset({
+    "on", "of", "the", "for", "to", "at", "in", "due", "from", "with", "by", "is", "a", "an", "and",
+    "maybe", "kinda", "idk", "probably", "some", "sort", "of", "like", "actually", "just", "about",
+    "please", "suggest", "recommend", "suggested", "recommended"
+})
 
 _PHRASE_MAP = {
     "request for information": "rfi", "port strike": "port_strike", "structural steel": "steel", "heavy vehicle": "equipment",
@@ -90,9 +94,23 @@ def _normalize_issue(raw: str) -> str:
     if not raw: return ""
     text = raw.lower()
     text = _PREFIX_RE.sub("", text)
+    
+    # Strip emails
+    text = re.sub(r"\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b", " ", text)
+    
+    # Strip site labels with optional colons/dashes: "Site: Alpha", "Zone - B", "Site 1"
+    text = re.sub(r"\b(?:site|zone|lot|level|area)\b[:\-\s]*[a-z0-9]+\b", " ", text, flags=re.IGNORECASE)
+    
+    text = re.sub(r"\b[a-z]\b\.", " ", text, flags=re.IGNORECASE) # Strip "a.", "b." etc.
+
     text = re.sub(r"\+?\$\s*\d[\d,]*\s*k?\b", " ", text, flags=re.IGNORECASE)
     text = re.sub(r"\+?\s*\d[\d,]*\s*k\b", " ", text, flags=re.IGNORECASE)
     text = re.sub(r"\+?\s*\d+\s*days?\b", " ", text, flags=re.IGNORECASE)
+    
+    # Strip dates (YYYY-MM-DD or DD/MM/YYYY)
+    text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", " ", text)
+    text = re.sub(r"\b\d{2}/\d{2}/\d{2,4}\b", " ", text)
+    
     text = _normalize_parameters(text)
     text = _normalize_phrases(text)
     text = _PUNCT_RE.sub(" ", text)
@@ -102,6 +120,7 @@ def _normalize_issue(raw: str) -> str:
     final_tokens = []
     for t in trimmed_tokens:
         if t in _CONNECTOR_WORDS: continue
+        if len(t) < 2 and not _is_protected(t): continue 
         if _is_protected(t): final_tokens.append(t)
         elif t in _CONCEPT_MAP: final_tokens.append(_CONCEPT_MAP[t])
         else: final_tokens.append(_SYNONYM_MAP.get(t, t))
@@ -171,7 +190,7 @@ def _write_bypass_reason(finalized: FinalizedDecision) -> Optional[str]:
     if finalized.conflict_detected: return BypassReason.CONFLICT_DETECTED
     
     if finalized.was_overridden: return BypassReason.OVERRIDDEN
-    if str(finalized.final_decision).upper() != "APPROVE": return BypassReason.NOT_APPROVED
+    if str(finalized.final_decision).upper() not in ["APPROVE", "REJECT"]: return BypassReason.NOT_APPROVED
     if (finalized.confidence_score or 0) < MIN_CACHE_CONFIDENCE: return BypassReason.LOW_CONFIDENCE
     
     if str(finalized.distrust_level).upper() in BYPASS_DISTRUST_LEVELS: return BypassReason.DISTRUST_HIGH
@@ -179,20 +198,34 @@ def _write_bypass_reason(finalized: FinalizedDecision) -> Optional[str]:
 
 def cache_get(context: CacheContext, *, governance_flags: List[Any], current_distrust_level: Optional[str], trace_id: str, scenario_type: str) -> Tuple[Optional[FinalizedDecision], str]:
     cache_key = context.cache_key
-    print(f"DEBUG CACHE_GET: Key={cache_key[:8]}... | Norm={context.normalized_issue}")
     bypass = _read_bypass_reason(governance_flags, current_distrust_level)
-    if bypass: return None, "BYPASS"
+    
+    if bypass:
+        event_bus.emit_event("CACHE_BYPASS", trace_id, scenario=scenario_type, metadata={"reason": bypass, "op": "read"})
+        return None, "BYPASS"
+        
     row = memory_db.cache_read(COMPONENT_NAME, cache_key)
-    if row is None: return None, "MISS"
+    if row is None:
+        event_bus.emit_event("CACHE_MISS", trace_id, scenario=scenario_type, metadata={"normalized_issue": context.normalized_issue})
+        return None, "MISS"
+        
     snapshot = json.loads(row["decision_snapshot_json"])
     finalized = FinalizedDecision.from_payload(snapshot)
-    print(f"DEBUG CACHE_GET: HIT!")
+    
+    memory_db.cache_touch_hit(COMPONENT_NAME, cache_key)
+    event_bus.emit_event("CACHE_HIT", trace_id, scenario=scenario_type, metadata={
+        "source_trace_id": row["source_trace_id"],
+        "hit_count": row["hit_count"] + 1,
+        "age_seconds": (datetime.utcnow() - datetime.fromisoformat(row["created_at"])).total_seconds()
+    })
     return finalized, "HIT"
 
 def cache_put(context: CacheContext, finalized: FinalizedDecision, *, trace_id: str, scenario_type: str) -> Tuple[bool, str]:
-    print(f"DEBUG CACHE_PUT: Key={context.cache_key[:8]}... | Decision={finalized.final_decision}")
     bypass = _write_bypass_reason(finalized)
-    if bypass: return False, "BYPASS"
+    if bypass:
+        event_bus.emit_event("CACHE_BYPASS", trace_id, scenario=scenario_type, metadata={"reason": bypass, "op": "write"})
+        return False, "BYPASS"
+        
     snapshot_json = json.dumps(finalized.to_event_payload(), ensure_ascii=False, sort_keys=True)
     wrote = memory_db.cache_write(
         COMPONENT_NAME, cache_key=context.cache_key, scenario_type=context.scenario_type, normalized_issue=context.normalized_issue,

@@ -1,5 +1,6 @@
 from typing import List, Dict
 from pathlib import Path
+from datetime import datetime
 from .execution_mode import EXECUTION_OVERLAY_MINIMAL
 
 class PromptBuilder:
@@ -26,12 +27,16 @@ class PromptBuilder:
         constraints = agent_config.get("constraints", [])
         domain = agent_config.get("domain", "unassigned")
         
+        current_time = datetime.now().isoformat()
+        
         law_summary = "\n".join([f"  - {l['id']}: {l['rule']}" for l in laws])
         constraint_summary = "\n".join([f"  - {c}" for c in constraints])
         
         base = f"""You are {name}, the {title} of the A.G.E.N.T.S. network.
         
 MISSION: {mission}
+
+CURRENT_SYSTEM_TIME: {current_time}
 
 YOUR CHARTER:
 {charter}
@@ -52,10 +57,11 @@ OPERATIONAL STANCE:
 """
 
         if execution_mode:
-            overlay = EXECUTION_OVERLAY_MINIMAL
+            overlay = "\n--- DISCIPLINE ENFORCEMENT ---\n"
+            overlay += EXECUTION_OVERLAY_MINIMAL
             if required_output_format:
-                overlay += (
-                    "\nREQUIRED OUTPUT FORMAT (return only this artifact):\n"
+                base += (
+                    "\nREQUIRED TASK SCHEMA (use this for the ARTIFACT block):\n"
                     f"{required_output_format}\n"
                 )
             if verbosity == "minimal":

@@ -6,39 +6,21 @@ from langchain_core.messages import (
     AIMessage
 )
 from langchain_google_genai import ChatGoogleGenerativeAI
-from .roster import AGENTS, fast, gemini
+from .roster import AGENTS, fast, gemini, senior
 from .prompt_builder import PromptBuilder
 from .core import GovernanceEngine
 from .execution_mode import (
-    OutputContract,
-    ContentQuality,
-    build_email_draft_v1_system_prompt,
-    build_morning_brief_v1_system_prompt,
+    OutputContract, 
+    ContentQualityResult,
     build_plan_v1_system_prompt,
     build_implementation_plan_v1_system_prompt,
-    build_proposal_v1_system_prompt,
-    build_tool_call_v1_system_prompt,
     build_decision_v1_system_prompt,
-    build_vote_v1_system_prompt,
-    build_audit_log_v1_system_prompt,
     build_critique_v1_system_prompt,
+    build_audit_log_v1_system_prompt,
+    build_email_draft_v1_system_prompt
 )
 from .telemetry import TELEMETRY
 from .logic import event_bus
-from .logic.event_bus import generate_trace_id
-from .logic.event_analytics import get_recent_decisions_from_events, get_risk_trend_from_events, get_structured_memory, format_memory_for_agents
-from .logic.governance_engine import evaluate_governance, has_critical_flag, format_flags_for_agents
-from .logic.history_engine import get_relevant_memory
-from .operators.construction_op import ConstructionOperator
-from .logic.risk_engine import calculate_risk_score
-from .tools import safe_file_write, safe_file_read, safe_list_files, safe_shell_command
-from .google_operator import GmailOperator, CalendarOperator 
-from .logic.owen_engine import OwenEngine
-from .logic import memory_db
-from .logic import memory_cache
-from .logic.input_sanitiser import MAX_DELAY_DAYS_SOFT, sanitise_construction_input
-from .logic.memory_contract import MemoryDomain
-from datetime import datetime
 import json
 import uuid
 import os
@@ -47,49 +29,45 @@ from pathlib import Path
 from typing import Any, List, Dict, Generator, Optional, Tuple
 
 # Orchestrator uses Gemini for high-speed routing to avoid local hardware lag
-router_llm = ChatGoogleGenerativeAI(
-    model="gemini-3-flash-preview",
-    google_api_key=os.getenv("GOOGLE_API_KEY", "missing"),
-    temperature=0
-)
+router_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
-ROUTER_PROMPT = """
-You are the A.G.E.N.T.S. routing system.
-Your job is to read the Gatekeeper's message and 
-decide which agent or agents should respond.
-
-Available agents and their roles:
-{agent_list}
-
-Rules:
-- If the message names an agent directly (e.g. "Owen, analyze..."), route to them.
-- If unclear, route to Aria (CEO) as default.
-- If message needs multiple agents, list all of them.
-- For ADHD/overwhelm signals, always include Eli.
-- For any compliance question, always include Marcus.
-- Return ONLY a JSON list of agent keys (e.g. ["aria", "owen"]). No explanation.
-"""
- 
 # Model map for specific contracts
 CONTRACT_MODEL_MAP = {
     "morning_brief_v1": gemini,
-    "email_draft_v1": gemini,
-    "plan_v1": gemini,
+    "email_draft_v1": senior,
+    "plan_v1": senior,
+    "implementation_plan_v1": senior,
     "tool_call_v1": gemini,
+    "critique_v1": senior,
+    "decision_v1": senior,
+    "audit_log_v1": gemini,
 }
 
+def generate_trace_id():
+    return str(uuid.uuid4())[:8]
+
 class Orchestrator:
-    
     def __init__(self):
         self.conversation_history = []
-        self.session_id = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        self.data_dir = Path("data")
-        self.log_dir = Path("Agent logs")
-        self.log_dir.mkdir(parents=True, exist_ok=True)
+        from .logic.owen_engine import OwenEngine
         self.owen_engine = OwenEngine()
-        
+
+    def _pre_sanitize_thinking(self, text: str) -> str:
+        """Surgically strip known meta-language from reasoning before it reaches the extractor."""
+        if not text: return ""
+        # Broad spectrum meta-language removal
+        meta_patterns = [
+            r"within my charter", r"as an ai", r"as a system auditor", r"according to (my )?policy",
+            r"according to (the )?constitution", r"law [gagnstp]\d+", r"governance constraint",
+            r"mission objective", r"gatekeeper approval", r"system-forced", r"re-run decision turn",
+            r"instruction follows", r"strict rule", r"i will reason", r"reasoning follows"
+        ]
+        for p in meta_patterns:
+            text = re.sub(rf"(?i)\b{p}\b[.?!]?\s*", "", text)
+        return text.strip()
+
     def _normalize_model_content(self, content: Any) -> str:
-        """Collapse provider-specific content blocks into readable plain text."""
+        """Safely extract string content from various LangChain message types."""
         if content is None:
             return ""
         if isinstance(content, str):
@@ -98,97 +76,90 @@ class Orchestrator:
             parts: List[str] = []
             for item in content:
                 res = self._normalize_model_content(item)
-                if res:
-                    parts.append(res)
-            return "\n".join(parts).strip()
+                if res: parts.append(res)
+            return "".join(parts)
         if isinstance(content, dict):
-            text = content.get("text")
-            if text:
-                return str(text)
+            if "text" in content: return str(content["text"])
+            if "content" in content: return self._normalize_model_content(content["content"])
         return str(content)
 
-    def _build_agent_list(self) -> str:
-        lines = []
-        for key, agent in AGENTS.items():
-            lines.append(f"- {key}: {agent['name']} ({agent['title']})")
-        return "\n".join(lines)
-
-    def _construction_acknowledgement(self, scenario_type: str) -> str:
-        scenario = scenario_type.lower()
-        if scenario in {"variation", "rfi", "delay", "site_issue"}:
-            return (
-                "Aria: Acknowledge Dale, now engaging: "
-                "NADIA (plan_v1), TUCKER (implementation_plan_v1), "
-                "WALL-E (critique_v1), Myself (decision_v1), "
-                "JENNY (email_draft_v1), WALL-E (audit_log_v1)."
-            )
-        return "Aria: Acknowledge Dale, now engaging the requested workflow."
-
-    def _summarize_operator_subject(self, scenario_type: str, user_input: str) -> str:
-        raw = " ".join(str(user_input or "").split()).strip()
-        if not raw:
-            return scenario_type.replace("_", " ").title()
-        raw = re.sub(r"^\s*(variation|rfi|delay|issue)\s*:\s*", "", raw, flags=re.IGNORECASE)
-        raw = re.sub(r"\s*Cost impact:\s*\$?[\d,]+(?:\.\d+)?\.?", "", raw, flags=re.IGNORECASE)
-        raw = re.sub(r"\s*Delay:\s*\d+\s*days?\.?", "", raw, flags=re.IGNORECASE)
-        raw = raw.strip(" .;-")
-        if len(raw) > 110:
-            raw = raw[:107].rstrip() + "..."
-        return raw or scenario_type.replace("_", " ").title()
-
-    def _format_sse(self, agent_label: str, payload: Any) -> str:
-        text = str(payload or "")
-        lines = text.splitlines() or [""]
-        return "\n".join(f"data: [{agent_label}] {line}" for line in lines) + "\n\n"
-    
-    def _route_message(self, message: str) -> List[str]:
-        message_lower = message.lower()
-        direct_mentions = []
-        for key, agent in AGENTS.items():
-            if any(t in message_lower for t in agent["triggers"]):
-                if key not in direct_mentions:
-                    direct_mentions.append(key)
-        if direct_mentions:
-            return direct_mentions
-        try:
-            response = router_llm.invoke([
-                SystemMessage(content=ROUTER_PROMPT.format(agent_list=self._build_agent_list())),
-                HumanMessage(content=message)
-            ])
-            if hasattr(response, "usage_metadata"):
-                TELEMETRY.record(response.usage_metadata, router_llm.model)
-            content = self._normalize_model_content(response.content)
-            if content.startswith("```json"):
-                content = content.replace("```json", "").replace("```", "").strip()
-            elif content.startswith("```"):
-                content = content.replace("```", "").strip()
-            agents = json.loads(content)
-            return agents if isinstance(agents, list) else ["aria"]
-        except Exception as e:
-            print(f"Routing Error: {e}. Defaulting to Aria.")
-            return ["aria"]
+    def _format_sse(self, agent_name: str, text: str) -> str:
+        return f"data: [{agent_name}] {text}\n\n"
 
     async def _execute_contract_turn(self, agent_key: str, prompt_builder, input_message: str, contract_id: str, execution_context: str = "", trace_id: str = "N/A") -> Tuple[str, bool, str]:
         agent = AGENTS.get(agent_key)
         if not agent:
             return json.dumps({"error": "agent_not_found"}), False, "agent_not_found"
+        
         agent_name = agent['name'].upper()
-        system_prompt = prompt_builder()
-        full_input = f"CONTEXT:\n{execution_context}\n\nUSER REQUEST:\n{input_message}" if execution_context else input_message
-        messages = [SystemMessage(content=system_prompt), HumanMessage(content=full_input)]
         active_llm = CONTRACT_MODEL_MAP.get(contract_id, gemini)
-        print(f"[LOOP] Executing {agent_name} ({contract_id})...")
-        resp = active_llm.invoke(messages)
-        if hasattr(resp, "usage_metadata"):
-            TELEMETRY.record(resp.usage_metadata, getattr(active_llm, "model", "local"))
-        response_text = self._normalize_model_content(resp.content)
+        
+        # --- PASS 1: THINKING (Pure Reasoning) ---
+        full_system_prompt = prompt_builder()
+        # We strip the formatting rules for this pass to let the model reason naturally
+        thinking_prompt = full_system_prompt.split("--- DISCIPLINE ENFORCEMENT ---")[0]
+        thinking_prompt += "\n\nSTRICT RULE: Reason through the request and determine the correct output content. Do not output JSON yet. Focus on logic, governance, and technical accuracy."
+        
+        full_input = f"CONTEXT:\n{execution_context}\n\nUSER REQUEST:\n{input_message}" if execution_context else input_message
+        messages = [SystemMessage(content=thinking_prompt), HumanMessage(content=full_input)]
+        
+        print(f"[LOOP] [{agent_name}] PASS 1 (Reasoning)...")
+        thinking_resp = active_llm.invoke(messages)
+        if hasattr(thinking_resp, "usage_metadata"):
+            TELEMETRY.record(thinking_resp.usage_metadata, getattr(active_llm, "model", "local"))
+        thinking_text = self._normalize_model_content(thinking_resp.content)
+        
+        # --- PASS 2: EMIT (Strict JSON Extraction) ---
+        emit_prompt = f"""You are the Artifact Extraction Engine for {agent_name}.
+Your job is to convert the reasoning provided below into a strict, production-ready JSON artifact.
+
+REASONING TO PROCESS:
+{thinking_text}
+
+STRICT EXTRACTION RULES:
+1. Output ONLY raw JSON. No prose, no markdown, no fences.
+2. STRIP ALL META-LANGUAGE: Remove phrases like "As an AI", "Within my charter", "According to policy", "Law G1", etc.
+3. PROFESSIONALIZE: Convert reasoning conclusions into professional construction industry language.
+4. REQUIRED FIELDS: Ensure every field in the schema is populated. 
+   - For email_draft_v1: Always include a 'to' address (e.g., 'site-manager@construction.com' if not specified).
+   - For audit_log_v1: Ensure the 'audit_entry' object is complete.
+   - For decision_v1: Populate 'confidence_score' (0.0-1.0) and 'confidence_reason' based on the reasoning.
+"""
+        # Append the schema from the prompt builder if present
+        if "REQUIRED TASK SCHEMA" in full_system_prompt:
+            try:
+                schema_part = full_system_prompt.split("REQUIRED TASK SCHEMA")[1].split("---")[0]
+                emit_prompt += "\n\nSCHEMA:\n" + schema_part
+            except IndexError:
+                pass
+
+        print(f"[LOOP] [{agent_name}] PASS 2 (Emission)...")
+        # Pass 2 uses a minimal, high-discipline turn
+        emit_resp = active_llm.invoke([HumanMessage(content=emit_prompt)])
+        if hasattr(emit_resp, "usage_metadata"):
+            TELEMETRY.record(emit_resp.usage_metadata, getattr(active_llm, "model", "local"))
+        artifact_text = self._normalize_model_content(emit_resp.content)
+        
+        reconstructed_full = f"THINKING:\n{thinking_text}\n\nARTIFACT:\n{artifact_text}"
+        
+        # Phase 5.2.1: Strict Sanitization & Discipline Gate
+        from .logic.sanitizer import ContractSanitizer
+        sanitized_obj, success, repaired, violations = ContractSanitizer.process(reconstructed_full, contract_id)
+        
+        if not success:
+            reason = f"discipline_violation: {', '.join(violations[:2])}"
+            print(f"[LOOP] {agent_key.upper()} discipline violation: {reason}")
+            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": reason, "violations": violations})
+            return reconstructed_full, False, reason
+
         contract = OutputContract()
-        validation = contract.validate(response_text, execution_mode=True, required_format=contract_id)
-        if not validation.ok:
-            print(f"[LOOP] {agent_key.upper()} format violation: {validation.reason}")
-            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": validation.reason})
-            return response_text, False, validation.reason or "validation_failed"
-        return response_text, True, ""
+        schema_res = contract.conforms_to_contract(sanitized_obj, contract_id)
+        if not schema_res.ok:
+            print(f"[LOOP] {agent_key.upper()} schema violation: {schema_res.reason}")
+            event_bus.emit_event("CONTRACT_VALIDATION_FAILED", trace_id, agent_id=agent_key, metadata={"contract": contract_id, "reason": schema_res.reason})
+            return json.dumps(sanitized_obj), False, schema_res.reason or "schema_mismatch"
+
+        return json.dumps(sanitized_obj), True, "repaired" if repaired else ""
 
     async def astream_chat(self, message: str) -> Generator[str, None, None]:
         print(f"[ORCHESTRATOR] Routing message: {message[:50]}...")
@@ -226,33 +197,36 @@ class Orchestrator:
             messages = [SystemMessage(content=PromptBuilder.build_system_prompt(agent, GovernanceEngine().constitution["laws"], GovernanceEngine().mission["mission"], execution_mode=False))]
             for ctx in self.conversation_history[-6:]: messages.append(ctx)
             messages.append(HumanMessage(content=message))
-            active_llm = agent["llm"]
-            async for chunk in active_llm.astream(messages):
+            
+            active_llm = senior if key == "aria" else gemini
+            for chunk in active_llm.stream(messages):
                 token_text = self._normalize_model_content(chunk.content)
                 if token_text:
                     full_responses[key] += token_text
                     yield self._format_sse(f"{agent_name}:", token_text)
             yield f"data: [{agent_name}] END\n\n"
-        combined_response_str = "\n\n".join([f"[{AGENTS[k]['name']}]: {v}" for k, v in full_responses.items()])
-        self.conversation_history.append(AIMessage(content=combined_response_str))
 
     async def _run_generic_construction_loop(self, scenario_type: str, user_input: str, trace_id: str) -> Generator[str, None, None]:
-        scenario_label = scenario_type.upper()
-        event_bus.emit_event("LOOP_STARTED", trace_id, scenario=scenario_type, metadata={"input": user_input})
-        yield f"data: [ARIA] {self._construction_acknowledgement(scenario_type)}\n\n"
-        yield f"data: [SYSTEM] Initiating {scenario_label} Loop... [Trace: {trace_id[:8]}]\n\n"
+        from .logic.governance_engine import evaluate_governance, format_flags_for_agents
+        from .logic.history_engine import get_relevant_memory
         
-        risk_trend = get_risk_trend_from_events()
-        trend_str = f"RISK TREND: {risk_trend['direction'].upper()} (last 5: {risk_trend['avg_5']}, last 10: {risk_trend['avg_10']})"
+        scenario_label = scenario_type.upper()
+        yield f"data: [SYSTEM] Initiating {scenario_label} Loop... [Trace: {trace_id}]\n\n"
+        
+        from .logic.event_analytics import get_risk_trend_from_events
+        trend = get_risk_trend_from_events()
+        trend_str = f"RISK TREND: {trend['direction']} (last 5: {trend['avg_5']}, last 10: {trend['avg_10']})"
         yield f"data: [SYSTEM] Current Project Health: {trend_str}\n\n"
-
-        sanitised = sanitise_construction_input(scenario_type, user_input)
-        if not sanitised.valid:
-            event_bus.emit_event("INPUT_INVALIDATED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={"status": sanitised.status, "reason": sanitised.reason})
-            yield f"data: [SYSTEM] INPUT VALIDATION FAILED: {sanitised.reason}\n\n"
+        
+        from .logic.input_sanitiser import sanitise_construction_input
+        sanitisation = sanitise_construction_input(scenario_type, user_input)
+        if sanitisation.status == "FAIL":
+            yield f"data: [SYSTEM] INPUT VALIDATION FAILED: {sanitisation.reason}\n\n"
             return
-
-        cost, days = sanitised.cost, sanitised.days
+            
+        cost, days = sanitisation.cost, sanitisation.days
+        
+        from .logic.risk_engine import calculate_risk_score
         risk_score = calculate_risk_score(scenario_type, cost, days, user_input)
         yield f"data: [SYSTEM] Calculated Risk Score: {risk_score}\n\n"
         
@@ -269,7 +243,6 @@ class Orchestrator:
         _cache_penalty, _cache_dpi, _current_distrust_level = compute_current_distrust_level(scenario_type)
         _cache_context = decision_cache.build_cache_context(scenario_type=scenario_type, user_input=user_input, cost=cost, days=days, governance_flags=governance_flags)
 
-        # === PHASE 2 ELI INTEGRATION ===
         from .logic.momentum_engine import analyze_momentum
         from .logic.eli_adapter_v1 import transform_signal_to_actions
         from .logic.task_queue import enqueue_logistics_task
@@ -311,6 +284,8 @@ class Orchestrator:
 
             decision_data = OutputContract()._parse_json_object(decision_raw)
             finalized = finalize_decision(decision_data=decision_data or {}, decision_valid=decision_valid, decision_error_reason=decision_error_reason, risk_score=risk_score, governance_flags=governance_flags, critique_data=OutputContract()._parse_json_object(critique_raw), memory_count=memory["count"], trace_id=trace_id, scenario_type=scenario_type, momentum_signal=_momentum_signal, outcome_score=0, user_input=user_input)
+            
+            event_bus.emit_event("DECISION_FINALIZED_V1", trace_id, scenario=scenario_type, metadata=finalized.to_event_payload())
             decision_cache.cache_put(_cache_context, finalized, trace_id=trace_id, scenario_type=scenario_type)
 
         yield f"data: [JENNY] START\n\n"
@@ -318,50 +293,41 @@ class Orchestrator:
         yield self._format_sse("JENNY:", email_raw); yield f"data: [JENNY] END\n\n"
 
         email_data = OutputContract()._parse_json_object(email_raw) or {}
-        actions_array = [{"type": "gmail_draft", "priority": "high", "payload": email_data}] if finalized.final_decision == "APPROVE" else [{"type": "audit_log", "reason": "record escalation"}]
         
-        # === CONFIDENCE & SATURATION GATE ENFORCEMENT ===
-        if finalized.gate_action == "SUPPRESS":
-            reason = "saturation_limit" if finalized.saturation_status != "PASS" else "low_confidence"
-            yield f"data: [SYSTEM] 🛑 ACTION SUPPRESSED: {reason.replace('_', ' ').title()} ({finalized.confidence_adjusted:.2f}). No proposal created.\n\n"
-            event_bus.emit_event("ACTION_SUPPRESSED", trace_id, agent_id="SYSTEM", scenario=scenario_type, metadata={"reason": reason, "confidence": finalized.confidence_adjusted, "saturation_status": finalized.saturation_status})
-            return
-
-        requires_approval = True
-        shadow_mode_active = os.getenv("AGENTS_SHADOW_MODE", "true").lower() == "true"
-        
-        if finalized.gate_action == "AUTO_ACT":
-            if shadow_mode_active:
-                yield f"data: [SYSTEM] 🛡️ SHADOW MODE: Decision is AUTO-ELIGIBLE ({finalized.confidence_adjusted:.2f}) but human approval forced for validation.\n\n"
-                requires_approval = True
-            else:
-                yield f"data: [SYSTEM] ⚡ AUTO-ACT: High confidence decision ({finalized.confidence_adjusted:.2f}). Proceeding to preflight.\n\n"
-                requires_approval = False
-
-        action_intent = {
-            "action": "operator_bundle", "agent_id": "system", "parameters": {"decision": finalized.final_decision, "confidence": finalized.confidence_score, "actions": actions_array},
-            "trace_id": trace_id, "requires_approval": requires_approval, "status": "pending",
-            "metadata": {
-                "scenario": scenario_type, 
-                "risk_score": risk_score, 
-                "final_decision": finalized.final_decision, 
-                "final_justification": finalized.final_justification,
-                "governance_flags": finalized.governance_flags,
-                "owen_briefing": owen_briefing,
-                "why": finalized.why,
-                "shadow_mode": shadow_mode_active,
-                "auto_eligible": finalized.gate_action == "AUTO_ACT",
-                "risk_level": finalized.risk_level,
-                "gate_action": finalized.gate_action
+        from .preflight_validator import create_or_get_request
+        request = create_or_get_request(
+            action_intent={
+                "action": "operator_bundle",
+                "agent_id": "SYSTEM",
+                "parameters": {
+                    "scenario_type": scenario_type,
+                    "user_input": user_input,
+                    "risk_score": risk_score,
+                    "decision": finalized.final_decision,
+                    "justification": finalized.final_justification,
+                    "confidence": finalized.confidence_score,
+                    "plan": OutputContract()._parse_json_object(plan_raw),
+                    "implementation_plan": OutputContract()._parse_json_object(impl_plan_raw),
+                    "email_draft": email_data
+                },
+                "trace_id": trace_id,
+                "requires_approval": True,
+                "status": "pending"
             }
-        }
-        from . import preflight_validator as firewall
-        request = firewall.create_or_get_request(action_intent=action_intent)
+        )
+        
         yield f"data: [SYSTEM] PROPOSAL CREATED. Request ID: {request['request_id']}\n\n"
-
+        
         yield f"data: [WALL-E] START\n\n"
-        audit_raw, _, _ = await self._execute_contract_turn("wall-e", build_audit_log_v1_system_prompt, f"Decision: {finalized.final_decision}", "audit_log_v1", trace_id=trace_id)
-        ConstructionOperator.log_to_sentinel(f"{scenario_label}_LOOP", "WALL-E", user_input, audit_raw)
+        audit_raw, _, _ = await self._execute_contract_turn("wall-e", build_audit_log_v1_system_prompt, f"Action: {scenario_label}\nDecision: {finalized.final_decision}\nProposal ID: {request['request_id']}", "audit_log_v1", trace_id=trace_id)
         yield self._format_sse("WALL-E:", audit_raw); yield f"data: [WALL-E] END\n\n"
         
         event_bus.emit_event("LOOP_COMPLETE", trace_id, scenario=scenario_type, metadata={"status": "awaiting_approval", "request_id": request['request_id']})
+
+    def _route_message(self, message: str) -> List[str]:
+        """Simple keyword-based routing for non-construction chat."""
+        msg = message.lower()
+        if any(k in msg for k in ["hello", "hi", "hey"]): return ["jenny"]
+        if any(k in msg for k in ["plan", "build", "strategy"]): return ["nadia"]
+        if any(k in msg for k in ["code", "engineer", "tucker"]): return ["tucker"]
+        return ["aria"]

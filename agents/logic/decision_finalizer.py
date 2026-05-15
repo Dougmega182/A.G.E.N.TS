@@ -277,23 +277,33 @@ def finalize_decision(
     confidence_reason = str(decision_data.get("confidence_reason", "No confidence reason provided."))
 
     # --- OVERRIDE 1: Contract validation failure (highest priority) ---
-    if not decision_valid or not decision_data:
+    is_repaired = decision_error_reason == "repaired"
+    
+    if not decision_valid or not decision_data or is_repaired:
         failure_reason = decision_error_reason or "decision_payload_unparseable"
-        final_decision = "ESCALATE"
-        final_justification = (
-            f"Technical Logic Failure: decision_v1 validation failed ({failure_reason}). "
-            f"System-forced escalation to protect project integrity."
-        )
-        override_chain.append("CONTRACT_VALIDATION_FAILURE")
-        primary_reason = "contract_failure"
-        was_system_forced = True
-        # Replace decision_data with safe defaults
-        decision_data = {
-            "decision": "ESCALATE",
-            "justification": final_justification,
-            "conditions": ["Manual human review required", "Re-run decision turn with valid contract payload"],
-            "impact": {"cost": 0, "days": 0, "risk_delta": 0},
-        }
+        
+        if is_repaired:
+            # If repaired, we have valid data but we MUST block AUTO_ACT
+            override_chain.append("CONTRACT_DISCIPLINE_REPAIR")
+            primary_reason = "contract_repair_required"
+            was_system_forced = True
+            warnings.append("AUTOMATED_DISCIPLINE_REPAIR_PERFORMED")
+        else:
+            final_decision = "ESCALATE"
+            final_justification = (
+                f"Technical Logic Failure: decision_v1 validation failed ({failure_reason}). "
+                f"System-forced escalation to protect project integrity."
+            )
+            override_chain.append("CONTRACT_VALIDATION_FAILURE")
+            primary_reason = "contract_failure"
+            was_system_forced = True
+            # Replace decision_data with safe defaults
+            decision_data = {
+                "decision": "ESCALATE",
+                "justification": final_justification,
+                "conditions": ["Manual human review required", "Re-run decision turn with valid contract payload"],
+                "impact": {"cost": 0, "days": 0, "risk_delta": 0},
+            }
 
     # --- OVERRIDE 2: CRITICAL governance flags (only if not already forced) ---
     if not was_system_forced and has_critical_flag(governance_flags) and final_decision == "APPROVE":
@@ -376,12 +386,15 @@ def finalize_decision(
         why += f" | {conflict_status}"
 
     # --- DETERMINE RISK LEVEL (Discipline Layer) ---
-    if risk_score < 0.4 and not has_critical_flag(governance_flags):
-        risk_level = "SAFE"
-    elif risk_score < 0.75:
-        risk_level = "CONTROLLED"
-    else:
+    input_lower = user_input.lower()
+    forced_critical = any(k in input_lower for k in ["financial", "security", "critical", "structural", "dangerous"])
+    
+    if forced_critical or risk_score >= 0.7 or has_critical_flag(governance_flags):
         risk_level = "CRITICAL"
+    elif risk_score < 0.4:
+        risk_level = "SAFE"
+    else:
+        risk_level = "CONTROLLED"
 
     # --- FINAL STEP: RISK-TIERED CONFIDENCE GATE (Pre-Act Enforcement) ---
     gate_action = "REQUIRE_APPROVAL"

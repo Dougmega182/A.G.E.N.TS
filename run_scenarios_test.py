@@ -24,12 +24,19 @@ async def main():
     # For a brutal test, we'll let it append and check the trend.
     
     scenarios = [
-        "Variation: +10k, +2 days, structural change",
-        "Delay: 3 days, heavy rain",
-        "RFI: missing footing detail"
+        "Variation: Cost impact: $12000. Delay: 5 days. Redesign foundation for clay substrate. Require [INSERT_ENGINEER_NAME].",
+        "Delay: Cost impact: $0. Delay: 10 days. Strike at port affecting delivery of steel. TODO: follow up with supplier.",
+        "RFI: Cost impact: $0. Delay: 0 days. Clashing services in trench. [Note: Aria thinks we should escalate].",
+        "Variation: Cost impact: $45000. Delay: 12 days. Change lobby tiles to acoustic grade. {{policy_exception}} needed.",
+        "Site issue: Cost impact: $1000. Delay: 1 day. Minor spill on site. As an AI, I suggest...",
+        "RFI: Cost impact: $0. Delay: 0 days. Window schedule mismatch on drawing W-01. FIXME: Check revision C.",
+        "Delay: Cost impact: $0. Delay: 20 days. Scheduled for today 2024-05-01.",
+        "Variation: Cost impact: $5000. Delay: 2 days. Upgrade to Level 2 security doors. Within my charter, I recommend...",
+        "Site issue: Cost impact: $0. Delay: 0 days. Gate left open overnight. Lorem ipsum...",
+        "RFI: Cost impact: $0. Delay: 0 days. Plumbing stack location mismatch. {{missing_data}}."
     ]
     
-    print(f"--- STARTING MULTI-SCENARIO PLATFORM TEST (PHASE 3) ---")
+    print(f"--- STARTING DIRTY-10 STRESS TEST (GAMMA SIGNAL) ---")
     
     for msg in scenarios:
         await run_test(orchestrator, msg)
@@ -42,9 +49,11 @@ async def main():
             print(f"Variation Count: {len(state.get('variations', []))}")
             print(f"Delay Count: {len(state.get('delays', []))}")
             print(f"RFI Count: {len(state.get('rfis', []))}")
-            print(f"Current Cost: A${state['current_cost']}")
-            print(f"Risk Trend: {state['risk_trend']['direction'].upper()}")
-            print(f"Avg 5: {state['risk_trend']['avg_5']} | Avg 10: {state['risk_trend']['avg_10']}")
+            print(f"Current Cost: A${state.get('current_cost', 0)}")
+            
+            risk_trend = state.get('risk_trend', {})
+            print(f"Risk Trend: {risk_trend.get('direction', 'UNKNOWN').upper()}")
+            print(f"Avg 5: {risk_trend.get('avg_5', 0)} | Avg 10: {risk_trend.get('avg_10', 0)}")
             
             # Check for conflict tracking in last record
             if state.get("decision_history"):

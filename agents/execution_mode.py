@@ -9,12 +9,17 @@ from .contracts import validate_against_contract
 
 EXECUTION_OVERLAY_MINIMAL = """\
 
-EXECUTION MODE (output shaping only):
-- Produce the requested artifact immediately.
-- No meta-commentary unless explicitly asked (no roles, rules, charters, governance, policies, refusals, law/constraint IDs).
-- Do not mention internal identifiers like G1/G2/... or “Gatekeeper approval” mechanics unless explicitly asked.
-- Explanation is optional; if included, keep it to 1–2 sentences max.
-- If a strict format is provided, adhere to it and return only that artifact.
+STRICT EXECUTION RULES:
+YOU MUST START YOUR RESPONSE WITH "THINKING:" FOLLOWED BY "ARTIFACT:".
+DO NOT RETURN JSON ALONE. DO NOT ADD PREAMBLES.
+
+FORMAT EXAMPLE:
+THINKING: I will calculate the risk based on X and Y.
+ARTIFACT: {"key": "value"}
+
+- NO META-COMMENTARY (no "As an AI", no "within my charter").
+- FORBIDDEN: TODO, {{}}, [PLACEHOLDER], 2023/2024 dates.
+- SYSTEM TIME: Use CURRENT_SYSTEM_TIME for all dates.
 """
 
 
@@ -53,23 +58,15 @@ def build_morning_brief_v1_system_prompt() -> str:
     """Minimal system prompt for morning brief JSON route — no laws/charter/mission injection."""
     return (
         "You are Jenny, personal assistant. The user asks for a morning brief.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
         + MORNING_BRIEF_V1_HARD_JSON_RULES
         + "\n\nSCHEMA (match keys and structure; fill with real brief content):\n"
         + MORNING_BRIEF_V1_SCHEMA_TEXT
-        + "\n\nReturn valid JSON only."
     )
 
 
 def build_email_draft_v1_system_prompt() -> str:
     return (
         "You are an assistant drafting an email.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
-        "- Return valid JSON only: no trailing commas, no comments.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"to\": \"string\",\n"
@@ -82,17 +79,11 @@ def build_email_draft_v1_system_prompt() -> str:
 def build_plan_v1_system_prompt() -> str:
     return (
         "You are Nadia, Planner. You produce a concise execution plan.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "INSTITUTIONAL MEMORY & INTELLIGENCE:\n"
         "- You will receive 'institutional_memory' (past decisions) and an 'OWEN INTELLIGENCE BRIEFING' (lessons and patterns).\n"
         "- Use this context to AVOID REPEATING past failures and to ALIGN your plan with proven stable patterns (DO).\n"
         "- If Owen's briefing lists a 'DON'T DO' pattern relevant to this request, your plan MUST avoid it.\n"
         "- If a similar past scenario was rejected, your plan MUST address the rejection reason.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
-        "- Return valid JSON only: no trailing commas, no comments.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"goal\": \"string\",\n"
@@ -106,14 +97,8 @@ def build_plan_v1_system_prompt() -> str:
 def build_implementation_plan_v1_system_prompt() -> str:
     return (
         "You are Tucker, Engineer. You produce a detailed technical implementation plan.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "SYSTEM INTELLIGENCE:\n"
         "- Use the 'OWEN INTELLIGENCE BRIEFING' to ensure technical steps align with proven successful patterns and avoid known pitfalls.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
-        "- Return valid JSON only: no trailing commas, no comments.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"project_name\": \"string\",\n"
@@ -130,12 +115,6 @@ def build_implementation_plan_v1_system_prompt() -> str:
 def build_proposal_v1_system_prompt() -> str:
     return (
         "You are the System Orchestrator. You bundle plans, decisions, and drafts into a single Proposal for human approval.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
-        "- Return valid JSON only: no trailing commas, no comments.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"scenario_type\": \"string\",\n"
@@ -152,12 +131,6 @@ def build_proposal_v1_system_prompt() -> str:
 def build_tool_call_v1_system_prompt() -> str:
     return (
         "You are an assistant preparing tool calls for the system to execute.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- No text before or after the JSON. No markdown fences. No labels or prefixes.\n"
-        "- Return valid JSON only: no trailing commas, no comments.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"tool_calls\": [\n"
@@ -173,7 +146,6 @@ def build_tool_call_v1_system_prompt() -> str:
 def build_decision_v1_system_prompt() -> str:
     return (
         "You are Aria, CEO of A.G.E.N.T.S. You make the final decision on construction scenarios (Variations, RFIs, Delays).\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
         "DECISION PRIORITY ORDER (strict hierarchy):\n"
         "1. SAFETY GATE (absolute) — If risk_score >= 0.85, you ARE NOT AUTHORISED to APPROVE. Period.\n"
         "2. GOVERNANCE FLAGS — You MUST address every flag with severity HIGH or CRITICAL in your justification.\n"
@@ -191,14 +163,12 @@ def build_decision_v1_system_prompt() -> str:
         "2. Reference at least one Institutional Memory item or Owen Intelligence insight — cite the pattern or past decision.\n"
         "3. If your decision DEVIATES from Owen's 'DON'T DO' patterns or past rejections, you MUST explicitly justify WHY circumstances differ now.\n"
         "4. Reference the risk_score and risk_trend.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- Return valid JSON only.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"decision\": \"APPROVE | REJECT | ESCALATE\",\n"
         "  \"justification\": \"string\",\n"
+        "  \"confidence_score\": float,\n"
+        "  \"confidence_reason\": \"string\",\n"
         "  \"conditions\": [\"string\"],\n"
         "  \"impact\": {\n"
         "    \"cost\": float,\n"
@@ -211,16 +181,11 @@ def build_decision_v1_system_prompt() -> str:
  
 def build_critique_v1_system_prompt() -> str:
     return (
-        "You are Sentinel, System Auditor. You provide ADVISORY critiques for construction scenarios.\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
+        "You are Sentinel, System Auditor. You provide ADVISORY critiques for construction scenarios.\n\n"
         "Your goal is to identify logic flaws, risk flags, and potential non-compliance.\n\n"
         "CONSIDER TRENDS & INTELLIGENCE:\n"
         "- Use the 'risk_trend' to determine if project health is deteriorating.\n"
         "- Use the 'OWEN INTELLIGENCE BRIEFING' to check if the proposed plan matches any known 'DON'T DO' patterns or repeated failures.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- Return valid JSON only.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"critique\": \"string\",\n"
@@ -234,11 +199,6 @@ def build_critique_v1_system_prompt() -> str:
 def build_audit_log_v1_system_prompt() -> str:
     return (
         "You are Sentinel, Auditor of A.G.E.N.T.S. You create formal audit entries for system actions.\n\n"
-        "ARTIFACT ONLY MODE: Return ONLY the JSON object. No conversational text. No introductory remarks. No explanations.\n\n"
-        "OUTPUT REQUIREMENTS (non-negotiable):\n"
-        "- Reply with one JSON object only.\n"
-        "- First character MUST be \"{\" and last character MUST be \"}\".\n"
-        "- Return valid JSON only.\n\n"
         "SCHEMA:\n"
         "{\n"
         "  \"audit_entry\": {\n"
@@ -384,32 +344,31 @@ class OutputContract:
     def _parse_json_object(self, text: Any) -> Optional[Mapping[str, Any]]:
         """
         Parse a strict JSON object from model output.
-        Also tolerates a common pattern where the model wraps JSON in markdown fences.
+        Also handles the 2-stage 'ARTIFACT:' label split.
         """
         if text is None:
             return None
         
-        # Handle list of parts (common in some model providers)
+        # Handle list of parts
         if isinstance(text, list):
             parts = []
             for part in text:
-                if isinstance(part, str):
-                    parts.append(part)
-                elif isinstance(part, dict) and "text" in part:
-                    parts.append(part["text"])
-                else:
-                    parts.append(str(part))
+                if isinstance(part, str): parts.append(part)
+                elif isinstance(part, dict) and "text" in part: parts.append(part["text"])
+                else: parts.append(str(part))
             text = "".join(parts)
         
         if not isinstance(text, str):
             text = str(text)
 
-        candidate = text.strip()
+        # Stage 1: Detect and extract 'ARTIFACT:' block if present
+        artifact_match = re.search(r"ARTIFACT:\s*(.*)", text, re.DOTALL | re.IGNORECASE)
+        candidate = artifact_match.group(1).strip() if artifact_match else text.strip()
 
-        # Phase 4 Hardening: Recursive strip of meta-talk preambles
+        # Stage 2: Recursive strip of meta-talk preambles
         candidate = self._recursive_strip_meta(candidate)
 
-        # Tolerate common agent-name prefixes that sometimes leak into outputs.
+        # Tolerate common agent-name prefixes
         candidate = re.sub(r"^\s*\[[^\]]+\]\s*:\s*", "", candidate)
         candidate = re.sub(r"^\s*[A-Za-z]+\s*:\s*", "", candidate)
         candidate = candidate.strip()
@@ -421,7 +380,15 @@ class OutputContract:
         try:
             parsed = json.loads(candidate)
         except Exception:
+            # Final fallback: try finding the LAST { } pair in the whole text if candidate failed
+            fallback_match = re.search(r"(\{.*\})", text, re.DOTALL | re.MULTILINE)
+            if fallback_match:
+                try:
+                    parsed = json.loads(fallback_match.group(1))
+                    if isinstance(parsed, dict): return parsed
+                except: pass
             return None
+            
         if isinstance(parsed, dict):
             return parsed
         return None

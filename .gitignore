@@ -4,6 +4,8 @@
 credentials.json
 **/token.json
 *.secret
+*.key
+
 # Python
 __pycache__/
 *.py[cod]
@@ -12,32 +14,35 @@ __pycache__/
 .venv/
 venv/
 ENV/
+.pytest_cache/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+.abacusai/
+.codex/
 
 # OS
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Data (runtime generated)
-data/audit_logs/
-data/proposals/
-data/tasks/
-
-# Node
-node_modules/
+# Data & Persistence
+data/
+*.db
+*.jsonl
+*.log
+Agent logs/
+scratch/
+Incident reports/
+The Board room/
+Onboarding/
+conversation.json
 
 # Projects & Archive
 PROJECTS/
 ARCHIVE/
-
-# Persistence
-*.db
-*.jsonl
-data/*.db
-Agent logs/
+archive/
+Archieve/
